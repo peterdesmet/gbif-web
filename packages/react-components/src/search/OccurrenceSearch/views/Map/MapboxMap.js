@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import mapboxgl from 'mapbox-gl';
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { getLayerConfig } from './getLayerConfig';
 import env from '../../../../../.env.json';
 import klokantech from './openlayers/styles/klokantech.json';
@@ -40,6 +41,15 @@ class Map extends Component {
       zoom,
       center: [lng, lat]
     });
+
+    // const Draw = new MapboxDraw({
+    //   // don't render the default controls
+    //   // displayControlsDefault: false,
+    // });
+
+    // // position probably doesn't matter. But doesn't harm either
+    // this.map.addControl(Draw);
+
     // this.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
     this.map.on("load", this.addLayer);
   }
