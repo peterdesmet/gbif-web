@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { root } from '../../../../style/shared';
 // import { focusStyle } from '../../style/shared';
 
 export const mapArea = ({ theme }) => css`
@@ -92,7 +93,7 @@ export const mapControlsContent = css`
 
 export const legendList = css`
   margin: 0;
-  padding: 0;
+  padding: 8px 0;
   list-style: none;
 `;
 
@@ -102,18 +103,15 @@ export const legendText = css`
 `;
 
 export const legendItem = css`
+  ${root}
   display: flex;
   flex-direction: row;
   padding: 4px 16px;
   overflow: hidden;
   align-items: center;
   > div {
-    flex: 0 0 auto;
-    width: 24px;
-    height: 24px;
-    line-height: 1.3;
-    align-items: center;
-    display: flex;
+    margin-inline-start: 8px;
+    max-width: 350px;
   }
   input {
     border-radius: 50%;
@@ -123,7 +121,7 @@ export const legendItem = css`
     margin-right: 12px;
   }
   input[type="color"] {
-    border: none;
+    border: 0.5px solid #00000011;
     padding: 0;
     overflow: hidden;
     display: block;

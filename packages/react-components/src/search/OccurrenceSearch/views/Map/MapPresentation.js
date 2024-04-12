@@ -12,7 +12,7 @@ import { jsx, css } from '@emotion/react';
 import { useResizeDetector } from 'react-resize-detector';
 import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
 import React, { useContext, useState, useEffect, useCallback } from "react";
-import { DetailsDrawer, Menu, MenuAction, Button, Tooltip } from '../../../../components';
+import { DetailsDrawer, Menu, MenuAction, Button, Tooltip, Root } from '../../../../components';
 import { OccurrenceSidebar } from '../../../../entities';
 import ThemeContext from '../../../../style/themes/ThemeContext';
 import { useDialogState } from "reakit/Dialog";
@@ -299,7 +299,12 @@ function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading,
           </div>
           {activeMenu === 'LEGEND' && <div css={styles.mapControlsContent}>
             <div>
-              <SortableList updateVisiblity={updateVisiblity} updateColor={props => updateColor({ ...props, occLayers })} items={occLayers ?? []} onSortEnd={props => onSortEnd({ ...props, items: occLayers })} useDragHandle />
+              <SortableList 
+                updateVisiblity={updateVisiblity} 
+                updateColor={props => updateColor({ ...props, occLayers })} 
+                items={occLayers ?? []} 
+                onSortEnd={props => onSortEnd({ ...props, items: occLayers })} 
+                useDragHandle />
             </div>
           </div>}
         </div>
@@ -360,11 +365,9 @@ const SortableItem = SortableElement(({ value, updateVisiblity, updateColor }) =
   return <li css={styles.legendItem}>
     <DragHandle />
     <input type="color" onChange={e => setColor(e.target.value)} value={color} />
-    <div>
-      {!value.visible && <MdVisibilityOff onClick={e => updateVisiblity({ item: { ...value, visible: true } })} />}
-      {value.visible && <MdVisibility onClick={e => updateVisiblity({ item: { ...value, visible: false } })} />}
-    </div>
-    <div css={styles.legendText} dangerouslySetInnerHTML={{ __html: title }} style={{ flex: '1 1 auto' }}></div>
+    {!value.visible && <MdVisibilityOff onClick={e => updateVisiblity({ item: { ...value, visible: true } })} />}
+    {value.visible && <MdVisibility onClick={e => updateVisiblity({ item: { ...value, visible: false } })} />}
+    <div css={styles.legendText} dangerouslySetInnerHTML={{ __html: title }}></div>
   </li>
 });
 
