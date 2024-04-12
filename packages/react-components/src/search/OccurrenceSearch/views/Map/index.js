@@ -121,12 +121,6 @@ function Map({style, className, mapProps}) {
         visible: true
       }
     });
-    // facets.push({
-    //   key: '_all',
-    //   count: null,
-    //   predicateHash: data?.occurrenceSearch?._v1PredicateHash,
-    //   title: 'all'
-    // });
     setFacets(facets);
   }, [facetData]);
 

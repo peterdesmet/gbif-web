@@ -106,26 +106,16 @@ class Map extends Component {
 
   updateLayer() {
     // remove all occurrence layers and sources. Assume they are named occurrences0, occurrences1, etc. There can be up to 20 layers
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 30; i++) {
       const layer = this.map.getLayer(`occurrences${i}`);
       if (layer) {
         this.map.removeLayer(`occurrences${i}`);
         this.map.removeSource(`occurrences${i}`);
       } else {
-        break;
+        continue; // just because this layer isn't rendered, doesn't mean the next one isn't. Since we label them by their index and they can be invisible
       }
     }
     this.addLayers();
-
-    // const layer = this.map.getLayer('occurrences');
-    // if (layer) {
-    //   this.map.removeLayer("occurrences");
-    //   this.map.removeSource("occurrences");
-    //   this.addLayer();
-    // } else {
-    //   this.addLayer();
-    // }
-    // // this.addLayer();
   }
 
   onPointClick(pointData) {

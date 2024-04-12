@@ -119,7 +119,6 @@ function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading,
 
   const updateVisiblity = useCallback(({ item }) => {
     // update the visibility of the node in occLayers
-    debugger;
     const newLayers = occLayers.map(layer => {
       if (layer.key === item.key) {
         return { ...layer, visible: item.visible };
