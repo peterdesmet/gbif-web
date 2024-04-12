@@ -9,6 +9,16 @@
     "count": "{num, plural, one { Location ID } other {# Location IDs}}",
     "description": "Publishers can choose to assign IDs to the location. This field is not normalized, meaning that you search data as provided by the publisher."
   },
+  "hasCoordinate": {
+    "name": "Has coordinate",
+    "count": "Has coordinates",
+    "description": ""
+  },
+  "hasGeospatialIssues": {
+    "name": "Has geospatial issues",
+    "count": "Has geospatial issues",
+    "description": ""
+  },
   "collectionKey": {
     "name": "Collection",
     "count": "{num, plural, one {# collection } other {# collections}}",
@@ -37,6 +47,14 @@
     "placeholderLon": "Longitude",
     "placeholderDist": "Distance"
   },
+  "geometry": {
+    "name": "Location",
+    "count": "{num, plural, one { filter } other {# filters }}",
+    "description": "",
+    "placeholderLat": "Latitude",
+    "placeholderLon": "Longitude",
+    "placeholderDist": "Distance"
+  },
   "relevance": {
     "name": "Relevance",
     "count": "{num, plural, one { relevance } other {# relevance filters}}",
@@ -46,6 +64,16 @@
     "name": "Topic",
     "count": "{num, plural, one { topic } other {# topics}}",
     "description": "What are the topics of the record."
+  },
+  "audiences": {
+    "name": "Audience",
+    "count": "{num, plural, one { audience } other {# audiences}}",
+    "description": "Who are the audiences for the resource."
+  },
+  "purposes": {
+    "name": "Topic",
+    "count": "{num, plural, one { purpose } other {# purposes}}",
+    "description": "What are the purposes of the resource."
   },
   "eventDate": {
     "name": "Event date",
@@ -259,7 +287,12 @@
   "collectionCode": {
     "name": "Collection code",
     "count": "{num, plural, one { collection code } other {# collection codes}}",
-    "description": "A short description of the component should be placed here"
+    "description": "What collection code is assigned to the record."
+  },
+  "projectId": {
+    "name": "Project ID",
+    "count": "{num, plural, one { project ID } other {# project IDs}}",
+    "description": "What project ID is associated with the record."
   },
   "recordedById": {
     "name": "Recorded by ID",

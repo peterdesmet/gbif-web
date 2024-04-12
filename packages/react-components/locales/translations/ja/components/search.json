@@ -7,6 +7,7 @@
     "events": "イベント",
     "download": "ダウンロード",
     "clusters": "",
+    "dashboard": "",
     "sites": "GBIFがアノーテーションしたアーカイブ"
   },
   "table": {
@@ -14,8 +15,13 @@
   },
   "placeholders": {
     "default": "検索",
-    "range": "",
+    "range": "範囲または単一値",
     "locationID": ""
+  },
+  "ternary": {
+    "yes": "はい",
+    "no": "いいえ",
+    "either": "GBIFがアノーテーションしたアーカイブ"
   },
   "loadMore": "もっと読み込む",
   "occurrenceClustersView": {
@@ -33,7 +39,7 @@
     "currentRecord": "",
     "nodeType": {
       "IMAGE": "画像",
-      "TYPE": "",
+      "TYPE": "タイプ標本",
       "TREATMENT": "処理",
       "OBSERVATION": "観察記録",
       "SPECIMEN": "標本",

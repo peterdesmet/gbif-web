@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "有坐标",
+    "count": "",
+    "description": "在文本字段中查找具有相似匹配文本的记录。对于特定字段中的匹配文本，请使用相应的过滤器，例如“科学名称”的过滤器。"
+  },
+  "hasGeospatialIssues": {
+    "name": "有地理空间问题",
+    "count": "有地理空间问题",
+    "description": "在文本字段中查找具有相似匹配文本的记录。对于特定字段中的匹配文本，请使用相应的过滤器，例如“科学名称”的过滤器。"
+  },
   "collectionKey": {
     "name": "馆藏",
     "count": "{num, plural, one {# 收藏品 } other {# 收藏品}}",
@@ -21,7 +31,7 @@
   },
   "specimensInGbif": {
     "name": "GBIF中的标本",
-    "count": "",
+    "count": "{num, plural, one { GBIF标本计数 } other {# GBIF标本}}",
     "description": "在文本字段中查找具有相似匹配文本的记录。对于特定字段中的匹配文本，请使用相应的过滤器，例如“科学名称”的过滤器。"
   },
   "iucnRedListCategory": {
@@ -33,8 +43,16 @@
     "name": "",
     "count": "",
     "description": "",
-    "placeholderLat": "",
-    "placeholderLon": "",
+    "placeholderLat": "纬度",
+    "placeholderLon": "经度",
+    "placeholderDist": ""
+  },
+  "geometry": {
+    "name": "位置",
+    "count": "",
+    "description": "在文本字段中查找具有相似匹配文本的记录。对于特定字段中的匹配文本，请使用相应的过滤器，例如“科学名称”的过滤器。",
+    "placeholderLat": "纬度",
+    "placeholderLon": "经度",
     "placeholderDist": ""
   },
   "relevance": {
@@ -46,6 +64,16 @@
     "name": "主题",
     "count": "",
     "description": ""
+  },
+  "audiences": {
+    "name": "读者",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
+    "name": "主题",
+    "count": "",
+    "description": "资源的用途是什么。"
   },
   "eventDate": {
     "name": "事件日期",
@@ -259,6 +287,11 @@
   "collectionCode": {
     "name": "保藏代码",
     "count": "{num, plural, one { 收集代码 } other {# 收集代码}}",
+    "description": "这里应该有一个组件的简短描述"
+  },
+  "projectId": {
+    "name": "项目编号",
+    "count": "这里应该有一个组件的简短描述",
     "description": "这里应该有一个组件的简短描述"
   },
   "recordedById": {

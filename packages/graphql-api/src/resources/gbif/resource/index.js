@@ -5,14 +5,17 @@ import * as dataUse from './dataUse';
 import * as event from './event';
 import * as gbifDocument from './document';
 import * as gbifProject from './gbifProject';
+import * as programme from './programme';
 import * as help from './help';
 import * as news from './news';
 import * as notification from './notification';
 import * as resourceSearch from './resourceSearch';
+import * as resource from './resource';
 import * as tool from './tool';
 import * as misc from './misc';
 import * as menuItem from './menuItem';
 import * as home from './home';
+import * as fundingOrganisation from './fundingOrganisation';
 import { ResourceAPI, ResourceSearchAPI } from './resource.source';
 import { merge, get } from 'lodash';
 
@@ -24,14 +27,17 @@ const children = [
   event,
   gbifDocument,
   gbifProject,
+  programme,
   help,
   news,
   notification,
   resourceSearch,
+  resource,
   tool,
   misc,
   menuItem, 
-  home
+  home,
+  fundingOrganisation,
 ].map(resource => resource.default);
 
 export default {

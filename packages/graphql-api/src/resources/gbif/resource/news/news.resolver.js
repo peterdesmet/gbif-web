@@ -1,4 +1,4 @@
-import { getHtml, trustedTags, excerpt, createLocalizedGbifHref } from "#/helpers/utils";
+import { getHtml, excerpt, createLocalizedGbifHref } from "#/helpers/utils";
 
 /**
  * fieldName: (parent, args, context, info) => data;
@@ -9,15 +9,15 @@ import { getHtml, trustedTags, excerpt, createLocalizedGbifHref } from "#/helper
  */
 export default {
   Query: {
-    news: (_, { id, preview }, { dataSources, locale }) =>
+    news: (_, { id }, { dataSources, locale, preview }) =>
       dataSources.resourceAPI.getEntryById({ id, preview, locale })
   },
   News: {
-    title: src => getHtml(src.title, { inline: true }),
-    summary: src => getHtml(src.summary),
-    body: src => getHtml(src.body, {allowedTags: trustedTags, wrapTables: true}),
-    excerpt: src => excerpt(src),
-    citation: src => getHtml(src.citation, {allowedTags: trustedTags}),
-    gbifHref: (src, _, context) => createLocalizedGbifHref(context.locale, 'news', src.id),
+    title: (src, _, { locale }) => getHtml(src.title, { inline: true, locale }),
+    summary: (src, _, { locale }) => getHtml(src.summary, { locale }),
+    body: (src, _, { locale }) => getHtml(src.body, { trustLevel: 'trusted', wrapTables: true, locale }),
+    excerpt: (src, _, { locale }) => excerpt(src, { locale }),
+    citation: (src, _, { locale }) => getHtml(src.citation, { trustLevel: 'trusted', locale }),
+    gbifHref: (src, _, { locale }) => createLocalizedGbifHref(locale, 'news', src.id),
   }
 }

@@ -9,14 +9,15 @@ And probably the point overlays will have to be dependent on the basemap as well
 
 */
 import { jsx, css } from '@emotion/react';
+import { useResizeDetector } from 'react-resize-detector';
 import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
 import React, { useContext, useState, useEffect, useCallback } from "react";
-import { DetailsDrawer, Menu, MenuAction, Button, Popover } from '../../../../components';
+import { DetailsDrawer, Menu, MenuAction, Button, Tooltip } from '../../../../components';
 import { OccurrenceSidebar } from '../../../../entities';
 import ThemeContext from '../../../../style/themes/ThemeContext';
 import { useDialogState } from "reakit/Dialog";
 import ListBox from './ListBox';
-import { MdOutlineLayers, MdZoomIn, MdZoomOut, MdLanguage, MdMyLocation, MdLegendToggle, MdVisibility, MdVisibilityOff, MdDragHandle } from 'react-icons/md'
+import { MdOutlineFilterAlt as ExploreAreaIcon, MdOutlineLayers, MdZoomIn, MdZoomOut, MdLanguage, MdMyLocation, MdLegendToggle, MdVisibility, MdVisibilityOff, MdDragHandle } from 'react-icons/md'
 import { ViewHeader } from '../ViewHeader';
 import MapComponentMB from './MapboxMap';
 import MapComponentOL from './OpenlayersMap';
@@ -76,7 +77,7 @@ function getStyle({ styles = {}, projection, type, lookup = {}, layerOptions }) 
   return style;
 }
 
-function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading, total, predicateHash, registerPredicate, loadPointData, defaultMapSettings, facets, breakdownField, setBreakdownField, ...props }) {
+function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading, total, predicateHash, registerPredicate, loadPointData, defaultMapSettings, style, className, mapProps, features, onFeaturesChange, facets, breakdownField, setBreakdownField, ...props }) {
   const dialog = useDialogState({ animated: true, modal: false });
   const theme = useContext(ThemeContext);
   const siteContext = useContext(SiteContext);
@@ -155,6 +156,12 @@ function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading,
 
   const items = pointData?.occurrenceSearch?.documents?.results || [];
 
+  const { width, height, ref } = useResizeDetector({
+    handleHeight: true,
+    refreshMode: 'debounce',
+    refreshRate: 1000
+  });
+
   useEffect(() => {
     const mapStyles = getMapStyles({ apiKeys: siteContext.apiKeys, language: siteContext?.maps?.locale || 'en', });
     let mapStyleOverwrites = {};
@@ -186,6 +193,22 @@ function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading,
   const previousItem = useCallback(() => {
     setActive(Math.max(0, activeId - 1));
   }, [items, activeId]);
+
+  const eventListener = useCallback((event) => {
+    if (onFeaturesChange && event.type === 'EXPLORE_AREA') {
+      if (['PLATE_CAREE', 'MERCATOR'].indexOf(projection) < 0) {
+        toast.error('This action is not supported in polar projections', {
+          backgroundColor: 'tomato',
+          color: '#ffffff',
+        });
+        return;
+      }
+      const { bbox } = event; //top, left, right, bottom
+      // create wkt from bounds, making sure that it is counter clockwise
+      const wkt = `POLYGON((${bbox.left} ${bbox.top},${bbox.left} ${bbox.bottom},${bbox.right} ${bbox.bottom},${bbox.right} ${bbox.top},${bbox.left} ${bbox.top}))`;
+      onFeaturesChange({ features: [wkt] });//remove existing geometries
+    }
+  }, [onFeaturesChange, projection]);
 
   const getUserLocation = useCallback(() => {
     if (hasGeoLocation) {
@@ -236,11 +259,13 @@ function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading,
   if (!basemapOptions || !mapConfiguration) return null;
   const MapComponent = mapConfiguration.component || MapComponentOL;
 
+  const notPolarProjection = ['PLATE_CAREE', 'MERCATOR'].indexOf(projection) >= 0;
+
   return <>
     <DetailsDrawer href={`https://www.gbif.org/occurrence/${activeItem?.key}`} dialog={dialog} nextItem={nextItem} previousItem={previousItem}>
       <OccurrenceSidebar id={activeItem?.key} defaultTab='details' style={{ maxWidth: '100%', width: 700, height: '100%' }} onCloseRequest={() => dialog.setVisible(false)} />
     </DetailsDrawer>
-    <div css={styles.mapArea({ theme })}>
+    <div ref={ref} css={styles.mapArea({ theme })} {...{ style, className }}>
       <ViewHeader message="counts.nResultsWithCoordinates" loading={loading} total={total} />
       <div style={{ position: 'relative', height: '200px', flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
         {listVisible && <ListBox onCloseRequest={e => showList(false)}
@@ -255,6 +280,9 @@ function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading,
             <div>
               <Button appearance="text" css={styles.mapControlsButton()} onClick={() => broadcastEvent({ type: 'ZOOM_IN' })}><MdZoomIn /></Button>
               <Button appearance="text" css={styles.mapControlsButton()} onClick={() => broadcastEvent({ type: 'ZOOM_OUT' })}><MdZoomOut /></Button>
+              {notPolarProjection && <Tooltip title={<FormattedMessage id="map.filterByView" defaultMessage="Use view as filter" />}>
+                <Button appearance="text" css={styles.mapControlsButton()} onClick={() => broadcastEvent({ type: 'EXPLORE_AREA' })}><ExploreAreaIcon /></Button>
+              </Tooltip>}
               {projectionOptions.length > 1 && <Menu style={{ display: 'inline-block' }}
                 aria-label="Select projection"
                 trigger={<Button appearance="text" css={styles.mapControlsButton()}><MdLanguage /></Button>}
@@ -262,20 +290,21 @@ function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading,
               />}
               {layerOptions?.[projection]?.length > 1 && <Menu style={{ display: 'inline-block' }}
                 aria-label="Select layers"
-                trigger={<Button appearance="text" css={styles.mapControlsButton()} ><MdOutlineLayers /></Button>}
+                trigger={<Button appearance="text" css={styles.mapControlsButton()}><MdOutlineLayers /></Button>}
                 items={menuLayerOptions}
               />}
               <Button appearance="text" css={styles.mapControlsButton({ active: activeMenu === 'LEGEND' })} onClick={() => setActiveMenu(activeMenu !== 'LEGEND' ? 'LEGEND' : null)}><MdLegendToggle /></Button>
-              {userLocationEnabled && <Button loading={searchingLocation} appearance="text" css={styles.mapControlsButton()} onClick={getUserLocation}><MdMyLocation /></Button>}
+              {userLocationEnabled && <Button loading={searchingLocation} css={styles.mapControlsButton()} appearance="text" onClick={getUserLocation}><MdMyLocation /></Button>}
             </div>
           </div>
           {activeMenu === 'LEGEND' && <div css={styles.mapControlsContent}>
             <div>
-              <SortableList updateVisiblity={updateVisiblity} updateColor={props => updateColor({...props, occLayers})} items={occLayers ?? []} onSortEnd={props => onSortEnd({ ...props, items: occLayers })} useDragHandle />
+              <SortableList updateVisiblity={updateVisiblity} updateColor={props => updateColor({ ...props, occLayers })} items={occLayers ?? []} onSortEnd={props => onSortEnd({ ...props, items: occLayers })} useDragHandle />
             </div>
           </div>}
         </div>
         <MapComponent
+          {...mapProps}
           mapConfig={mapConfiguration.mapConfig}
           latestEvent={latestEvent}
           defaultMapSettings={defaultMapSettings}
@@ -287,7 +316,11 @@ function Map({ labelMap, query, q, pointData, pointError, pointLoading, loading,
           query={query}
           onMapClick={e => showList(false)}
           onPointClick={data => { showList(true); loadPointData(data) }}
-          registerPredicate={registerPredicate} />
+          listener={eventListener}
+          registerPredicate={registerPredicate}
+          height={height}
+          width={width}
+        />
       </div>
     </div>
   </>;

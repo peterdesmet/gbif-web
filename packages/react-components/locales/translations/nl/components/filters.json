@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "",
+    "count": "",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
+  },
+  "hasGeospatialIssues": {
+    "name": "",
+    "count": "",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
+  },
   "collectionKey": {
     "name": "Verzameling",
     "count": "{num, plural, one {# verzameling } other {# verzamelingen}}",
@@ -22,17 +32,25 @@
   "specimensInGbif": {
     "name": "Exemplaren in GBIF",
     "count": "",
-    "description": ""
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "iucnRedListCategory": {
     "name": "",
-    "count": "",
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
     "description": ""
   },
   "geoDistance": {
     "name": "",
     "count": "",
     "description": "",
+    "placeholderLat": "Breedtegraad",
+    "placeholderLon": "Lengtegraad",
+    "placeholderDist": "Afstand"
+  },
+  "geometry": {
+    "name": "",
+    "count": "",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
     "placeholderLat": "Breedtegraad",
     "placeholderLon": "Lengtegraad",
     "placeholderDist": "Afstand"
@@ -47,40 +65,50 @@
     "count": "",
     "description": "Wat zijn de onderwerpen van het dossier."
   },
-  "eventDate": {
-    "name": "Datum van gebeurtenis",
-    "count": "",
-    "description": ""
-  },
-  "alternativeCode": {
+  "audiences": {
     "name": "",
     "count": "",
     "description": ""
+  },
+  "purposes": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "eventDate": {
+    "name": "Datum van gebeurtenis",
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
+  },
+  "alternativeCode": {
+    "name": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "identifier": {
     "name": "",
-    "count": "",
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
     "description": ""
   },
   "institutionType": {
     "name": "",
-    "count": "",
-    "description": ""
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "discipline": {
-    "name": "",
-    "count": "",
-    "description": ""
+    "name": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "collectionContentType": {
-    "name": "",
-    "count": "",
-    "description": ""
+    "name": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "preservationType": {
-    "name": "",
-    "count": "",
-    "description": ""
+    "name": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "taxonKey": {
     "name": "Wetenschappelijke naam",
@@ -122,12 +150,12 @@
     "description": "Het land of grondgebied waar de gebeurtenis plaatsvond"
   },
   "grsciCollCountry": {
-    "description": ""
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "preparations": {
     "name": "",
-    "count": "",
-    "description": ""
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "publishingCountryCode": {
     "name": "Publicerend land",
@@ -261,6 +289,11 @@
     "count": "",
     "description": ""
   },
+  "projectId": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
   "recordedById": {
     "name": "",
     "count": "",
@@ -369,12 +402,12 @@
   "active": {
     "name": "Actief",
     "count": "Actief",
-    "description": ""
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "personalCollection": {
     "name": "",
     "count": "",
-    "description": ""
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "datasetType": {
     "name": "",
@@ -394,18 +427,18 @@
   "name": {
     "name": "Naam",
     "count": "",
-    "description": "",
-    "searchPlaceholder": ""
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
+    "searchPlaceholder": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "city": {
     "name": "Stad",
     "count": "",
-    "description": ""
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "code": {
     "name": "",
     "count": "",
-    "description": ""
+    "description": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "verbatimScientificName": {
     "name": "Woordelijke wetenschappelijke naam",
@@ -414,7 +447,7 @@
   },
   "networkKey": {
     "name": "",
-    "count": "",
+    "count": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\".",
     "description": ""
   },
   "literatureType": {

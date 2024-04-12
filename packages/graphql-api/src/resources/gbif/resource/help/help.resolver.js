@@ -1,4 +1,5 @@
-import { getHtml, excerpt, trustedTags } from "#/helpers/utils";
+import { getHtml, excerpt } from "#/helpers/utils";
+import { untrustedHeaderOptions } from "#/helpers/sanitize-html";
 
 /**
  * fieldName: (parent, args, context, info) => data;
@@ -14,8 +15,8 @@ export default {
       dataSources.resourceSearchAPI.getFirstEntryByQuery({...params, contentType: 'help'}, localeOverwrite ?? locale)
   },
   Help: {
-    title: src => getHtml(src.title, { inline: true }),
-    body: src => getHtml(src.body, {allowedTags: trustedTags, wrapTables: true}),
-    excerpt: src => excerpt(src),
+    title: (src, _, { locale }) => getHtml(src.title, { inline: true, locale, ...untrustedHeaderOptions }),
+    body: (src, _, { locale }) => getHtml(src.body, { trustLevel: 'trusted', wrapTables: true, locale }),
+    excerpt: (src, _, { locale }) => excerpt(src, { locale }),
   }
 }

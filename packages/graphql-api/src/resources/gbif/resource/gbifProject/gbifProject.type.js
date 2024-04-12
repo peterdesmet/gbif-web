@@ -2,14 +2,14 @@ import { gql } from "apollo-server";
 
 const typeDef = gql`
   extend type Query {
-    gbifProject(id: String!, preview: Boolean): GbifProject
+    gbifProject(id: String!): GbifProject
   }
 
   type GbifProject {
-    id: ID
-    gbifHref: String
-    # leadPartner: ParticipantOrOrganisation
-    title: String
+    id: ID!
+    gbifHref: String!
+    leadPartner: ParticipantOrFundingOrganisation
+    title: String!
     officialTitle: String
     body: String
     summary: String
@@ -21,42 +21,31 @@ const typeDef = gql`
     primaryImage: AssetImage
     fundsAllocated: Int
     leadContact: String
-    searchable: Boolean
+    searchable: Boolean!
     contractCountry: String
     call: Call
     gbifProgrammeAcronym: String
     projectId: String
-    # TODO
-    # additionalPartners: [ParticipantOrOrganisation]
+    additionalPartners: [ParticipantOrFundingOrganisation]
     status: String
-    homepage: Boolean
-    keywords: [String]
-    documents: [DocumentAsset]
-    events: [Event]
+    homepage: Boolean!
+    keywords: [String!]
+    documents: [DocumentAsset!]
+    events: [Event!]
     programme: Programme
     excerpt: String
     updatedAt: DateTime
     grantType: String
     primaryLink: Link
-    news: [News]
-    # TODO
-    # fundingOrganisations: [ParticipantOrOrganisation]
-    purposes: [String]
-    secondaryLinks: [Link]
-    # TODO
-    # overrideProgrammeFunding: [Organization]
+    news: [News!]
+    fundingOrganisations: [ParticipantOrFundingOrganisation]
+    purposes: [String!]
+    secondaryLinks: [Link!]
+    overrideProgrammeFunding: [FundingOrganisation]
     meta: JSON
   }
 
-  type Programme {
-    id: String
-    summary: String
-    body: String
-    title: String
-    excerpt: String
-  }
-
-  union ParticipantOrOrganisation = Participant | Organization
+  union ParticipantOrFundingOrganisation = Participant | FundingOrganisation
 `
 
 export default typeDef;

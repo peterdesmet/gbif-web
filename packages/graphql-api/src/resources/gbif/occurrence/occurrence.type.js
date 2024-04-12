@@ -75,7 +75,7 @@ const typeDef = gql`
     elevationAccuracy: Float
     endDayOfYear: Int
     establishmentMeans: String
-    eventDate: DateTime
+    eventDate: String
     eventID: String
     eventRemarks: String
     eventTime: String
@@ -558,6 +558,17 @@ const typeDef = gql`
     extendedMeasurementOrFact: [JSON]
     chronometricAge: [JSON]
     dnaDerivedData: [JSON]
+  }
+
+  type MapCapabilities {
+    minLat: Int!
+    maxLat: Int!
+    minLng: Int!
+    maxLng: Int!
+    minYear: Int
+    maxYear: Int
+    total: Int!
+    generated: DateTime!
   }
 `;
 

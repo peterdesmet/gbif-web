@@ -7,6 +7,7 @@
     "events": "",
     "download": "Downloaden",
     "clusters": "",
+    "dashboard": "Dashboard",
     "sites": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "table": {
@@ -16,6 +17,11 @@
     "default": "Zoeken",
     "range": "Bereik of enkele waarde",
     "locationID": ""
+  },
+  "ternary": {
+    "yes": "",
+    "no": "",
+    "either": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "loadMore": "Meer",
   "occurrenceClustersView": {

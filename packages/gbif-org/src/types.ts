@@ -1,14 +1,21 @@
 import { RouteObject } from 'react-router-dom';
 import { Config } from '@/contexts/config/config';
+import { GraphQLService } from './services/graphQLService';
+import { RouteId } from './hooks/useParentRouteLoaderData';
 
 export type LoaderArgs = {
+  id: string;
   request: Request;
   config: Config;
   locale: Config['languages'][number];
+  graphql: GraphQLService;
   params: Record<string, string | undefined>;
 };
 
-export type SourceRouteObject = Omit<RouteObject, 'loader' | 'children' | 'lazy'> & {
+export type SourceRouteObject = Omit<RouteObject, 'loader' | 'children' | 'lazy' | 'id'> & {
+  // 'id' is a unique identifier for the route, used for example to identify the route in the useParentRouteLoaderData hook.
+  id?: RouteId;
+
   // 'key' is optionally used to activate or deactivate the route in the global configuration.
   key?: string;
 
@@ -26,9 +33,13 @@ export type SourceRouteObject = Omit<RouteObject, 'loader' | 'children' | 'lazy'
 
   // 'lazy' is a function for lazy loading the route's component, improving performance by loading the component only when required.
   lazy?: () => Promise<Pick<RouteObject, 'element'>>;
+
+  isSlugified?: boolean;
 };
 
 export type RouteMetadata = {
+  id?: RouteId;
+  isSlugified?: boolean;
   path?: string;
   key?: string;
   loadingElement?: React.ReactNode;

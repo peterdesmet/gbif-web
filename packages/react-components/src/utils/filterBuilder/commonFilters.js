@@ -131,6 +131,22 @@ export const commonFilters = {
       }
     }
   },
+  geometry: {
+    type: 'GEOMETRY',
+    config: {
+      std: {
+        id2labelHandle: 'geometry',
+        translations: {
+          count: 'filters.geometry.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.geometry.name',// translation path to a title for the popover and the button
+          description: 'filters.geometry.description', // translation path for the filter description
+        },
+      },
+      specific: {
+        
+      }
+    }
+  },
   countriesOfResearcher: {
     type: 'SUGGEST',
     config: {
@@ -400,6 +416,7 @@ export const commonFilters = {
       },
       specific: {
         options: basisofRecord,
+        supportsInverse: true,
       }
     }
   },
@@ -417,6 +434,7 @@ export const commonFilters = {
       },
       specific: {
         options: relevance,
+        supportsInverse: true,
       }
     }
   },
@@ -434,6 +452,7 @@ export const commonFilters = {
       },
       specific: {
         options: topics,
+        supportsInverse: true,
       }
     }
   },
@@ -451,6 +470,7 @@ export const commonFilters = {
       },
       specific: {
         options: typeStatus,
+        supportsInverse: true,
       }
     }
   },
@@ -469,7 +489,8 @@ export const commonFilters = {
       specific: {
         options: occurrenceIssue,
         supportsNegation: true,
-        supportsExist: true
+        supportsExist: true,
+        supportsInverse: true,
       }
     }
   },
@@ -486,7 +507,7 @@ export const commonFilters = {
         }
       },
       specific: {
-        options: mediaType,
+        options: mediaType
       }
     }
   },
@@ -538,6 +559,7 @@ export const commonFilters = {
       },
       specific: {
         options: license,
+        supportsInverse: true,
       }
     }
   },
@@ -647,6 +669,7 @@ export const commonFilters = {
       specific: {
         options: month,
         supportsExist: true,
+        supportsInverse: true,
       }
     }
   },
@@ -664,6 +687,7 @@ export const commonFilters = {
       },
       specific: {
         options: continent,
+        supportsInverse: true,
       }
     }
   },
@@ -681,6 +705,7 @@ export const commonFilters = {
       },
       specific: {
         options: endpointType,
+        supportsInverse: true,
       }
     }
   },
@@ -803,6 +828,24 @@ export const commonFilters = {
       },
       specific: {
         placeholder: 'Search by collection code',
+        supportsExist: true,
+      }
+    }
+  },
+  projectId: {
+    type: 'SIMPLE_TEXT',
+    config: {
+      std: {
+        filterHandle: 'projectId',
+        id2labelHandle: 'projectId',
+        translations: {
+          count: 'filters.projectId.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.projectId.name',// translation path to a title for the popover and the button
+          description: 'filters.projectId.description', // translation path for the filter description
+        },
+      },
+      specific: {
+        placeholder: 'Search by project ID',
         supportsExist: true,
       }
     }
@@ -1476,6 +1519,7 @@ export const commonFilters = {
       },
       specific: {
         options: literatureType,
+        supportsInverse: true,
       }
     }
   },
@@ -1492,7 +1536,8 @@ export const commonFilters = {
         }
       },
       specific: {
-        options: dwcaExtension
+        options: dwcaExtension,
+        supportsInverse: true,
       }
     }
   },
@@ -1613,7 +1658,8 @@ export const commonFilters = {
           }
         },
         specific: {
-          options: iucnRedListCategory
+          options: iucnRedListCategory,
+          supportsInverse: true,
         }
       }
     },
@@ -1684,7 +1730,8 @@ export const commonFilters = {
           }
         },
         specific: {
-          options: discipline
+          options: discipline,
+          supportsInverse: true,
         }
       }
     },
@@ -1718,7 +1765,8 @@ export const commonFilters = {
           }
         },
         specific: {
-          options: preservationType
+          options: preservationType,
+          supportsInverse: true,
         }
       }
     },

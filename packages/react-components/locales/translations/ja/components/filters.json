@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "座標あり",
+    "count": "",
+    "description": "GBIFがアノーテーションしたアーカイブ"
+  },
+  "hasGeospatialIssues": {
+    "name": "地理空間情報の解釈に問題あり",
+    "count": "地理空間情報の解釈に問題あり",
+    "description": "GBIFがアノーテーションしたアーカイブ"
+  },
   "collectionKey": {
     "name": "コレクション",
     "count": "",
@@ -37,12 +47,30 @@
     "placeholderLon": "",
     "placeholderDist": ""
   },
+  "geometry": {
+    "name": "位置情報",
+    "count": "",
+    "description": "GBIFがアノーテーションしたアーカイブ",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
   "relevance": {
     "name": "関連性",
     "count": "",
     "description": ""
   },
   "topics": {
+    "name": "トピック",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "利用者",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
     "name": "トピック",
     "count": "",
     "description": ""
@@ -258,6 +286,11 @@
   },
   "collectionCode": {
     "name": "コレクションコード",
+    "count": "",
+    "description": ""
+  },
+  "projectId": {
+    "name": "プロジェクトID",
     "count": "",
     "description": ""
   },

@@ -2,13 +2,13 @@ const { gql } = require("apollo-server-core");
 
 const typeDef = gql`
   extend type Query {
-    article(id: String!, preview: Boolean): Article
+    article(id: String!): Article
   }
 
   type Article {
-    id: ID
-    gbifHref: String
-    title: String
+    id: ID!
+    gbifHref: String!
+    title: String!
     summary: String
     body: String
     excerpt: String
@@ -20,6 +20,7 @@ const typeDef = gql`
     updatedAt: DateTime
     displayDate: Boolean
     articleType: String
+    citation: String
     audiences: [String]
     keywords: [String]
     purposes: [String]

@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "",
+    "count": "",
+    "description": "GBIF annoteret Arkiv"
+  },
+  "hasGeospatialIssues": {
+    "name": "",
+    "count": "",
+    "description": "GBIF annoteret Arkiv"
+  },
   "collectionKey": {
     "name": "",
     "count": "",
@@ -37,12 +47,30 @@
     "placeholderLon": "",
     "placeholderDist": ""
   },
+  "geometry": {
+    "name": "",
+    "count": "",
+    "description": "GBIF annoteret Arkiv",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
   "relevance": {
     "name": "Relevans",
     "count": "",
     "description": ""
   },
   "topics": {
+    "name": "Emne",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "Publikum",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
     "name": "Emne",
     "count": "",
     "description": ""
@@ -258,6 +286,11 @@
   },
   "collectionCode": {
     "name": "",
+    "count": "",
+    "description": ""
+  },
+  "projectId": {
+    "name": "Projekt-ID",
     "count": "",
     "description": ""
   },

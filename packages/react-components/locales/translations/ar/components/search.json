@@ -7,6 +7,7 @@
     "events": "أحداث",
     "download": "تنزيل",
     "clusters": "",
+    "dashboard": "",
     "sites": "أرشيف شروح \"جيبف\""
   },
   "table": {
@@ -16,6 +17,11 @@
     "default": "بحث",
     "range": "",
     "locationID": ""
+  },
+  "ternary": {
+    "yes": "نعم",
+    "no": "لا",
+    "either": "أرشيف شروح \"جيبف\""
   },
   "loadMore": "مزيد",
   "occurrenceClustersView": {

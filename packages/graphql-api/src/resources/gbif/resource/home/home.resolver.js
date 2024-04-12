@@ -1,5 +1,3 @@
-import { getHtml, excerpt, trustedTags, createLocalizedGbifHref } from "#/helpers/utils";
-
 /**
  * fieldName: (parent, args, context, info) => data;
  * parent: An object that contains the result returned from the resolver on the parent type
@@ -9,14 +7,14 @@ import { getHtml, excerpt, trustedTags, createLocalizedGbifHref } from "#/helper
  */
 export default {
   Query: {
-    gbifHome: (_, { preview }, { dataSources, locale }) =>
+    gbifHome: (_, __, { dataSources, locale, preview }) =>
       dataSources.resourceAPI.getEntryById({ id: '3D1QT0b4vuKS4iGaaumqwG', preview, locale })
   },
   Home: {
-    children: ({mainNavigationElements}, _, { dataSources, locale }) => {
+    children: ({ mainNavigationElements }, _, { dataSources, locale, preview }) => {
       if (!mainNavigationElements) return [];
       return mainNavigationElements.map(child => {
-        return dataSources.resourceAPI.getEntryById({ id: child.id, locale })
+        return dataSources.resourceAPI.getEntryById({ id: child.id, locale, preview })
       })
     }
   }

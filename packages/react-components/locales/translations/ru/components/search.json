@@ -7,6 +7,7 @@
     "events": "Мероприятия",
     "download": "Загрузить",
     "clusters": "",
+    "dashboard": "Панель управления",
     "sites": "Архив, аннотированный GBIF"
   },
   "table": {
@@ -16,6 +17,11 @@
     "default": "Поиск",
     "range": "",
     "locationID": ""
+  },
+  "ternary": {
+    "yes": "Да",
+    "no": "Нет",
+    "either": "Архив, аннотированный GBIF"
   },
   "loadMore": "Еще",
   "occurrenceClustersView": {

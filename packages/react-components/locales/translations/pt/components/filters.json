@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "Tem coordenadas",
+    "count": "",
+    "description": "Uma breve descrição do componente deve ser colocada aqui"
+  },
+  "hasGeospatialIssues": {
+    "name": "Tem problemas geoespaciais",
+    "count": "Tem problemas geoespaciais",
+    "description": "Uma breve descrição do componente deve ser colocada aqui"
+  },
   "collectionKey": {
     "name": "Coleção",
     "count": "",
@@ -37,12 +47,30 @@
     "placeholderLon": "",
     "placeholderDist": ""
   },
+  "geometry": {
+    "name": "Localização",
+    "count": "",
+    "description": "Uma breve descrição do componente deve ser colocada aqui",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
   "relevance": {
     "name": "Relevância",
     "count": "",
     "description": ""
   },
   "topics": {
+    "name": "Tópico",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "Audiência",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
     "name": "Tópico",
     "count": "",
     "description": ""
@@ -259,6 +287,11 @@
   "collectionCode": {
     "name": "Código de coleção",
     "count": "{num, plural, one { código da coleção } other {# códigos da coleção}}",
+    "description": "Uma breve descrição do componente deve ser colocada aqui"
+  },
+  "projectId": {
+    "name": "ID do Projeto",
+    "count": "Uma breve descrição do componente deve ser colocada aqui",
     "description": "Uma breve descrição do componente deve ser colocada aqui"
   },
   "recordedById": {

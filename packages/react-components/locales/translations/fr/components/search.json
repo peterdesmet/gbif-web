@@ -7,6 +7,7 @@
     "events": "Évènements",
     "download": "Télécharger",
     "clusters": "",
+    "dashboard": "Tableau de bord",
     "sites": "Archive annotée par GBIF"
   },
   "table": {
@@ -16,6 +17,11 @@
     "default": "Rechercher",
     "range": "Intervalle ou valeur unique",
     "locationID": ""
+  },
+  "ternary": {
+    "yes": "Oui",
+    "no": "Non",
+    "either": "Archive annotée par GBIF"
   },
   "loadMore": "Plus",
   "occurrenceClustersView": {

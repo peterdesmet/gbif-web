@@ -1,4 +1,4 @@
-import { getHtml, excerpt, trustedTags, createLocalizedGbifHref } from "#/helpers/utils";
+import { getHtml, excerpt, createLocalizedGbifHref } from "#/helpers/utils";
 
 /**
  * fieldName: (parent, args, context, info) => data;
@@ -9,14 +9,15 @@ import { getHtml, excerpt, trustedTags, createLocalizedGbifHref } from "#/helper
  */
 export default {
   Query: {
-    article: (_, { id, preview }, { dataSources, locale }) =>
+    article: (_, { id }, { dataSources, locale, preview }) =>
       dataSources.resourceAPI.getEntryById({ id, preview, locale })
   },
   Article: {
-    title: src => getHtml(src.title, { inline: true }),
-    summary: src => getHtml(src.summary),
-    body: src => getHtml(src.body, {allowedTags: trustedTags, wrapTables: true}),
-    excerpt: src => excerpt(src),
-    gbifHref: (src, _, context) => createLocalizedGbifHref(context.locale, 'article', src.id),
+    title: (src, _, { locale }) => getHtml(src.title, { inline: true, locale }),
+    summary: (src, _, { locale }) => getHtml(src.summary, { locale }),
+    body: (src, _, { locale }) => getHtml(src.body, { trustLevel: 'trusted', wrapTables: true, locale }),
+    excerpt: (src, _, { locale }) => excerpt(src, { locale }),
+    citation: (src, _, { locale }) => getHtml(src.citation, { trustLevel: 'trusted', locale }),
+    gbifHref: (src, _, { locale }) => createLocalizedGbifHref(locale, 'article', src.id),
   }
 }

@@ -2,15 +2,15 @@ import { gql } from 'apollo-server';
 
 const typeDef = gql`
   extend type Query {
-    gbifDocument(id: String!, preview: Boolean): Document
+    gbifDocument(id: String!): Document
   }
 
   type Document {
-    id: ID
-    gbifHref: String
+    id: ID!
+    title: String!
+    gbifHref: String!
     createdAt: DateTime
     document: DocumentAsset
-    title: String
     updatedAt: DateTime
     summary: String
     primaryLink: Link

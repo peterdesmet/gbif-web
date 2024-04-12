@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "具有座標",
+    "count": "",
+    "description": "GBIF 註記的存檔"
+  },
+  "hasGeospatialIssues": {
+    "name": "有地理空間問題",
+    "count": "有地理空間問題",
+    "description": "GBIF 註記的存檔"
+  },
   "collectionKey": {
     "name": "蒐藏集",
     "count": "{num, plural,one {#蒐藏}other {#蒐藏}}",
@@ -37,12 +47,30 @@
     "placeholderLon": "",
     "placeholderDist": ""
   },
+  "geometry": {
+    "name": "地點",
+    "count": "",
+    "description": "GBIF 註記的存檔",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
   "relevance": {
     "name": "相關性",
     "count": "",
     "description": ""
   },
   "topics": {
+    "name": "主題",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "讀者",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
     "name": "主題",
     "count": "",
     "description": ""
@@ -258,6 +286,11 @@
   },
   "collectionCode": {
     "name": "蒐藏品代碼",
+    "count": "",
+    "description": ""
+  },
+  "projectId": {
+    "name": "專案 ID",
     "count": "",
     "description": ""
   },

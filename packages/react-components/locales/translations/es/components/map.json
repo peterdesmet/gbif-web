@@ -13,7 +13,8 @@
         "PLATE_CAREE": "Proyección Geográfica"
     },
     "failedToGetUserLocation": {
-        "title": "Busque registros con texto parecido entre los campos de texto. Para buscar un texto que coincida dentro de un campo específico, utilice el filtro correspondiente, como el de \"Nombre Científico\".",
-        "message": "Busque registros con texto parecido entre los campos de texto. Para buscar un texto que coincida dentro de un campo específico, utilice el filtro correspondiente, como el de \"Nombre Científico\"."
-    }
+        "title": "Aquí debe colocarse una breve descripción del componente",
+        "message": "Aquí debe colocarse una breve descripción del componente"
+    },
+    "filterByView": "Usar el área visible como filtro"
 }

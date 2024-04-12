@@ -2,13 +2,13 @@ import { gql } from 'apollo-server';
 
 const typeDef = gql`
   extend type Query {
-    dataUse(id: String!, preview: Boolean): DataUse
+    dataUse(id: String!): DataUse
   }
 
   type DataUse {
-    id: ID
-    gbifHref: String
-    title: String
+    id: ID!
+    gbifHref: String!
+    title: String!
     summary: String
     body: String
     excerpt: String

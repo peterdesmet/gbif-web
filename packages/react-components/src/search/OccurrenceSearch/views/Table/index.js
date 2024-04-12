@@ -1,23 +1,12 @@
-import React, { useEffect, useContext, useState, useRef, useCallback } from "react";
+import React, { useEffect, useContext, useState, useCallback } from "react";
 import { useLocalStorage, useUpdateEffect } from 'react-use';
 import { FilterContext } from '../../../..//widgets/Filter/state';
 import OccurrenceContext from '../../../SearchContext';
 import { useQuery } from '../../../../dataManagement/api';
 import { filter2predicate } from '../../../../dataManagement/filterAdapter';
-import { useUrlState } from '../../../../dataManagement/state/useUrlState';
-import { useIntegerParam } from '../../../../dataManagement/state/useIntegerParam';
 import { TablePresentation } from './TablePresentation';
 import { useQueryParam, NumberParam } from 'use-query-params';
 import keyBy from 'lodash/keyBy';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-  useHistory,
-  useLocation
-} from "react-router-dom";
 
 const OCCURRENCE_TABLE = `
 query table($predicate: Predicate, $size: Int = 20, $from: Int = 0){
@@ -38,6 +27,7 @@ query table($predicate: Predicate, $size: Int = 20, $from: Int = 0){
           }
         }
         year
+        eventDate
 				basisOfRecord
         datasetKey
         datasetTitle
@@ -86,7 +76,7 @@ query table($predicate: Predicate, $size: Int = 20, $from: Int = 0){
 }
 `;
 
-function Table() {
+function Table({style, className, dataTableProps, ...props}) {
   const [from = 0, setFrom] = useQueryParam('from', NumberParam);
   const [visibleColumnNames, setVisibleColumnNames, removeVisibleColumnNames] = useLocalStorage('visibleOccurrenceColumns');
   const [visibleColumns, setVisibleColumns] = useState([]);
@@ -116,7 +106,7 @@ function Table() {
 
   // https://stackoverflow.com/questions/55075604/react-hooks-useeffect-only-on-update
   useUpdateEffect(() => {
-    // if (from !== 0) setFrom(0);
+    if (from !== 0) setFrom(0);
   }, [currentFilterContext.filterHash]);
 
   const next = useCallback(() => {
@@ -200,6 +190,7 @@ function Table() {
     visibleColumns={visibleColumns}
     availableColumns={availableColumns}
     toggleColumn={toggleColumn}
+    {...{style, className, dataTableProps}}
   />
 }
 

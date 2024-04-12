@@ -2,12 +2,22 @@
   "dwcaExtension": {
     "name": "DWCA-Erweiterung",
     "count": "{num, plural, one { DwCA-Erweiterung } other {# DwCA-Erweiterungen}}",
-    "description": "Bezeichner für die Sammlung, zu der das usprüngliche Objekt gehört."
+    "description": "Art des Datasets"
   },
   "locationId": {
     "name": "",
     "count": "",
     "description": ""
+  },
+  "hasCoordinate": {
+    "name": "",
+    "count": "",
+    "description": "Stadt zum Fundort."
+  },
+  "hasGeospatialIssues": {
+    "name": "",
+    "count": "",
+    "description": "Stadt zum Fundort."
   },
   "collectionKey": {
     "name": "",
@@ -37,12 +47,30 @@
     "placeholderLon": "",
     "placeholderDist": ""
   },
+  "geometry": {
+    "name": "",
+    "count": "",
+    "description": "Stadt zum Fundort.",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
   "relevance": {
     "name": "",
     "count": "",
     "description": ""
   },
   "topics": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
     "name": "",
     "count": "",
     "description": ""
@@ -60,7 +88,7 @@
   "identifier": {
     "name": "",
     "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
-    "description": "Bezeichner für die Sammlung, zu der das usprüngliche Objekt gehört."
+    "description": "Art des Datasets"
   },
   "institutionType": {
     "name": "",
@@ -259,6 +287,11 @@
   "collectionCode": {
     "name": "Sammlungscode",
     "count": "{num, plural, one { Sammlungscode } other {# Sammlungscodes}}",
+    "description": "Bezeichner für die Sammlung, zu der das usprüngliche Objekt gehört."
+  },
+  "projectId": {
+    "name": "Projekt ID",
+    "count": "Bezeichner für die Sammlung, zu der das usprüngliche Objekt gehört.",
     "description": "Bezeichner für die Sammlung, zu der das usprüngliche Objekt gehört."
   },
   "recordedById": {

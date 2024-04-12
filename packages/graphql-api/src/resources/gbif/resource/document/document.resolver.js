@@ -1,4 +1,4 @@
-import { getHtml, excerpt, trustedTags, createLocalizedGbifHref } from "#/helpers/utils";
+import { getHtml, excerpt, createLocalizedGbifHref } from "#/helpers/utils";
 
 /**
  * fieldName: (parent, args, context, info) => data;
@@ -9,14 +9,14 @@ import { getHtml, excerpt, trustedTags, createLocalizedGbifHref } from "#/helper
  */
 export default {
   Query: {
-    gbifDocument: (_, { id, preview }, { dataSources, locale }) =>
+    gbifDocument: (_, { id }, { dataSources, locale, preview }) =>
       dataSources.resourceAPI.getEntryById({ id, preview, locale })
   },
   Document: {
-    title: src => getHtml(src.title, { inline: true }),
-    summary: src => getHtml(src.summary),
-    body: src => getHtml(src.body, {allowedTags: trustedTags, wrapTables: true}),
-    excerpt: src => excerpt(src),
-    gbifHref: (src, _, context) => createLocalizedGbifHref(context.locale, 'document', src.id),
+    title: (src, _, { locale }) => getHtml(src.title, { inline: true, locale }),
+    summary: (src, _, { locale }) => getHtml(src.summary, { locale }),
+    body: (src, _, { locale }) => getHtml(src.body, { trustLevel: 'trusted', wrapTables: true, locale }),
+    excerpt: (src, _, { locale }) => excerpt(src, { locale }),
+    gbifHref: (src, _, { locale }) => createLocalizedGbifHref(locale, 'document', src.id),
   }
 }

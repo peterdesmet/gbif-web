@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "hasGeospatialIssues": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
   "collectionKey": {
     "name": "",
     "count": "",
@@ -37,12 +47,30 @@
     "placeholderLon": "",
     "placeholderDist": ""
   },
+  "geometry": {
+    "name": "",
+    "count": "",
+    "description": "",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
   "relevance": {
     "name": "",
     "count": "",
     "description": ""
   },
   "topics": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
     "name": "",
     "count": "",
     "description": ""
@@ -257,6 +285,11 @@
     "description": ""
   },
   "collectionCode": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "projectId": {
     "name": "",
     "count": "",
     "description": ""

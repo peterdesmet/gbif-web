@@ -9,28 +9,34 @@ const typeDef = gql`
   # All types that compose the Image type
   type ImageFileDetails {
     size: Int
+    image: ImageFileDetailsImage
+    width: Int @deprecated(reason: "Use image.width")
+    height: Int @deprecated(reason: "Use image.height")
+  }
+
+  type ImageFileDetailsImage {
     width: Int
     height: Int
   }
 
   type ImageFile {
-    url: String
-    details: ImageFileDetails
-    fileName: String
-    contentType: String
-    thumbor(width: Int, height: Int, fitIn: Boolean): String
+    url: String!
+    details: ImageFileDetails!
+    fileName: String!
+    contentType: String!
+    thumbor(width: Int, height: Int, fitIn: Boolean): String!
   }
 
   type AssetImage {
-    file: ImageFile
+    file: ImageFile!
     description: String
     title: String
   }
 
   # All types that compose the Link type
   type Link {
-    label: String
-    url: String
+    label: String!
+    url: String!
   }
 
   # All types that compose the Country type
@@ -49,6 +55,10 @@ const typeDef = gql`
     details: DocumentAssetFileDetails
     fileName: String
     contentType: String
+    """
+    Used internally by the UI to map the document type to an icon
+    """
+    volatile_documentType: String
   }
 
   type DocumentAsset {

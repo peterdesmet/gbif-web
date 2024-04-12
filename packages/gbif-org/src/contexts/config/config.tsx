@@ -1,7 +1,7 @@
-import { foregroundColorContrast } from '@/utils/foregroundColorContrast';
-import { toRecord } from '@/utils/toRecord';
 import React from 'react';
 import { Endpoints, GbifEnv, getEndpointsBasedOnGbifEnv } from './endpoints';
+import themeBuilder from './theme/index';
+import { Theme } from './theme/theme';
 
 type PageConfig = {
   key: string;
@@ -16,15 +16,16 @@ export type InputConfig = {
     default: boolean;
     textDirection: 'ltr' | 'rtl';
     cmsLocale?: string; // this is the locale code used by the CMS
+    reactIntlLocale?: string; // this is the locale code used by react-intl
   }[];
   occurrencePredicate: any;
   pages?: PageConfig[];
-  theme?: {
-    colors?: {
-      primary?: string;
-      primaryForeground?: string;
-    };
-    borderRadius?: number;
+  theme?: Partial<Theme>;
+  baseUrl: string; // e.g. 'https://www.gbif.org'
+  // OpenGraph only works on server side rendered pages. So gbif.org.
+  // OpenGraph tags will not be added if this is not set
+  openGraph?: {
+    site_name: string; // e.g. 'GBIF'
   };
 };
 
@@ -37,26 +38,45 @@ type Props = {
   config: InputConfig;
 };
 
-type CssVariable = { name: string; value: unknown; postFix?: string };
+type CssVariable = { name: string; value: unknown };
 
 export function ConfigProvider({ config, children }: Props): React.ReactElement {
-  const variables = React.useMemo(() => {
-    const cssVariables: CssVariable[] = [
-      { name: '--primary', value: config.theme?.colors?.primary },
-      { name: '--primary-foreground', value: config.theme?.colors?.primaryForeground },
-      { name: '--radius', value: config.theme?.borderRadius, postFix: 'rem' },
-    ];
+  // Build the config context value that will made available to all components
+  const contextValue: Config = React.useMemo(() => configBuilder(config), [config]);
 
-    return addSensibleForegroundColors(cssVariables).filter((v) => v.value != null);
+  // Create css for theming based on the baseTheme and the theme extension
+  const css: string = React.useMemo(() => {
+    const theme = themeBuilder({
+      baseTheme: 'light',
+      extendWith: config.theme,
+    });
+
+    const cssVariables: CssVariable[] = Object.entries(theme)
+      // Remove all key value pairs where the value is null
+      .filter(([, value]) => value != null)
+      // Convert to css variables
+      .map(([key, value]) => {
+        // Convert hex colors to rgb
+        const valueIsHexColor = typeof value === 'string' && value.startsWith('#');
+        if (valueIsHexColor) {
+          // convert to rgb components
+          const rgb = value.match(/[A-Za-z0-9]{2}/g)?.map((v) => parseInt(v, 16));
+
+          if (rgb?.length === 3) {
+            return { name: `--${key}`, value: rgb.join(' ') };
+          }
+        }
+
+        return { name: `--${key}`, value };
+      });
+
+    // Convert css variables to actual css that will be injected in the document
+    return `:root { ${cssVariables.map((v) => `${v.name}: ${v.value};`).join('\n')} }`;
   }, [config]);
-
-  const contextValue: Config = React.useMemo(() => processConfig(config), [config]);
 
   return (
     <ConfigContext.Provider value={contextValue}>
-      <style>{`:root { ${variables
-        .map((v) => `${v.name}: ${v.value}${v.postFix ?? ''};`)
-        .join('\n')} }`}</style>
+      <style>{css}</style>
       {children}
     </ConfigContext.Provider>
   );
@@ -64,38 +84,11 @@ export function ConfigProvider({ config, children }: Props): React.ReactElement 
 
 export function useConfig(): Config {
   const ctx = React.useContext(ConfigContext);
-
-  if (ctx == null) {
-    throw new Error('useConfig must be used within a ConfigProvider');
-  }
-
+  if (ctx == null) throw new Error('useConfig must be used within a ConfigProvider');
   return ctx;
 }
 
-function addSensibleForegroundColors(cssVariables: CssVariable[]): CssVariable[] {
-  const variablesByNameRecord = toRecord(cssVariables, (v) => v.name);
-
-  return cssVariables.map((variable) => {
-    // Skip if the variable is not a foreground color
-    if (!variable.name.endsWith('-foreground')) return variable;
-
-    // Skip if the variable already has a value
-    if (variable.value != null) return variable;
-
-    // Get the background color variable
-    const bgName = variable.name.replace('-foreground', '');
-    const bgVariable = variablesByNameRecord[bgName];
-
-    // Skip if the background color variable does not exist or is not of type string
-    if (bgVariable == null || typeof bgVariable.value !== 'string') return variable;
-
-    // Calculate the foreground color
-    const newForegroundColor = foregroundColorContrast(bgVariable.value);
-    return { ...variable, value: newForegroundColor };
-  });
-}
-
-export function processConfig(config: InputConfig): Config {
+export function configBuilder(config: InputConfig): Config {
   return {
     ...getEndpointsBasedOnGbifEnv(config.gbifEnv),
     ...config,

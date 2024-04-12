@@ -7,6 +7,7 @@
     "events": "Events",
     "download": "Download",
     "clusters": "Related",
+    "dashboard": "Dashboard",
     "sites": ""
   },
   "table": {
@@ -16,6 +17,11 @@
     "default": "Search",
     "range": "Range or single value",
     "locationID": "Search by location ID (case sensitive)"
+  },
+  "ternary": {
+    "yes": "Yes",
+    "no": "No",
+    "either": ""
   },
   "loadMore": "More",
   "occurrenceClustersView": {

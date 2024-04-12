@@ -6,7 +6,11 @@ const typeDef = gql`
       limit: Int
       offset: Int
       q: String
+      """
+      deprecated field, use institutionKey instead
+      """
       institution: [GUID]
+      institutionKey: [GUID]
       contact: ID
       code: String
       name: String
@@ -25,7 +29,7 @@ const typeDef = gql`
       sortBy: CollectionsSortField
       sortOrder: SortOrder
       ): CollectionSearchResults
-    collection(key: String!): Collection
+    collection(key: ID!): Collection
   }
 
   type CollectionSearchResults {

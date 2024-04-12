@@ -1,6 +1,5 @@
 
 import { css, jsx } from '@emotion/react';
-import ThemeContext from '../../style/themes/ThemeContext';
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Button as ButtonA11y } from "reakit/Button";
@@ -24,26 +23,27 @@ export const Button = React.forwardRef(({
   look = 'primary',
   children,
   truncate,
+  as,
   ...props
 }, ref) => {
   appearance = appearance || look;
-  const theme = useContext(ThemeContext);
-  const { classesToApply, classNames } = getClasses(theme.prefix, 'button', { appearance, loading, isFullWidth }, className);
-  return <ButtonA11y ref={ref} {...classNames} css={css`
-        ${styles.button(theme)}
-        ${classesToApply.map(x => styles[x](theme))};
+  const Comp = as || ButtonA11y;
+  const { classesToApply, classNames } = getClasses('gbif', 'button', { appearance, loading, isFullWidth }, className);
+  return <Comp ref={ref} {...classNames} css={css`
+        ${styles.button}
+        ${classesToApply.map(x => styles[x])};
 `} {...props}>
     {truncate ? <span style={truncateStyle}>{children}</span> : children}
     {/* <span style={truncate ? truncateStyle : {}}>
       {children}
     </span> */}
-  </ButtonA11y>
+  </Comp>
 });
 
 Button.displayName = 'Button'
 
 Button.propTypes = {
-  as: PropTypes.oneOf(['button', 'a', 'input', 'span', 'div']),
+  as: PropTypes.oneOf(['button', 'a', 'input', 'span', 'div', 'label']),
   className: PropTypes.string,
   appearance: PropTypes.oneOf(['primary', 'primaryOutline', 'outline', 'ghost', 'danger', 'link', 'text']),
   loading: PropTypes.bool,
@@ -53,8 +53,7 @@ Button.propTypes = {
 export const ButtonGroup = ({
   ...props
 }) => {
-  const theme = useContext(ThemeContext);
-  return <div css={styles.group({ theme })} {...props} />
+  return <div css={styles.group} {...props} />
 };
 
 ButtonGroup.displayName = 'ButtonGroup'
@@ -92,8 +91,7 @@ FilterButton.propTypes = {
 }
 
 export const TextButton = React.forwardRef(({ look, ...props }, ref) => {
-  const theme = useContext(ThemeContext);
-  return <ButtonA11y ref={ref} css={css`${styles.text(theme)} ${look ? styles[look](theme) : null}`} {...props} />
+  return <ButtonA11y ref={ref} css={css`${styles.text} ${look ? styles[look] : null}`} {...props} />
 });
 
 export const DropdownButton = React.forwardRef(({

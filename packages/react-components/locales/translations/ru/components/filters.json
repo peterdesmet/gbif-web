@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "Имеет координаты",
+    "count": "Имеет координаты",
+    "description": "Архив, аннотированный GBIF"
+  },
+  "hasGeospatialIssues": {
+    "name": "Есть проблемы в географической привязке",
+    "count": "Есть проблемы в географической привязке",
+    "description": "Архив, аннотированный GBIF"
+  },
   "collectionKey": {
     "name": "Коллекция",
     "count": "",
@@ -37,6 +47,14 @@
     "placeholderLon": "Долгота",
     "placeholderDist": "Расстояние"
   },
+  "geometry": {
+    "name": "Местонахождение (топоним)",
+    "count": "{num, plural, one { filter } few {# filters } many {# filters } other {# filters }}",
+    "description": "Архив, аннотированный GBIF",
+    "placeholderLat": "Широта",
+    "placeholderLon": "Долгота",
+    "placeholderDist": "Расстояние"
+  },
   "relevance": {
     "name": "Отношение публикации к GBIF",
     "count": "",
@@ -46,6 +64,16 @@
     "name": "Тематика",
     "count": "",
     "description": ""
+  },
+  "audiences": {
+    "name": "Аудитория",
+    "count": "{num, plural, one { пользователь } few {# audiences} many {# audiences} other {# audiences}}",
+    "description": "Кто является пользователем ресурса-материала."
+  },
+  "purposes": {
+    "name": "Тематика",
+    "count": "{num, plural, one { цель } few {# purposes} many {# purposes} other {# purposes}}",
+    "description": "Каковы цели ресурса-материала."
   },
   "eventDate": {
     "name": "Дата события",
@@ -258,6 +286,11 @@
   },
   "collectionCode": {
     "name": "Код коллекции",
+    "count": "",
+    "description": ""
+  },
+  "projectId": {
+    "name": "ID проекта",
     "count": "",
     "description": ""
   },

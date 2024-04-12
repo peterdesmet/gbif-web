@@ -16,6 +16,8 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
       dataset: getFile(locale, `../${folder}/${locale}/components/dataset`),
       publisher: getFile(locale, `../${folder}/${locale}/components/publisher`),
       collection: getFile(locale, `../${folder}/${locale}/components/collection`),
+      installation: getFile(locale, `../${folder}/${locale}/components/installation`),
+      network: getFile(locale, `../${folder}/${locale}/components/network`),
       grscicoll: getFile(locale, `../${folder}/${locale}/components/grscicoll`),
       institution: getFile(locale, `../${folder}/${locale}/components/institution`),
       catalogues: getFile(locale, `../${folder}/${locale}/components/catalogues`),
@@ -36,6 +38,7 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
       images: getFile(locale, `../${folder}/${locale}/components/images`),
       error: getFile(locale, `../${folder}/${locale}/components/error`),
       dashboard: getFile(locale, `../${folder}/${locale}/components/dashboard`),
+      cms: getFile(locale, `../${folder}/${locale}/components/cms`),
       enums: {
         basisOfRecord: getFile(locale, `../${folder}/${locale}/enums/basisOfRecord`),
         countryCode: getFile(locale, `../${folder}/${locale}/enums/countryCode`),
@@ -52,6 +55,7 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
         month: getFile(locale, `../${folder}/${locale}/enums/month`),
         continent: getFile(locale, `../${folder}/${locale}/enums/continent`),
         endpointType: getFile(locale, `../${folder}/${locale}/enums/endpointType`),
+        installationType: getFile(locale, `../${folder}/${locale}/enums/installationType`),
         establishmentMeans: getFile(locale, `../${folder}/${locale}/enums/establishmentMeans`),
         occurrenceStatus: getFile(locale, `../${folder}/${locale}/enums/occurrenceStatus`),
         literatureType: getFile(locale, `../${folder}/${locale}/enums/literatureType`),
@@ -66,8 +70,11 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
         iucnRedListCategory: getFile(locale, `../${folder}/${locale}/enums/iucnRedListCategory`),
         relevance: getFile(locale, `../${folder}/${locale}/enums/relevance`),
         topics: getFile(locale, `../${folder}/${locale}/enums/topics`),
+        audiences: getFile(locale, `../${folder}/${locale}/enums/audiences`),
+        purposes: getFile(locale, `../${folder}/${locale}/enums/purposes`),
         collectionContentType: getFile(locale, `../${folder}/${locale}/enums/collectionContentType`),
         preservationType: getFile(locale, `../${folder}/${locale}/enums/preservationType`),
+        cms: getFile(locale, `../${folder}/${locale}/enums/cms`),
   // -- Add enums above this line (required by plopfile.js) --
       }
     }

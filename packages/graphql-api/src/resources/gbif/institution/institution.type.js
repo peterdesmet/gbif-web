@@ -18,12 +18,13 @@ const typeDef = gql`
       occurrenceCount: String
       identifier: String
       type: String
+      institutionKey: [GUID]
       discipline: [String]
       displayOnNHCPortal: Boolean
       sortBy: CollectionsSortField
       sortOrder: SortOrder
       ): InstitutionSearchResults
-    institution(key: String!): Institution
+    institution(key: ID!): Institution
   }
 
   type InstitutionSearchResults {

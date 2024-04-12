@@ -15,6 +15,7 @@ const typeDef = gql`
       topics: [String]
       gbifDatasetKey: [ID]
       publishingOrganizationKey: [ID]
+      gbifNetworkKey: [ID]
       peerReview: Boolean
       openAccess: Boolean
       gbifDownloadKey: [ID]
@@ -115,7 +116,7 @@ const typeDef = gql`
   }
 
   type Literature {
-    id: ID
+    id: ID!
     abstract: String
     excerpt: String
     authors: [Author]
@@ -136,7 +137,7 @@ const typeDef = gql`
     relevance: [String]
     source: String
     tags: [String]
-    title: String
+    title: String!
     topics: [String]
     websites: [String]
     year: Int

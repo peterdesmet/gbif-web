@@ -2,13 +2,13 @@ import { gql } from 'apollo-server';
 
 const typeDef = gql`
   extend type Query {
-    news(id: String!, preview: Boolean): News
+    news(id: String!): News
   }
 
   type News {
-    id: ID
-    gbifHref: String
-    title: String
+    id: ID!
+    gbifHref: String!
+    title: String!
     summary: String
     body: String
     excerpt: String
@@ -21,11 +21,11 @@ const typeDef = gql`
     purposes: [String]
     audiences: [String]
     keywords: [String]
-    searchable: Boolean
-    homepage: Boolean
+    searchable: Boolean!
+    homepage: Boolean!
     gbifRegion: [GbifRegion]
-    createdAt: DateTime
-    updatedAt: DateTime
+    createdAt: DateTime!
+    updatedAt: DateTime!
     programmeTag: [String]
     projectTag: [String]
     meta: JSON

@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "Має координати",
+    "count": "",
+    "description": "Архів анотований GBIF"
+  },
+  "hasGeospatialIssues": {
+    "name": "Має проблеми з геопросторовою прив'язкою",
+    "count": "Має проблеми з геопросторовою прив'язкою",
+    "description": "Архів анотований GBIF"
+  },
   "collectionKey": {
     "name": "Колекція",
     "count": "",
@@ -37,12 +47,30 @@
     "placeholderLon": "",
     "placeholderDist": ""
   },
+  "geometry": {
+    "name": "Місцезнаходження",
+    "count": "",
+    "description": "Архів анотований GBIF",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
   "relevance": {
     "name": "Релевантність",
     "count": "",
     "description": ""
   },
   "topics": {
+    "name": "Тема",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "Аудиторія",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
     "name": "Тема",
     "count": "",
     "description": ""
@@ -258,6 +286,11 @@
   },
   "collectionCode": {
     "name": "Код колекції",
+    "count": "",
+    "description": ""
+  },
+  "projectId": {
+    "name": "ID проєкту",
     "count": "",
     "description": ""
   },

@@ -2,15 +2,15 @@ import { gql } from 'apollo-server';
 
 const typeDef = gql`
   extend type Query {
-    call(id: String!, preview: Boolean): Call
+    call(id: String!): Call
   }
 
   type Call {
-    id: ID
+    id: ID!
+    title: String!
     createdAt: DateTime
     updatedAt: DateTime
     acronym: String
-    title: String
     body: String
     excerpt: String
     meta: JSON

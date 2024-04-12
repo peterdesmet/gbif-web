@@ -26,6 +26,7 @@ import api from './dataSources';
 import extractUser from './helpers/auth/extractUser';
 import mapController from './api-utils/maps/index.ctrl.js';
 import ipController from './api-utils/ip2country.ctrl.js';
+import polygonName from './api-utils/polygonName.ctrl.js';
 import { loggingPlugin } from './plugins/loggingPlugin';
 
 // we are doing this async as we need to load the various enumerations from the APIs
@@ -54,6 +55,7 @@ async function initializeServer() {
         // we could also forward the full header I suppose. For now it is just the referer
         referer: get(req, 'headers.referer') || null,
         locale: get(req, 'headers.locale') || 'en-GB',
+        preview: get(req, 'headers.preview') === 'true',
       };
     },
     typeDefs,
@@ -110,6 +112,7 @@ async function initializeServer() {
   // utils for map styles
   mapController(app);
   ipController(app);
+  polygonName(app);
 
   await server.start();
   server.applyMiddleware({ app });
