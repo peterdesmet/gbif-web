@@ -78,6 +78,14 @@ function Map({style, className, mapProps}) {
   every time the field is changed, or the filter or root predicate, then we need to fetch the data for the breakdown
   and once we have that we need to process the result and pass that to the map component (array of key, count, predicateHash, and possible formatted name to show in the legend as well as the field we do a breakdown on)
   The map component then needs to be able to handle that data and do the queries for each of the breakdowns. And to handle toggling each layer visibility and color.
+
+  TODO:
+  when clicking points we need to add an additional filter corresponding to the visible map layers.
+  we need an option to select which breakdown field to use. the query will change accordingly. 
+  We could also insist on an "all" layer to keep click events simple
+  
+  And finally an option to color by selected values if for example a user has selected 4 taxa and want to color those differently. 
+  This option only makes sense if multiple values have been selected
   */
   useEffect(() => {
     loadHashAndCount({
