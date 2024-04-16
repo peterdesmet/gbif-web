@@ -38,6 +38,25 @@ query map($predicate: Predicate){
 }
 `;
 
+const DATASET_FACET = `
+query map($predicate: Predicate){
+  occurrenceSearch(predicate: $predicate) {
+    facet {
+      results: datasetKey(size: 8) {
+        key
+        count
+        occurrences {
+          _v1PredicateHash
+        }
+        entity: dataset {
+          formattedName: title
+        }
+      }
+    }
+  }
+}
+`;
+
 const OCCURRENCE_POINT = `
 query point($predicate: Predicate){
   occurrenceSearch(predicate: $predicate) {
@@ -63,6 +82,17 @@ query point($predicate: Predicate){
 `;
 const wktBBoxTemplate = '((W S,E S,E N,W N,W S))';
 
+// function useFacetQuery({predicate, breakdownField}) {
+//   const { data, error, loading, load } = useQuery(OCCURRENCE_FACET, { lazyLoad: true });
+//   useEffect(() => {
+//     if (breakdownField) {
+//       load({ variables: { predicate } });
+//     }
+//   }, [predicate, breakdownField]);
+//   return { data, error, loading };
+
+// }
+
 function Map({style, className, mapProps}) {
   const currentFilterContext = useContext(FilterContext);
   const { labelMap, rootPredicate, predicateConfig, more } = useContext(OccurrenceContext);
@@ -72,6 +102,17 @@ function Map({style, className, mapProps}) {
   const { data: facetData, error: facetError, loading: facetLoading, load: facetLoad } = useQuery(OCCURRENCE_FACET, { lazyLoad: true });
   const [breakdownField, setBreakdownField] = useState(true);
   const [facets, setFacets] = useState();
+  
+  // if we want to support the option to do maps with the exact selected taxa (or whatever) we need to add a filter for each 
+  // of the selected taxa since it cannot be done via a facet
+  /*
+  So if we want a generic format to get these, we could add a hook that takes a breakdown field or a filter name + the predicate. 
+  And then returns the data for that breakdown : registered hash, title, count, key and a boolean for visibility. As well as the predicate to use when clicking on the map.
+  */
+  currentFilterContext.filter?.must?.taxonKey?.forEach(taxonFilter => {
+    console.log(taxonFilter);
+    // for each of these filters, we need to add an additional filter (or replace the existing one) to the predicate. And then get a registered hash for that predicate
+  });
 
   /*
   we need a state to handle which visualization to show. by count or by field/facet
@@ -111,7 +152,7 @@ function Map({style, className, mapProps}) {
     }
     load({ keepDataWhileLoading: true, variables: { predicate } });
     if (breakdownField) {
-      facetLoad({ keepDataWhileLoading: true, variables: { predicate } });
+      facetLoad({ keepDataWhileLoading: true, variables: { predicate }, query: OCCURRENCE_FACET });
     } else {
       setFacets();
     }
@@ -146,7 +187,7 @@ function Map({style, className, mapProps}) {
       filter: currentFilterContext.filter,
       predicateConfig,
       rootPredicate,
-      breakdown
+      breakdownField
     });
   }, [currentFilterContext.filterHash, rootPredicate, predicateConfig, breakdownField]);
 

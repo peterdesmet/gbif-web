@@ -47,9 +47,10 @@ function useQuery(query, options = {}) {
     init(options);
     const variables = options?.variables;
     const queue = options?.queue;
+    const currentQuery = options.query || query;
 
     const { promise: dataPromise, cancel } = client.query({
-      query: queryTag ? queryTransform(query, queryConfig, queryTag) : query,
+      query: queryTag ? queryTransform(currentQuery, queryConfig, queryTag) : currentQuery,
       variables,
       queue
     });
