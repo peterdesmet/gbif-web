@@ -1,0 +1,16 @@
+{
+  "occurrence": {
+    "publisherFeedbackSystem": {
+      "title": "Publisher Feedback System (recommended)",
+      "description": "This data publisher has their own feedback system. This is the recommended option for feedback that has to do with the published data."
+    },
+    "datasetContact": {
+      "title": "Dataset contact",
+      "description": "This dataset have a contact email for feedback. This is a good option if your feedback is related to the published data and not the interpretation."
+    },
+    "gbifGithub": {
+      "title": "GBIF issue tracking",
+      "description": "GBIF process and interprets data. If you believe there is an issue with the data interpretation, you can provide feedback here. This option requires a Github account."
+    }
+  }
+}

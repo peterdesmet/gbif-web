@@ -1,7 +1,7 @@
 
 import { jsx } from '@emotion/react';
 import React, { useContext, useState, useEffect } from 'react';
-import { MdInfo, MdInsertPhoto, MdClose, MdExtension } from 'react-icons/md'
+import { MdInfo, MdInsertPhoto, MdClose, MdExtension, MdFeedback } from 'react-icons/md'
 import ThemeContext from '../../style/themes/ThemeContext';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -14,6 +14,7 @@ import { Cluster } from './details/Cluster';
 import { ClusterIcon } from '../../components/Icons/Icons';
 import LinksContext from '../../search/OccurrenceSearch/config/links/LinksContext';
 import { Extensions } from './details/Extensions';
+import { Feedback } from './details/Feedback';
 
 const { TabList, Tab, TabPanel, TapSeperator } = Tabs;
 
@@ -87,6 +88,9 @@ export function OccurrenceSidebarCore({
           {hasExtensions && <Tab tabId="extensions" direction="left">
             <MdExtension title="Extensions"/>
           </Tab>}
+          {/* <Tab tabId="feedback" direction="left">
+            <MdFeedback />
+          </Tab> */}
         </TabList>
       </Col>
       <Col shrink={false} grow={false} css={css.detailDrawerContent({ theme })} >
@@ -101,6 +105,9 @@ export function OccurrenceSidebarCore({
         </TabPanel>
         <TabPanel tabId='extensions'>
           <Extensions data={data} loading={loading} error={error} />
+        </TabPanel>
+        <TabPanel tabId='feedback'>
+          <Feedback data={data} loading={loading} error={error} />
         </TabPanel>
       </Col>
     </Row>
@@ -146,6 +153,17 @@ query occurrence($key: ID!){
         isSequenced
         isClustered
         isSamplingEvent
+      }
+      feedback {
+        gbifGithub
+        publisherFeedbackSystem {
+          value
+          title
+        }
+        datasetContactEmail {
+          value
+          title
+        }
       }
     }
     datasetKey,

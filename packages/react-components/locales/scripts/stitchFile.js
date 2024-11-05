@@ -23,6 +23,7 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
       catalogues: getFile(locale, `../${folder}/${locale}/components/catalogues`),
       tableHeaders: getFile(locale, `../${folder}/${locale}/components/tableHeaders`),
       intervals: getFile(locale, `../${folder}/${locale}/components/intervals`),
+      feedback: getFile(locale, `../${folder}/${locale}/components/feedback`),
       filters: getFile(locale, `../${folder}/${locale}/components/filters`),
       filterSupport: getFile(locale, `../${folder}/${locale}/components/filterSupport`),
       counts: getFile(locale, `../${folder}/${locale}/components/counts`),
