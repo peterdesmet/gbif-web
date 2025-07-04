@@ -2,6 +2,7 @@ import { collectionKeyRoute } from '@/routes/collection/key';
 import { collectionSearchRoute } from '@/routes/collection/search';
 import { datasetKeyRoute } from '@/routes/dataset/key';
 import { datasetSearchRoute } from '@/routes/dataset/search';
+import { eventSearchRoute } from '@/routes/events/search/index';
 import { installationKeyRoute } from '@/routes/installation/key';
 import { institutionKeyRoute } from '@/routes/institution/key';
 import { institutionSearchRoute } from '@/routes/institution/search';
@@ -27,6 +28,7 @@ export const dataRoutes = [
   publisherSearchRoute,
   literatureSearchRoute,
   resourceSearchRoute,
+  eventSearchRoute,
 
   // detail routes
   collectionKeyRoute,

@@ -18,6 +18,8 @@ function reduce(item) {
 
   return removeUndefined({
     ...source.event,
+    eventDate: source.event.eventDateSingle,
+    eventDateSingle: undefined,
     ...source.metadata,
     ...source.derivedMetadata,
     ...eventVerbatim,

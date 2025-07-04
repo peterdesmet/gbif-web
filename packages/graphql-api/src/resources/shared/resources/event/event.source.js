@@ -1,7 +1,7 @@
-import { get } from 'lodash';
-import { RESTDataSource } from 'apollo-datasource-rest';
-import { Parser } from 'xml2js';
 import { getDefaultAgent } from '#/requestAgents';
+import { RESTDataSource } from 'apollo-datasource-rest';
+import { get } from 'lodash';
+import { Parser } from 'xml2js';
 
 const urlSizeLimit = 2000; // use GET for requests that serialized is less than N characters
 
@@ -86,6 +86,7 @@ class EventAPI extends RESTDataSource {
     const body = { ...query, includeMeta: true };
     let response;
     if (JSON.stringify(body).length < urlSizeLimit) {
+      console.log(JSON.stringify(body));
       response = await this.get(
         '/event',
         { body: JSON.stringify(body) },
@@ -101,6 +102,7 @@ class EventAPI extends RESTDataSource {
     response.documents.limit = response.documents.size;
     response.documents.offset = response.documents.from;
     response._predicate = body.predicate;
+    response._q = query.q;
     return response;
   };
 

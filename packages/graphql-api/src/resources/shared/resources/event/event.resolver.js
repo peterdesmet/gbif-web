@@ -10,7 +10,7 @@ import {
   getMultiFacet,
   getOccurrenceFacet,
   getStats,
-  getTemporal,
+  getTemporal
 } from './helpers/getMetrics';
 // there are many fields that support facets. This function creates the resolvers for all of them
 const facetReducer = (dictionary, facetName) => {
@@ -59,11 +59,11 @@ const temporalEventSearch = (parent) => {
  */
 export default {
   Query: {
-    eventSearch: (parent, { predicate, ...params }, { dataSources }) => {
+    eventSearch: (parent, { predicate, q, ...params }, { dataSources }) => {
       return {
         _predicate: predicate,
+        _q: q,
         _params: params,
-        _tileServerToken: dataSources.eventAPI.registerPredicate({ predicate }),
       };
     },
     event: (parent, { eventID, datasetKey }, { dataSources }) =>
@@ -89,7 +89,7 @@ export default {
   EventSearchResult: {
     documents: (parent, query, { dataSources }) => {
       return dataSources.eventAPI.searchEventDocuments({
-        query: { predicate: parent._predicate, ...parent._params, ...query },
+        query: { predicate: parent._predicate, q: parent._q, ...parent._params, ...query },
       });
     },
     occurrenceCount: (parent, query, { dataSources }) => {

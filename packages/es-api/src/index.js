@@ -80,6 +80,13 @@ app.use(function (req, res, next) {
 });
 
 const temporaryAuthMiddleware = function (req, res, next) {
+  if (config.debug) {
+    // the apiKey shouldn't be used elsewhere and shouldn't be interpreted as a es query param
+    delete req.query.apiKey;
+    // Pass to next layer of middleware
+    next();
+    return;
+  }
   const apiKey =
     _.get(req, 'query.apiKey') ||
     _.get(req, 'body.apiKey') ||
@@ -214,6 +221,8 @@ function searchResource(resource, metaOnly = false) {
   const { dataSource, get2predicate, predicate2query, get2metric, metric2aggs } = resource;
   return async (req, res, next) => {
     try {
+      console.log('req.body', req.body);
+      console.log('req.query', req.query);
       // console.log(`queueLength: ${eventQueue.queue.getLength()}`);
       const {
         metrics,
@@ -227,6 +236,7 @@ function searchResource(resource, metaOnly = false) {
         sortBy,
         sortOrder,
       } = parseQuery(req, res, next, { get2predicate, get2metric });
+      
       const aggs = metric2aggs(metrics);
       const query = await predicate2query(predicate, q);
       const normalizedPredicate = normalizePredicate(predicate);

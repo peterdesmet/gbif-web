@@ -5,6 +5,7 @@ export default gql`
     eventSearch(
       apiKey: String
       predicate: Predicate
+      q: String
       size: Int
       from: Int
     ): EventSearchResult
@@ -108,9 +109,9 @@ export default gql`
     coordinates: JSON
     formattedCoordinates: String
     measurementOrFactTypes: [String]
-    measurementOrFactCount: Int
+    measurementOrFactMethods: [String]
     parentEvent: Event
-    measurementOrFacts: [Measurement]
+    # measurementOrFacts: [Measurement]
     eventHierarchy: [String]
     eventHierarchyJoined: String
     eventTypeHierarchy: [String]

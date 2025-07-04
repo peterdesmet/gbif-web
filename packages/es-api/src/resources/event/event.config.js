@@ -340,11 +340,11 @@ const config = {
         defaultLowerBound: 'lte',
       },
     },
+    // eventDate: {
+    //   field: 'event.eventDate',
+    //   discarded: true,
+    // },
     eventDate: {
-      field: 'event.eventDate',
-      discarded: true,
-    },
-    eventDateSingle: {
       type: 'date',
       field: 'event.eventDateSingle',
       get: {
@@ -373,6 +373,10 @@ const config = {
     measurementOrFactTypes: {
       type: 'keyword',
       field: 'event.measurementOrFactTypes.keyword',
+    },
+    measurementOrFactMethods: {
+      type: 'keyword',
+      field: 'event.measurementOrFactMethods.keyword',
     },
     extensions: {
       type: 'keyword',
@@ -538,6 +542,15 @@ const config = {
       type: 'keyword',
       field: 'event.eventTypeHierarchyJoined.keyword',
       suggestField: 'eventTypeHierarchyJoined.suggest',
+    },
+    eventHierarchyLevels: {
+      type: 'numeric',
+      field: 'event.eventHierarchyLevels',
+      get: {
+        type: 'range_or_term',
+        defaultUpperBound: 'gte',
+        defaultLowerBound: 'lte',
+      },
     },
     publishingCountry: {
       type: 'keyword',
@@ -705,7 +718,7 @@ const config = {
       type: 'keyword',
       field: 'metadata.publishingCountry',
     },
-    metadata_publishingOrganizationKey: {
+    publishingOrganizationKey: {
       type: 'keyword',
       field: 'metadata.publishingOrganizationKey',
     },
