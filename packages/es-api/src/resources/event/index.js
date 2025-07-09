@@ -1,6 +1,10 @@
 const env = require('../../config');
 const { config } = require('./event.config');
-const { get2predicate } = require('../../requestAdapter/query');
+const {
+  get2predicate,
+  get2esQuery: get2esQueryStd,
+  predicate2esQuery: predicate2esQueryStd,
+} = require('../../requestAdapter/query');
 const { suggestConfigFromAlias } = require('../../requestAdapter/util/suggestConfig');
 const { suggestGqlTypeFromAlias } = require('../../requestAdapter/util/suggestGraphqlType');
 const { get2metric, metric2aggs } = require('../../requestAdapter/aggregations');
@@ -25,8 +29,12 @@ function suggestConfig() {
 module.exports = {
   dataSource: dataSource,
   get2predicate: (query) => get2predicate(query, config),
-  get2query: (predicate) => get2esQuery(predicate, config),
-  predicate2query: (predicate, q) => predicate2esQuery(predicate, q),
+
+  // get2query: (predicate) => get2esQuery(predicate, config),
+  // predicate2query: (predicate, q) => predicate2esQuery(predicate, q),
+  get2query: (predicate) => get2esQueryStd(predicate, config),
+  predicate2query: (predicate) => predicate2esQueryStd(predicate, config),
+
   get2metric: (query) => get2metric(query, config),
   metric2aggs: (metrics) => metric2aggs(metrics, config),
   getSuggestQuery: ({ key, text }) => getSuggestQuery(key, text, config),
@@ -45,6 +53,7 @@ function get2esQuery(getQuery, config) {
 function predicate2esQuery(predicate, q) {
   // first we normalize the predicate
   const { predicate: normalizedPredicate, err } = normalizePredicate(predicate);
+
   if (err) {
     console.error('Error normalizing predicate:', err);
     return;
@@ -52,8 +61,7 @@ function predicate2esQuery(predicate, q) {
   if (!normalizedPredicate && !q) {
     return;
   }
-console.log(JSON.stringify(normalizedPredicate));
-console.log(q);
+
   // then we convert it to an es query using the API
   return fetch(`${env.apiv1}/event/search/predicate/toesquery`, {
     method: 'POST',
@@ -72,7 +80,6 @@ console.log(q);
       return response.json();
     })
     .then((data) => {
-      console.log(data);
       return data;
     })
     .catch((error) => {

@@ -29,18 +29,18 @@ class EventAPI extends RESTDataSource {
   }
 
   async searchEventOccurrences({
-    eventID,
+    eventId,
     datasetKey,
-    locationID,
+    locationId,
     month,
     year,
     size,
     from,
   }) {
     const response = await this.eventOccurrences({
-      eventID,
+      eventId,
       datasetKey,
-      locationID,
+      locationId,
       month,
       year,
       size,
@@ -107,9 +107,9 @@ class EventAPI extends RESTDataSource {
   };
 
   eventOccurrences = async ({
-    eventID,
+    eventId,
     datasetKey,
-    locationID,
+    locationId,
     month,
     year,
     size,
@@ -118,9 +118,9 @@ class EventAPI extends RESTDataSource {
     const params = {
       size,
       from,
-      ...(eventID && { eventHierarchy: eventID }),
+      ...(eventId && { eventHierarchy: eventId }),
       ...(datasetKey && { datasetKey }),
-      ...(locationID && { locationID }),
+      ...(locationId && { locationId }),
       ...(month && { month }),
       ...(year && { year }),
     };
@@ -158,8 +158,8 @@ class EventAPI extends RESTDataSource {
     return response;
   };
 
-  async getEventByKey({ eventID, datasetKey }) {
-    return this.get(`/event/key/${datasetKey}/${encodeURIComponent(eventID)}`);
+  async getEventByKey({ eventId, datasetKey }) {
+    return this.get(`/event/key/${datasetKey}/${encodeURIComponent(eventId)}`);
   }
 
   async getDatasetEML({ datasetKey }) {
@@ -191,8 +191,8 @@ class EventAPI extends RESTDataSource {
     };
   }
 
-  async getLocation({ locationID }) {
-    const query = JSON.stringify({ locationID });
+  async getLocation({ locationId }) {
+    const query = JSON.stringify({ locationId });
     const response = await this.get(
       '/event',
       { body: query },

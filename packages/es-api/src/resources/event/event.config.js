@@ -240,6 +240,10 @@ const config = {
       type: 'keyword',
       field: 'scientificNames',
     },
+    country: {
+      type: 'keyword',
+      field: 'event.countryCode',
+    },
     id: {
       type: 'keyword',
       field: 'id',
@@ -295,7 +299,7 @@ const config = {
       type: 'keyword',
       field: 'event.countryCode',
     },
-    datasetID: {
+    datasetId: {
       type: 'keyword',
       field: 'event.datasetID',
     },
@@ -353,18 +357,17 @@ const config = {
         defaultLowerBound: 'lte',
       },
     },
-    eventID: {
+    eventId: {
       type: 'keyword',
-      field: 'event.eventID.keyword',
-      suggestField: 'eventID.suggest',
+      field: 'event.eventHierarchy.keyword',
     },
-    surveyID: {
+    surveyId: {
       type: 'keyword',
       field: 'event.surveyID.keyword',
     },
     eventType: {
       type: 'keyword',
-      field: 'event.eventType.concept',
+      field: 'event.eventTypeHierarchy.keyword',
     },
     eventTypeHierarchyJoined: {
       type: 'keyword',
@@ -393,6 +396,13 @@ const config = {
       type: 'boolean',
       field: 'event.hasCoordinate',
     },
+    geometry: {
+      type: 'geo_shape',
+      field: 'event.scoordinates',
+      get: {
+        type: 'within',
+      },
+    },
     hasGeospatialIssue: {
       type: 'boolean',
       field: 'event.hasGeospatialIssue',
@@ -400,6 +410,10 @@ const config = {
     id: {
       type: 'keyword',
       field: 'event.id.keyword',
+    },
+    fieldNumber: {
+      type: 'keyword',
+      field: 'event.fieldNumber',
     },
     institutionCode: {
       type: 'keyword',
@@ -415,7 +429,7 @@ const config = {
       field: 'event.locality.keyword',
       suggestField: 'locality.suggest',
     },
-    locationID: {
+    locationId: {
       type: 'keyword',
       field: 'event.locationID.keyword',
       suggestField: 'locationID.suggest',
@@ -517,7 +531,7 @@ const config = {
       type: 'keyword',
       field: 'event.notIssues',
     },
-    parentEventID: {
+    parentEventId: {
       type: 'keyword',
       field: 'event.parentEventID.keyword',
       suggestField: 'parentEventID.suggest',
@@ -551,6 +565,10 @@ const config = {
         defaultUpperBound: 'gte',
         defaultLowerBound: 'lte',
       },
+    },
+    gadmGid: {
+      type: 'keyword',
+      field: 'event.gadm.gids',
     },
     publishingCountry: {
       type: 'keyword',
@@ -607,6 +625,28 @@ const config = {
       field: 'event.stateProvince.keyword',
       suggestField: 'stateProvince.suggest',
       displayField: 'event.stateProvince.verbatim',
+    },
+    depth: {
+      type: 'numeric',
+      field: 'event.depth',
+      get: {
+        type: 'range_or_term',
+        defaultUpperBound: 'gte',
+        defaultLowerBound: 'lte',
+      },
+    },
+    dwcaExtension: {
+      type: 'keyword',
+      field: 'event.extensions',
+    },
+    elevation: {
+      type: 'numeric',
+      field: 'event.elevation',
+      get: {
+        type: 'range_or_term',
+        defaultUpperBound: 'gte',
+        defaultLowerBound: 'lte',
+      },
     },
     verbatimDepth: {
       type: 'keyword',
@@ -735,7 +775,7 @@ const config = {
             type: 'keyword',
             field: 'gbifClassification.classKey',
           },
-          eventID: {
+          eventId: {
             type: 'keyword',
             field: 'eventID',
           },
@@ -759,7 +799,7 @@ const config = {
             type: 'keyword',
             field: 'gbifClassification.kingdomKey',
           },
-          occurrenceID: {
+          occurrenceId: {
             type: 'keyword',
             field: 'core.occurrenceID',
           },
@@ -826,7 +866,7 @@ const config = {
       type: 'keyword',
       field: 'occurrence.core.class',
     },
-    // eventID: {
+    // eventId: {
     //   type: 'keyword',
     //   field: 'occurrence.core.eventID'
     // },
@@ -846,7 +886,7 @@ const config = {
       type: 'keyword',
       field: 'occurrence.occurrence.core.identificationRemarks',
     },
-    occurrenceID: {
+    occurrenceId: {
       type: 'keyword',
       field: 'occurrence.core.occurrenceID',
     },

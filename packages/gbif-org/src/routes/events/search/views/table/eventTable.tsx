@@ -2,9 +2,10 @@ import { ClientSideOnly } from '@/components/clientSideOnly';
 import { getAsQuery } from '@/components/filters/filterTools';
 import {
   FallbackTableOptions,
-  RowLinkOptions, useAvailableAndDefaultEnabledColumns,
+  RowLinkOptions,
+  useAvailableAndDefaultEnabledColumns,
   usePaginationState,
-  useRowLink
+  useRowLink,
 } from '@/components/searchTable';
 import { SearchTable } from '@/components/searchTable/index';
 import { SearchTableServerFallback } from '@/components/searchTable/table';
@@ -13,10 +14,7 @@ import { ViewHeader } from '@/components/ViewHeader';
 import { useConfig } from '@/config/config';
 import { FilterContext } from '@/contexts/filter';
 import { useSearchContext } from '@/contexts/search';
-import {
-  EventSearchQuery,
-  EventSearchQueryVariables
-} from '@/gql/graphql';
+import { EventSearchQuery, EventSearchQueryVariables } from '@/gql/graphql';
 import useQuery from '@/hooks/useQuery';
 import { ExtractPaginatedResult } from '@/types';
 import { notNull } from '@/utils/notNull';
@@ -29,12 +27,7 @@ import { useOrderedList } from '../browseList/useOrderedList';
 import { useEventColumns } from './columns';
 
 const EVENT_SEARCH_QUERY = /* GraphQL */ `
-  query EventSearch(
-    $from: Int
-    $size: Int
-    $predicate: Predicate
-    $q: String
-  ) {
+  query EventSearch($from: Int, $size: Int, $predicate: Predicate, $q: String) {
     eventSearch(q: $q, predicate: $predicate) {
       documents(from: $from, size: $size) {
         from
@@ -64,9 +57,7 @@ const EVENT_SEARCH_QUERY = /* GraphQL */ `
   }
 `;
 
-export type SingleEventSearchResult = ExtractPaginatedResult<
-  EventSearchQuery['eventSearch']
->;
+export type SingleEventSearchResult = ExtractPaginatedResult<EventSearchQuery['eventSearch']>;
 
 const keySelector = (item: SingleEventSearchResult) => item.key?.toString() ?? '';
 
@@ -84,7 +75,7 @@ const fallbackOptions: FallbackTableOptions = {
     'country',
     'coordinates',
     'year',
-    'locationID',
+    'locationId',
     'datasetKey',
     'publishingOrg',
   ],
@@ -107,13 +98,13 @@ export function EventTableClient() {
 
   const { filter, filterHash } = filterContext || { filter: { must: {} } };
 
-  const { data, load, loading, error } = useQuery<
-    EventSearchQuery,
-    EventSearchQueryVariables
-  >(EVENT_SEARCH_QUERY, {
-    lazyLoad: true,
-    keepDataWhileLoading: true,
-  });
+  const { data, load, loading, error } = useQuery<EventSearchQuery, EventSearchQueryVariables>(
+    EVENT_SEARCH_QUERY,
+    {
+      lazyLoad: true,
+      keepDataWhileLoading: true,
+    }
+  );
 
   useEffect(() => {
     const query = getAsQuery({ filter, searchContext, searchConfig });
@@ -127,13 +118,7 @@ export function EventTableClient() {
 
     // We use a filterHash to trigger a reload when the filter changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    load,
-    filterHash,
-    searchContext,
-    paginationState.pageIndex,
-    paginationState.pageSize,
-  ]);
+  }, [load, filterHash, searchContext, paginationState.pageIndex, paginationState.pageSize]);
 
   const { filters } = useFilters({ searchConfig });
 
@@ -146,10 +131,7 @@ export function EventTableClient() {
     window.gbif.availableColumnOptions = columns.map((column) => column.id);
   }
 
-  const events = useMemo(
-    () => data?.eventSearch?.documents.results.filter(notNull) ?? [],
-    [data]
-  );
+  const events = useMemo(() => data?.eventSearch?.documents.results.filter(notNull) ?? [], [data]);
 
   const { setOrderedList } = useOrderedList();
 
@@ -166,7 +148,7 @@ export function EventTableClient() {
     });
 
   const { openDrawerOnTableRowClick } = useConfig();
-  const rowLinkOptions = rowLinkOptionsDrawer;//openDrawerOnTableRowClick ? rowLinkOptionsDrawer : rowLinkOptionsDirect;
+  const rowLinkOptions = rowLinkOptionsDrawer; //openDrawerOnTableRowClick ? rowLinkOptionsDrawer : rowLinkOptionsDirect;
 
   const createRowLink = useRowLink({ rowLinkOptions, keySelector });
 

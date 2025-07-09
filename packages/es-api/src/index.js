@@ -221,8 +221,6 @@ function searchResource(resource, metaOnly = false) {
   const { dataSource, get2predicate, predicate2query, get2metric, metric2aggs } = resource;
   return async (req, res, next) => {
     try {
-      console.log('req.body', req.body);
-      console.log('req.query', req.query);
       // console.log(`queueLength: ${eventQueue.queue.getLength()}`);
       const {
         metrics,
@@ -236,7 +234,7 @@ function searchResource(resource, metaOnly = false) {
         sortBy,
         sortOrder,
       } = parseQuery(req, res, next, { get2predicate, get2metric });
-      
+
       const aggs = metric2aggs(metrics);
       const query = await predicate2query(predicate, q);
       const normalizedPredicate = normalizePredicate(predicate);

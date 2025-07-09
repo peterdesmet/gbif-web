@@ -22,12 +22,7 @@ const config: FilterConfigType = {
         supportedTypes: ['range', 'equals'],
       },
     },
-    depth: {
-      v1: {
-        supportedTypes: ['range', 'equals'],
-      },
-    },
-    elevation: {
+    sampleSizeValue: {
       v1: {
         supportedTypes: ['range', 'equals'],
       },
@@ -44,35 +39,22 @@ const otherParams = [
   'gadmGid',
   'country',
 
-  'license',
-  'mediaType',
   'month',
   'continent',
-  'protocol',
   'dwcaExtension',
-  'typeStatus',
-  'issue',
 
-  'projectId',
-  'higherGeography',
   'eventId',
   'fieldNumber',
-  'preparations',
-  'lithostratigraphy',
-  'biostratigraphy',
-  'geologicalTime',
-  'locality',
-  'waterBody',
-  'stateProvince',
-  'samplingProtocol',
+  'eventType',
 
-  'islandGroup',
-  'island',
-  'georeferencedBy',
+  'locality',
+  'samplingProtocol',
+  'sampleSizeUnit',
+  'sampleSizeValue',
 
   'geometry',
   'hasCoordinate',
-  'hasGeospatialIssue'
+  'hasGeospatialIssue',
 ];
 
 otherParams.forEach((filter) => {

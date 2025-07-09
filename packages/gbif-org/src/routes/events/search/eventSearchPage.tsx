@@ -25,7 +25,7 @@ export function EventSearchPage(): React.ReactElement {
   const [filter, setFilter] = useFilterParams({
     filterConfig: searchConfig,
     paramsToRemove: ['offset', 'from'],
-    defaultChecklistKey: useConfig().defaultChecklistKey,
+    defaultChecklistKey: undefined,
   });
   const config = useConfig();
 
@@ -50,7 +50,7 @@ export function EventSearchPage(): React.ReactElement {
 
 const groups = [
   'record',
-  'event',
+  'occurrence',
   'organism',
   'materialEntity',
   'event',

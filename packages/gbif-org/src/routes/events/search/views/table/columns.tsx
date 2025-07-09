@@ -9,9 +9,7 @@ type Args = {
   showPreview?: ((id: string) => void) | false;
 };
 
-export function useEventColumns({
-  showPreview,
-}: Args): ColumnDef<SingleEventSearchResult>[] {
+export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSearchResult>[] {
   return useMemo(() => {
     const columns: ColumnDef<SingleEventSearchResult>[] = [
       {
@@ -20,12 +18,16 @@ export function useEventColumns({
         filterKey: 'eventId', // default is same as id
         disableHiding: true,
         minWidth: 250,
-        cell: ({eventID, eventTypeHierarchyJoined, eventHierarchyJoined}) => {
-          return <div>
-            <SetAsFilter field="eventId" value={eventID}>{eventID}</SetAsFilter>
-            <div className="g-text-sm g-text-slate-500">{eventTypeHierarchyJoined}</div>
-          </div>
-        }
+        cell: ({ eventID, eventTypeHierarchyJoined, eventHierarchyJoined }) => {
+          return (
+            <div>
+              <SetAsFilter field="eventId" value={eventID}>
+                {eventID}
+              </SetAsFilter>
+              <div className="g-text-sm g-text-slate-500">{eventTypeHierarchyJoined}</div>
+            </div>
+          );
+        },
       },
       {
         id: 'country',
@@ -85,11 +87,11 @@ export function useEventColumns({
         },
       },
       {
-        id: 'locationId',
+        id: 'locationID',
         sort: { localStorageKey: 'eventSort', sortBy: 'basisOfRecord' },
-        header: 'filters.locationId.name',
+        header: 'filters.locationID.name',
         cell: ({ locationID }) => (
-          <SetAsFilter field="locationId" value={locationID}>
+          <SetAsFilter field="locationID" value={locationID}>
             {locationID}
           </SetAsFilter>
         ),
