@@ -1,7 +1,7 @@
 import { DataHeader } from '@/components/dataHeader';
 import { HeaderInfo, HeaderInfoMain } from '@/components/headerComponents';
 import { FeatureList, GenericFeature, Location } from '@/components/highlights';
-import { DisplayMap } from '@/components/maps/displayMap';
+import { GeoJsonMap } from '@/components/maps/geojsonMap';
 import { FormattedDateRange } from '@/components/message';
 import Properties, { Property } from '@/components/properties';
 import { Button } from '@/components/ui/button';
@@ -334,7 +334,7 @@ export function Event({ event, eventSearch }: EventProps) {
                   }
 
                   return (
-                    <DisplayMap
+                    <GeoJsonMap
                       geoJson={geoJson}
                       initialCenter={initialCenter}
                       initialZoom={initialZoom}
