@@ -182,7 +182,7 @@ export const configDefault: Partial<Config> = {
   },
   eventSearch: {
     queryType: 'PREDICATE',
-    highlightedFilters: ['eventId', 'year', 'country', 'measurementOrFactTypes', 'issue', 'geometry'],
+    highlightedFilters: ['eventId', 'year', 'country', 'geometry'],
     tabs: ['table'],
   },
   occurrenceSearch: {

@@ -1,5 +1,5 @@
 import useQuery from '@/hooks/useQuery';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Event } from './Event';
 
 // GraphQL query interfaces (you'll need to generate these from your schema)
@@ -65,6 +65,7 @@ query event($eventId: ID, $datasetKey: ID, $predicate: Predicate){
     eventType {
       concept
     }
+    eventDate
     eventName
     coordinates
     countryCode
@@ -110,6 +111,22 @@ export default function EventDrawer({ entityKey }: { entityKey?: string }) {
     lazyLoad: true,
     throwAllErrors: true,
   });
+
+  const getEventLink = useCallback((datasetid: string, eventId: string) => {
+    // generate a link to show the event in a drawer. To do that take the current url and replace or add an entity search param with the format `e_{datasetKey}_{eventId}`
+    const url = new URL(window.location.href);
+    const currentSearchParams = new URLSearchParams(url.search);
+    const entitySearch = currentSearchParams.get('entity');
+    if (entitySearch) {
+      // if entity search already exists, replace it
+      currentSearchParams.set('entity', `e_${datasetid}_${eventId}`);
+    } else {
+      // if entity search does not exist, add it
+      currentSearchParams.append('entity', `e_${datasetid}_${eventId}`);
+    }
+    url.search = currentSearchParams.toString();
+    return url.toString();
+  }, []);
 
   useEffect(() => {
     if (entityKey) {
@@ -160,5 +177,5 @@ export default function EventDrawer({ entityKey }: { entityKey?: string }) {
     );
   }
 
-  return <Event event={data.event} eventSearch={data.eventSearch} />;
+  return <Event event={data.event} eventSearch={data.eventSearch} getEventLink={getEventLink} />;
 }

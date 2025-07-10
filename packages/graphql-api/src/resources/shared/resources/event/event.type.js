@@ -401,6 +401,11 @@ export default gql`
   }
 
   type EventExtensions {
-    test: String
+    audubon: [JSON]
+    image: [JSON]
+    measurementOrFact: [JSON]
+    multimedia: [JSON]
+    extendedMeasurementOrFact: [JSON]
+    humboldtEcologicalInventory: [JSON]
   }
 `;

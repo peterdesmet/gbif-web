@@ -16,14 +16,14 @@ import { FilterContext } from '@/contexts/filter';
 import { useSearchContext } from '@/contexts/search';
 import { EventSearchQuery, EventSearchQueryVariables } from '@/gql/graphql';
 import useQuery from '@/hooks/useQuery';
+import { useEntityDrawer } from '@/routes/occurrence/search/views/browseList/useEntityDrawer';
+import { useOrderedList } from '@/routes/occurrence/search/views/browseList/useOrderedList';
 import { ExtractPaginatedResult } from '@/types';
 import { notNull } from '@/utils/notNull';
 import { useContext, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useFilters } from '../../filters';
 import { searchConfig } from '../../searchConfig';
-import { useEntityDrawer } from '../browseList/useEntityDrawer';
-import { useOrderedList } from '../browseList/useOrderedList';
 import { useEventColumns } from './columns';
 
 const EVENT_SEARCH_QUERY = /* GraphQL */ `
@@ -51,6 +51,8 @@ const EVENT_SEARCH_QUERY = /* GraphQL */ `
           samplingProtocol
           eventTypeHierarchy
           eventTypeHierarchyJoined
+          stateProvince
+          locality
         }
       }
     }
@@ -59,11 +61,7 @@ const EVENT_SEARCH_QUERY = /* GraphQL */ `
 
 export type SingleEventSearchResult = ExtractPaginatedResult<EventSearchQuery['eventSearch']>;
 
-const keySelector = (item: SingleEventSearchResult) => item.key?.toString() ?? '';
-
-const rowLinkOptionsDirect: RowLinkOptions<SingleEventSearchResult> = {
-  pageId: 'eventKey',
-};
+const keySelector = (item: SingleEventSearchResult) => item.eventID?.toString() ?? '';
 
 const rowLinkOptionsDrawer: RowLinkOptions<SingleEventSearchResult> = {
   createDrawerKey: ({ datasetKey, eventID }) => `e_${datasetKey}_${eventID}`,
@@ -72,12 +70,13 @@ const rowLinkOptionsDrawer: RowLinkOptions<SingleEventSearchResult> = {
 const fallbackOptions: FallbackTableOptions = {
   prefixColumns: ['eventId'],
   defaultEnabledTableColumns: [
+    'eventId',
     'country',
     'coordinates',
     'year',
+    'eventDate',
+    'locality',
     'locationId',
-    'datasetKey',
-    'publishingOrg',
   ],
 };
 

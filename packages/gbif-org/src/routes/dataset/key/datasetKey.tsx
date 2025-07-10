@@ -331,6 +331,16 @@ export function DatasetPage() {
         children: <FormattedMessage id="dataset.tabs.occurrences" />,
       });
     }
+    if (
+      (config.datasetKey?.showEvents && withEventId > 0) ||
+      (dataset.type === 'SAMPLING_EVENT' &&
+        import.meta.env.PUBLIC_ENABLE_SAMPLING_EVENT_BROWSER === 'enabled')
+    ) {
+      tabsToDisplay.push({
+        to: 'events',
+        children: <FormattedMessage id="dataset.tabs.events" defaultMessage={'Events'} />,
+      });
+    }
     if (dataset.project) {
       tabsToDisplay.push({
         to: 'project',
@@ -372,12 +382,6 @@ export function DatasetPage() {
       to: 'download',
       children: <FormattedMessage id="dataset.tabs.download" />,
     });
-    if (config.datasetKey?.showEvents && withEventId > 0) {
-      tabsToDisplay.push({
-        to: 'events',
-        children: <FormattedMessage id="dataset.tabs.events" defaultMessage={'Events'} />,
-      });
-    }
     return tabsToDisplay;
   }, [
     hasPhylogeny,

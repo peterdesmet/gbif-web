@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { formattedCoordinates } from '#/helpers/utils';
+import { formattedCoordinates, simplifyUrlObjectKeys } from '#/helpers/utils';
 import fieldsWithFacetSupport from './helpers/fieldsWithFacetSupport';
 import fieldsWithOccurrenceFacetSupport from './helpers/fieldsWithOccurrenceFacetSupport';
 import fieldsWithStatsSupport from './helpers/fieldsWithStatsSupport';
@@ -203,6 +203,35 @@ export default {
   EventStats,
   EventTemporal,
   Event: {
+    extensions: (event) => {
+      const extensions = {
+        audubon: event?.extensions?.['http://rs.tdwg.org/ac/terms/Multimedia'],
+        image: event?.extensions?.['http://rs.gbif.org/terms/1.0/Image'],
+        humboldtEcologicalInventory:
+          event?.extensions?.['http://rs.tdwg.org/eco/terms/Event'],
+        measurementOrFact:
+          event?.extensions?.['http://rs.tdwg.org/dwc/terms/MeasurementOrFact'],
+        multimedia:
+          event?.extensions?.['http://rs.gbif.org/terms/1.0/Multimedia'],
+        extendedMeasurementOrFact:
+          event?.extensions?.[
+            'http://rs.iobis.org/obis/terms/ExtendedMeasurementOrFact'
+          ],
+      };
+      Object.keys(extensions).forEach((key) => {
+        const extension = extensions[key];
+        // remove empty and half empty values
+        if (Array.isArray(extension) && extension.length > 0) {
+          extensions[key] = extension
+            .filter((x) => Object.keys(x).length > 0)
+            .map(simplifyUrlObjectKeys);
+          if (extensions[key].length === 0) delete extensions[key];
+        } else {
+          delete extensions[key];
+        }
+      });
+      return extensions;
+    },
     formattedCoordinates: ({ decimalLatitude, decimalLongitude }) => {
       return formattedCoordinates({
         lat: decimalLatitude,
@@ -249,7 +278,6 @@ export default {
             }),
           ),
         ),
-    extensions: ({}) => ({}),
   },
   EventFacetResult_dataset: {
     datasetTitle: ({ key }, args, { dataSources }) => {

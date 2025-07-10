@@ -11,10 +11,14 @@ import { ArticlePreTitle } from '@/routes/resource/key/components/articlePreTitl
 import { ArticleTextContainer } from '@/routes/resource/key/components/articleTextContainer';
 import { ArticleTitle } from '@/routes/resource/key/components/articleTitle';
 import { PageContainer } from '@/routes/resource/key/components/pageContainer';
-import { MdDataset, MdEvent, MdLocationOn } from 'react-icons/md';
+import { useMemo } from 'react';
+import { MdEvent, MdLocationOn } from 'react-icons/md';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 interface EventProps {
+  getEventLink: (datasetKey: string, eventId: string) => string;
+  getSearchPageLink?: string;
   event: {
     eventID: ID;
     parentEventID?: ID;
@@ -31,6 +35,7 @@ interface EventProps {
     datasetTitle?: string;
     year?: number;
     month?: number;
+    eventDate?: string;
     occurrenceCount?: number;
     measurementOrFactTypes?: string[];
     sampleSizeUnit?: string;
@@ -133,17 +138,35 @@ const ApiContent = ({ eventID, datasetKey }: { eventID?: string; datasetKey?: st
   </div>
 );
 
-export function Event({ event, eventSearch }: EventProps) {
+export function Event({ event, eventSearch, getEventLink }: EventProps) {
   // Create title from eventType and eventID
   const eventTypeDisplay = event.eventType?.concept || 'Event';
   const title = `${eventTypeDisplay}: ${event.eventID}`;
 
-  // Format date for display - use temporalCoverage if available, otherwise construct from year/month
-  const eventDate = event.temporalCoverage
-    ? `${event.temporalCoverage.gte || ''}/${event.temporalCoverage.lte || ''}`
-    : event.year
-    ? `${event.year}${event.month ? `-${event.month.toString().padStart(2, '0')}` : ''}`
-    : undefined;
+  const geoJson = useMemo(() => {
+    const wktGeometry = event.wktConvexHull ? parseWktGeometry(event.wktConvexHull) : null;
+
+    if (wktGeometry) {
+      return {
+        type: 'Feature',
+        geometry: wktGeometry,
+        properties: {},
+      };
+    }
+
+    if (event.decimalLatitude && event.decimalLongitude) {
+      return {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [event.decimalLongitude, event.decimalLatitude],
+        },
+        properties: {},
+      };
+    }
+
+    return null;
+  }, [event.wktConvexHull, event.decimalLatitude, event.decimalLongitude]);
 
   return (
     <article>
@@ -157,8 +180,8 @@ export function Event({ event, eventSearch }: EventProps) {
         <ArticleTextContainer className="g-max-w-screen-xl">
           <ArticlePreTitle
             secondary={
-              eventDate ? (
-                <FormattedDateRange date={eventDate} />
+              event.eventDate ? (
+                <FormattedDateRange date={event.eventDate} />
               ) : (
                 <FormattedMessage id="phrases.unknownDate" />
               )
@@ -176,10 +199,10 @@ export function Event({ event, eventSearch }: EventProps) {
           <HeaderInfo>
             <HeaderInfoMain>
               <FeatureList>
-                {eventDate && (
+                {event.eventDate && (
                   <GenericFeature>
                     <MdEvent />
-                    <FormattedDateRange date={eventDate} />
+                    <FormattedDateRange date={event.eventDate} />
                   </GenericFeature>
                 )}
 
@@ -206,12 +229,12 @@ export function Event({ event, eventSearch }: EventProps) {
                   </GenericFeature>
                 )}
 
-                {event.datasetTitle && (
+                {/* {event.datasetTitle && (
                   <GenericFeature>
                     <MdDataset />
                     <span>{event.datasetTitle}</span>
                   </GenericFeature>
-                )}
+                )} */}
               </FeatureList>
             </HeaderInfoMain>
           </HeaderInfo>
@@ -231,26 +254,37 @@ export function Event({ event, eventSearch }: EventProps) {
             </CardHeader>
             <CardContent>
               <Properties>
-                <Property labelId="event.eventID" value={event.eventID} />
+                <Property labelId="occurrenceFieldNames.eventID" value={event.eventID} />
 
                 {event.parentEventID && (
-                  <Property labelId="event.parentEventID" value={event.parentEventID} />
+                  <Property
+                    labelId="occurrenceFieldNames.parentEventID"
+                    value={event.parentEventID}
+                    formatter={(value) => (
+                      <Link
+                        to={getEventLink(event.datasetKey, event.parentEventID)}
+                        className="g-text-blue-600 g-underline"
+                      >
+                        {value}
+                      </Link>
+                    )}
+                  />
                 )}
 
                 {event.eventType?.concept && (
-                  <Property labelId="event.eventType" value={event.eventType.concept} />
+                  <Property labelId="Event type" value={event.eventType.concept} />
                 )}
 
                 {event.eventTypeHierarchy && event.eventTypeHierarchy.length > 0 && (
                   <Property
-                    labelId="event.structure"
+                    labelId="Event type hierarchy"
                     value={event.eventTypeHierarchy.join(' > ')}
                   />
                 )}
 
                 {event.temporalCoverage && (
                   <Property
-                    labelId="event.temporalCoverage"
+                    labelId="Temporal coverage"
                     value={`${event.temporalCoverage.gte || ''} - ${
                       event.temporalCoverage.lte || ''
                     }`.trim()}
@@ -259,15 +293,15 @@ export function Event({ event, eventSearch }: EventProps) {
 
                 {(event.sampleSizeValue || event.sampleSizeUnit) && (
                   <Property
-                    labelId="event.sampleSize"
+                    labelId="occurrenceFieldNames.sampleSize"
                     value={`${event.sampleSizeValue || ''} ${event.sampleSizeUnit || ''}`.trim()}
                   />
                 )}
               </Properties>
 
               <div className="g-mt-6">
-                <Button variant="outline">
-                  <FormattedMessage id="event.viewChildEvents" defaultMessage="View child events" />
+                <Button variant="outline" asChild>
+                  <EventLink eventId={event.eventID} />
                 </Button>
               </div>
             </CardContent>
@@ -282,91 +316,75 @@ export function Event({ event, eventSearch }: EventProps) {
             <CardContent>
               {/* Map component */}
               <div className="g-mb-6">
-                {(() => {
-                  const wktGeometry = event.wktConvexHull
-                    ? parseWktGeometry(event.wktConvexHull)
-                    : null;
-                  const hasLocationData =
-                    wktGeometry || (event.decimalLatitude && event.decimalLongitude);
-
-                  if (!hasLocationData) {
-                    return (
-                      <div className="g-h-64 g-bg-gray-100 g-rounded g-flex g-items-center g-justify-center g-text-gray-500">
-                        <span>No location data available</span>
-                      </div>
-                    );
-                  }
-
-                  let geoJson;
-                  let initialCenter: [number, number] = [0, 0];
-                  let initialZoom = 8;
-
-                  if (wktGeometry) {
-                    geoJson = {
-                      type: 'Feature',
-                      geometry: wktGeometry,
-                      properties: {},
-                    };
-
-                    // Set initial center based on geometry type
-                    if (wktGeometry.type === 'Point') {
-                      initialCenter = wktGeometry.coordinates as [number, number];
-                      initialZoom = 8;
-                    } else if (wktGeometry.type === 'Polygon') {
-                      // For polygons, use the first coordinate as center (could be improved with centroid calculation)
-                      const coords = wktGeometry.coordinates as number[][][];
-                      if (coords[0] && coords[0][0]) {
-                        initialCenter = [coords[0][0][0], coords[0][0][1]];
-                      }
-                      initialZoom = 6;
-                    }
-                  } else {
-                    // Fallback to lat/lon point
-                    geoJson = {
-                      type: 'Feature',
-                      geometry: {
-                        type: 'Point',
-                        coordinates: [event.decimalLongitude!, event.decimalLatitude!],
-                      },
-                      properties: {},
-                    };
-                    initialCenter = [event.decimalLongitude!, event.decimalLatitude!];
-                  }
-
-                  return (
-                    <GeoJsonMap
-                      geoJson={geoJson}
-                      initialCenter={initialCenter}
-                      initialZoom={initialZoom}
-                      rasterStyle="gbif-natural"
-                      height="350px"
-                    />
-                  );
-                })()}
+                {geoJson ? (
+                  <GeoJsonMap
+                    geoJson={geoJson}
+                    initialCenter={[0, 0]}
+                    initialZoom={6}
+                    rasterStyle="gbif-natural"
+                    height="350px"
+                  />
+                ) : (
+                  <div className="g-h-64 g-bg-gray-100 g-rounded g-flex g-items-center g-justify-center g-text-gray-500">
+                    <span>No location data available</span>
+                  </div>
+                )}
               </div>
 
               <Properties>
-                <Property labelId="event.locationID" value={event.locationID} />
+                <Property labelId="occurrenceFieldNames.locationID" value={event.locationID} />
 
                 {event.countryCode && (
-                  <Property
-                    labelId="event.countryCode"
-                    value={<FormattedMessage id={`enums.countryCode.${event.countryCode}`} />}
-                  />
+                  <Property labelId="occurrenceFieldNames.country" value={event.countryCode}>
+                    <FormattedMessage
+                      id={`enums.countryCode.${event.countryCode}`}
+                      defaultMessage={event.countryCode}
+                    />
+                  </Property>
                 )}
 
-                <Property labelId="event.stateProvince" value={event.stateProvince} />
+                <Property
+                  labelId="occurrenceFieldNames.stateProvince"
+                  value={event.stateProvince}
+                />
 
-                <Property labelId="event.locality" value={event.locality} />
+                <Property labelId="occurrenceFieldNames.locality" value={event.locality} />
 
-                <Property labelId="event.decimalLatitude" value={event.decimalLatitude} />
+                <Property
+                  labelId="occurrenceFieldNames.decimalLatitude"
+                  value={event.decimalLatitude}
+                />
 
-                <Property labelId="event.decimalLongitude" value={event.decimalLongitude} />
+                <Property
+                  labelId="occurrenceFieldNames.decimalLongitude"
+                  value={event.decimalLongitude}
+                />
               </Properties>
             </CardContent>
           </Card>
         </ArticleTextContainer>
       </ArticleContainer>
     </article>
+  );
+}
+
+// a component to take the current url, but remove the entity search parameter and add the eventId parameter
+export function EventLink({ eventId, className }: { eventId?: string; className?: string }) {
+  const searchParams = new URLSearchParams(window.location.search);
+  searchParams.delete('entity');
+  if (eventId) {
+    searchParams.set('eventId', eventId);
+  }
+
+  return (
+    <Link
+      to={{
+        pathname: window.location.pathname,
+        search: searchParams.toString(),
+      }}
+      className={className}
+    >
+      <FormattedMessage id="event.viewEvent" defaultMessage="View child events" />
+    </Link>
   );
 }

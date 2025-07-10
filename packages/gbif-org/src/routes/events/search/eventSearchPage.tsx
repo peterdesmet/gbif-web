@@ -7,18 +7,18 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/smallCard';
 import { useConfig } from '@/config/config';
 import { FilterContext, FilterProvider } from '@/contexts/filter';
-import { SearchContextProvider, useSearchContext } from '@/contexts/search';
+import { SearchContextProvider, SearchMetadata, useSearchContext } from '@/contexts/search';
 import { useFilterParams } from '@/dataManagement/filterAdapter/useFilterParams';
 import { useStringParam } from '@/hooks/useParam';
 import { useUpdateViewParams } from '@/hooks/useUpdateViewParams';
+import EntityDrawer from '@/routes/occurrence/search/views/browseList/ListBrowser';
 import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { MdDeleteOutline } from 'react-icons/md';
 import { FormattedMessage } from 'react-intl';
-import { useFilters } from './filters';
+import { Filters, useFilters } from './filters';
 import { AboutContent, ApiContent } from './help';
 import { searchConfig } from './searchConfig';
-import EntityDrawer from './views/browseList/ListBrowser';
 import { EventTable } from './views/table/eventTable';
 
 export function EventSearchPage(): React.ReactElement {
@@ -66,7 +66,6 @@ export function EventSearchPageInner(): React.ReactElement {
   const searchContext = useSearchContext();
   const { filters } = useFilters({ searchConfig });
   const defaultView = searchContext.defaultTab ?? searchContext?.tabs?.[0] ?? 'table';
-  const currentFilterContext = useContext(FilterContext);
   const [view] = useStringParam({
     key: 'view',
     defaultValue: defaultView,
@@ -92,22 +91,7 @@ export function EventSearchPageInner(): React.ReactElement {
       </DataHeader>
 
       <section>
-        <FilterBar className="g-flex f-flex-nowrap g-items-start">
-          <div>
-            <FilterButtons filters={filters} searchContext={searchContext} groups={groups} />
-          </div>
-          <div className="g-flex-1"></div>
-          <div className="g-flex g-items-center g-gap-1 g-ps-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              className="g-px-1 g-mb-1 g-text-slate-400 hover:g-text-red-800"
-              onClick={() => currentFilterContext.setFilter({})}
-            >
-              <MdDeleteOutline className="g-text-base" />
-            </Button>
-          </div>
-        </FilterBar>
+        <FilterOptions filters={filters} searchContext={searchContext} />
       </section>
 
       <Views view={view} className="g-py-2 g-px-4 g-bg-slate-100" />
@@ -124,21 +108,20 @@ export function EventSearchInner(): React.ReactElement {
     defaultValue: defaultView,
     hideDefault: true,
   });
+  console.log('searchContext', searchContext);
 
   return (
     <ErrorBoundary showStackTrace showReportButton>
       <EntityDrawer />
       <section className="g-bg-white">
         <Card>
-          <EventViewTabs
+          {/* <EventViewTabs
             view={view}
             defaultView={defaultView}
             tabs={searchContext.tabs}
             className="g-border-b"
-          />
-          <FilterBar>
-            <FilterButtons filters={filters} searchContext={searchContext} />
-          </FilterBar>
+          /> */}
+          <FilterOptions filters={filters} searchContext={searchContext} />
         </Card>
       </section>
 
@@ -187,5 +170,33 @@ function EventViewTabs({
         children: <FormattedMessage id={`search.tabs.${tab}`} defaultMessage={tab} />,
       }))}
     />
+  );
+}
+
+function FilterOptions({
+  searchContext,
+  filters,
+}: {
+  searchContext: SearchMetadata;
+  filters: Filters;
+}) {
+  const currentFilterContext = useContext(FilterContext);
+  return (
+    <FilterBar className="g-flex f-flex-nowrap g-items-start">
+      <div>
+        <FilterButtons filters={filters} searchContext={searchContext} groups={groups} />
+      </div>
+      <div className="g-flex-1"></div>
+      <div className="g-flex g-items-center g-gap-1 g-ps-2">
+        <Button
+          size="sm"
+          variant="ghost"
+          className="g-px-1 g-mb-1 g-text-slate-400 hover:g-text-red-800"
+          onClick={() => currentFilterContext.setFilter({})}
+        >
+          <MdDeleteOutline className="g-text-base" />
+        </Button>
+      </div>
+    </FilterBar>
   );
 }

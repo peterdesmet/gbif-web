@@ -1,15 +1,11 @@
 import { InlineLineClamp } from '@/components/inlineLineClamp';
 import { FormattedDateRange } from '@/components/message';
-import { ColumnDef, SetAsFilter, SetAsFilterList } from '@/components/searchTable';
+import { ColumnDef, SetAsFilter } from '@/components/searchTable';
 import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { SingleEventSearchResult } from './eventTable';
 
-type Args = {
-  showPreview?: ((id: string) => void) | false;
-};
-
-export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSearchResult>[] {
+export function useEventColumns(): ColumnDef<SingleEventSearchResult>[] {
   return useMemo(() => {
     const columns: ColumnDef<SingleEventSearchResult>[] = [
       {
@@ -18,7 +14,7 @@ export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSea
         filterKey: 'eventId', // default is same as id
         disableHiding: true,
         minWidth: 250,
-        cell: ({ eventID, eventTypeHierarchyJoined, eventHierarchyJoined }) => {
+        cell: ({ eventID, eventTypeHierarchyJoined }) => {
           return (
             <div>
               <SetAsFilter field="eventId" value={eventID}>
@@ -31,11 +27,6 @@ export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSea
       },
       {
         id: 'country',
-        sort: {
-          localStorageKey: 'eventSort',
-          sortBy: 'countryCode',
-          // message: <FormattedMessage id="Sorted by country code" />,
-        },
         header: 'filters.country.name',
         minWidth: 150,
         cell: ({ countryCode }) => (
@@ -62,7 +53,6 @@ export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSea
       },
       {
         id: 'year',
-        sort: { localStorageKey: 'eventSort', sortBy: 'year' },
         header: 'filters.year.name',
         cell: ({ year }) => (
           <SetAsFilter field="year" value={year}>
@@ -72,7 +62,6 @@ export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSea
       },
       {
         id: 'eventDate',
-        sort: { localStorageKey: 'eventSort', sortBy: 'eventDate' },
         header: 'filters.eventDate.name',
         cell: ({ eventDate }) => {
           if (!eventDate) return null;
@@ -87,8 +76,7 @@ export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSea
         },
       },
       {
-        id: 'locationID',
-        sort: { localStorageKey: 'eventSort', sortBy: 'basisOfRecord' },
+        id: 'locationId',
         header: 'filters.locationID.name',
         cell: ({ locationID }) => (
           <SetAsFilter field="locationID" value={locationID}>
@@ -113,8 +101,7 @@ export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSea
       // },
       {
         id: 'locality',
-        sort: { localStorageKey: 'eventSort', sortBy: 'locality' },
-        header: 'eventFieldNames.locality',
+        header: 'occurrenceFieldNames.locality',
         minWidth: 200,
         cell: ({ locality }) => (
           <InlineLineClamp className="-g-ml-0.5">
@@ -125,30 +112,8 @@ export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSea
         ),
       },
       {
-        id: 'fieldNumber',
-        sort: { localStorageKey: 'eventSort', sortBy: 'fieldNumber' },
-        header: 'eventFieldNames.fieldNumber',
-        minWidth: 200,
-        cell: ({ fieldNumber }) => (
-          <InlineLineClamp className="-g-ml-0.5">
-            <SetAsFilter field="fieldNumber" value={fieldNumber} className="g-ml-0">
-              {fieldNumber}
-            </SetAsFilter>
-          </InlineLineClamp>
-        ),
-      },
-      {
-        id: 'higherGeography',
-        minWidth: 350,
-        header: 'eventFieldNames.higherGeography',
-        cell: ({ higherGeography }) => (
-          <SetAsFilterList field="higherGeography" items={higherGeography} />
-        ),
-      },
-      {
         id: 'stateProvince',
-        sort: { localStorageKey: 'eventSort', sortBy: 'stateProvince' },
-        header: 'eventFieldNames.stateProvince',
+        header: 'occurrenceFieldNames.stateProvince',
         cell: ({ stateProvince }) => {
           if (!stateProvince) return null;
 
@@ -162,5 +127,5 @@ export function useEventColumns({ showPreview }: Args): ColumnDef<SingleEventSea
     ];
 
     return columns;
-  }, [showPreview]);
+  }, []);
 }

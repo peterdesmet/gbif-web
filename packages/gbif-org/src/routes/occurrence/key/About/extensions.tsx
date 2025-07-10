@@ -474,7 +474,7 @@ function GenericExtension({
   );
 }
 
-function GenericExtensionContent({
+export function GenericExtensionContent({
   item,
   extensionName,
   overwrites = {},

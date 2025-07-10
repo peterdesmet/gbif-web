@@ -373,6 +373,14 @@ const config = {
       type: 'keyword',
       field: 'event.eventTypeHierarchyJoined.keyword',
     },
+    verbatimEventType: {
+      type: 'keyword',
+      field: 'event.verbatimEventTypeHierarchy.keyword',
+    },
+    eventTypeHierarchyJoined: {
+      type: 'keyword',
+      field: 'event.verbatimEventTypeHierarchyJoined.keyword',
+    },
     measurementOrFactTypes: {
       type: 'keyword',
       field: 'event.measurementOrFactTypes.keyword',
