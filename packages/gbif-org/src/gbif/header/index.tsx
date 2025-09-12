@@ -6,10 +6,10 @@ import { DynamicLink, useI18n } from '@/reactRouterPlugins';
 import { FiActivity } from 'react-icons/fi';
 import { MdOutlineFeedback, MdSearch, MdTranslate } from 'react-icons/md';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { FeedbackPopover } from './feedback';
 import { LanguageSelector } from './languageSelector';
 import MainNavigation from './mainNav';
 import MobileMenu from './mobileMenu';
+import { FeedbackPopover } from './feedback/feedback';
 
 export function Header({ menu }: { menu: HeaderQuery }) {
   const { locale } = useI18n();

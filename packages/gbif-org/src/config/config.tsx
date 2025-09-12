@@ -56,6 +56,11 @@ export type Config = Endpoints & {
   experimentalFeatures: {
     localContextEnabled: boolean;
   };
+  feedback?: {
+    gbifFeedback?: boolean;
+    showFeedbackInDataHeader?: boolean;
+  };
+  notFoundPageImageUrl?: string;
   defaultChecklistKey?: string;
   availableChecklistKeys?: string[];
   suggest?: {

@@ -90,6 +90,11 @@ export const gbifConfig: Config = {
   //     id: 'speciesKey',
   //   },
   // ],
+  notFoundPageImageUrl: '/img/404.jpg',
+  feedback: {
+    gbifFeedback: true,
+    showFeedbackInDataHeader: false,
+  },
   experimentalFeatures: {
     localContextEnabled: true,
   },
