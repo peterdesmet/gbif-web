@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { DynamicLink } from '@/reactRouterPlugins';
-import { useUser } from '@/contexts/UserContext';
+import { UserProvider, useUser } from '@/contexts/UserContext';
 import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation } from 'react-router-dom';
@@ -59,13 +59,15 @@ export function GbifFeedback({ pageType, onClose }: GbifFeedbackProps) {
         Object.assign(headers, { Authorization: `Bearer ${user.graphqlToken}` });
       }
 
-      fetch(`${import.meta.env.PUBLIC_FORMS_ENDPOINT}/feedback`, {
+      fetch(`${import.meta.env.PUBLIC_FORMS_ENDPOINT}/feedback/bug`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
           title: titleValue,
           description: descriptionValue,
-          location: location.pathname + location.search,
+          location: window.location.href,
+          width: window.innerWidth,
+          height: window.innerHeight,
         }),
       })
         .then((response) => {
@@ -77,7 +79,7 @@ export function GbifFeedback({ pageType, onClose }: GbifFeedbackProps) {
         })
         .then((data) => {
           setSubmissionState('SUCCESS');
-          setReferenceId(data.referenceId || null);
+          setReferenceId(data.issue || null);
           // Clear form
           setTitleValue('');
           setDescriptionValue('');
@@ -114,27 +116,144 @@ export function GbifFeedback({ pageType, onClose }: GbifFeedbackProps) {
     }
   }, [descriptionValue, titleValue]);
 
+  if (submissionState === 'SUCCESS') {
+    return (
+      <div className="g-mt-4">
+        <div className="g-mb-4">
+          <div className="g-p-4 g-bg-green-50 g-text-green-800 g-border g-border-green-100 g-rounded g-mb-4">
+            <div className="g-text-lg g-font-semibold g-mb-2">
+              <FormattedMessage id="feedback.confirmation.title" defaultMessage="Thank you" />
+            </div>
+            <p className="g-text-sm g-text-slate-700">
+              <FormattedMessage
+                id="feedback.confirmation.description"
+                defaultMessage="Your feedback has been logged as an issue in Github. If necessary and if contact details were provided, we might reach out to you for further information."
+              />
+            </p>
+          </div>
+          <div className="g-flex g-gap-2">
+            {referenceId && (
+              <Button asChild>
+                <a href={referenceId} target="_blank" rel="noopener noreferrer">
+                  <FormattedMessage
+                    id="feedback.confirmation.seeIssue"
+                    defaultMessage="See issue"
+                  />
+                </a>
+              </Button>
+            )}
+            <Button onClick={resetForm} variant="outline">
+              <FormattedMessage
+                id="feedback.confirmation.createAnother"
+                defaultMessage="Create another"
+              />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (submissionState === 'FAILED') {
+    let body = '';
+    if (titleValue) {
+      body += titleValue + '\n';
+    }
+    if (descriptionValue) {
+      body += descriptionValue + '\n';
+    }
+    body += `\n\nPage: ${
+      typeof window !== 'undefined'
+        ? window.location.toString()
+        : `${location.pathname}${location.search}`
+    }`;
+    return (
+      <div className="g-mt-4">
+        <div className=" g-mb-4">
+          <div className="g-p-4 g-bg-red-50 g-text-red-800 g-rounded g-border g-border-red-100 g-mb-4">
+            <div className="g-text-lg g-font-semibold g-mb-2">
+              <FormattedMessage id="feedback.failure.title" defaultMessage="Something went wrong" />
+            </div>
+            <div className="g-text-sm g-text-slate-700">
+              <FormattedMessage
+                id="feedback.failure.description"
+                defaultMessage="This isn't good — the feedback system doesn't work. Please send us a mail or go straight to {githubLink}. We are sorry about the trouble."
+                values={{
+                  githubLink: (
+                    <a
+                      className="g-underline"
+                      href={`https://github.com/gbif/portal-feedback/issues/new?body=${encodeURIComponent(
+                        body
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Github
+                    </a>
+                  ),
+                }}
+              />
+            </div>
+          </div>
+          <div className="g-flex g-gap-2">
+            <Button asChild variant="outline">
+              <a
+                href={`mailto:helpdesk@gbif.org?subject=${encodeURIComponent(
+                  'Feedback on GBIF.org'
+                )}&body=${encodeURIComponent(body)}`}
+              >
+                <FormattedMessage id="feedback.emailHelpdesk" defaultMessage="Email Helpdesk" />
+              </a>
+            </Button>
+            <Button onClick={resetForm} variant="outline">
+              <FormattedMessage id="feedback.failure.tryAgain" defaultMessage="Try again" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="g-mt-4">
       {!isLoggedIn && (
         <div className="g-mt-4">
           <div className="g-text-sm g-text-slate-700 g-mb-4 g-bg-blue-50 g-p-4 g-rounded-lg g-border g-border-blue-200">
-            <p className="g-mb-3">
+            <h3 className="g-text-lg g-font-semibold g-mb-2">
               <FormattedMessage
                 id="feedback.pleaseLogin"
                 defaultMessage="Please login to leave feedback."
               />
-            </p>
-            <p className="g-text-xs g-text-slate-600">
+            </h3>
+            <p className="g-text-sm g-text-slate-700">
               <FormattedMessage
                 id="feedback.pleaseLoginReason"
                 defaultMessage="Why? Unfortunately we are seeing lots of spam advertisement in our feedback system if we do not require users to login."
               />
             </p>
+            <Button asChild variant="outline" className="g-w-full" onClick={() => onClose()}>
+              <DynamicLink
+                pageId="user-login"
+                className="g-mt-2"
+                searchParams={{ returnUrl: location.pathname + location.search }}
+              >
+                <FormattedMessage id="feedback.login" defaultMessage="Login" />
+              </DynamicLink>
+            </Button>
           </div>
           <div className="g-flex g-gap-2">
             <a
-              href="https://github.com/gbif/portal-feedback/issues/new"
+              href={`${
+                import.meta.env.PUBLIC_FEEDBACK_GITHUB_REPO
+              }/issues/new?body=${encodeURIComponent(
+                `**Page**: ${
+                  typeof window !== 'undefined'
+                    ? window.location.toString()
+                    : `${location.pathname}${location.search}`
+                }`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="g-inline-flex g-items-center g-px-3 g-py-2 g-text-sm g-font-medium g-text-gray-700 g-bg-white g-border g-border-gray-300 g-rounded-md g-shadow-sm hover:g-bg-gray-50"
             >
               <FormattedMessage
@@ -148,81 +267,6 @@ export function GbifFeedback({ pageType, onClose }: GbifFeedbackProps) {
             >
               <FormattedMessage id="feedback.emailHelpdesk" defaultMessage="Email Helpdesk" />
             </a>
-          </div>
-        </div>
-      )}
-      {isLoggedIn && submissionState === 'SUCCESS' && (
-        <div className="g-mt-4">
-          <div className="g-text-center g-mb-4">
-            <div className="g-text-lg g-font-semibold g-text-green-700 g-mb-2">
-              <FormattedMessage id="feedback.confirmation.title" defaultMessage="Thank you" />
-            </div>
-            <p className="g-text-sm g-text-slate-700 g-mb-4">
-              <FormattedMessage
-                id="feedback.confirmation.description"
-                defaultMessage="Your feedback has been logged as an issue in Github. If necessary and if contact details were provided, we might reach out to you for further information."
-              />
-            </p>
-            <div className="g-flex g-gap-2 g-justify-center">
-              {referenceId && (
-                <a
-                  href={referenceId}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="g-inline-flex g-items-center g-px-3 g-py-2 g-text-sm g-font-medium g-text-white g-bg-blue-600 g-border g-border-blue-600 g-rounded-md g-shadow-sm hover:g-bg-blue-700"
-                >
-                  <FormattedMessage
-                    id="feedback.confirmation.seeIssue"
-                    defaultMessage="See issue"
-                  />
-                </a>
-              )}
-              <Button onClick={resetForm} variant="outline" className="g-text-sm">
-                <FormattedMessage
-                  id="feedback.confirmation.createAnother"
-                  defaultMessage="Create another"
-                />
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isLoggedIn && submissionState === 'FAILED' && (
-        <div className="g-mt-4">
-          <div className=" g-mb-4">
-            <div className="g-text-lg g-font-semibold g-text-red-700 g-mb-2">
-              <FormattedMessage id="feedback.failure.title" defaultMessage="Something went wrong" />
-            </div>
-            <div className="g-text-sm g-text-red-600 g-mb-4 g-bg-red-50 g-p-4 g-rounded-lg g-border g-border-red-200">
-              <FormattedMessage
-                id="feedback.failure.description"
-                defaultMessage="This isn't good — the feedback system doesn't work. Please send us a mail or go straight to {githubLink}. We are sorry about the trouble."
-                values={{
-                  githubLink: (
-                    <a
-                      className="g-underline"
-                      href="https://github.com/gbif/portal-feedback/issues/new"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Github
-                    </a>
-                  ),
-                }}
-              />
-            </div>
-            <div className="g-flex g-gap-2 g-justify-center">
-              <a
-                href="mailto:helpdesk@gbif.org"
-                className="g-inline-flex g-items-center g-px-3 g-py-2 g-text-sm g-font-medium g-text-gray-700 g-bg-white g-border g-border-gray-300 g-rounded-md g-shadow-sm hover:g-bg-gray-50"
-              >
-                <FormattedMessage id="feedback.emailHelpdesk" defaultMessage="Email Helpdesk" />
-              </a>
-              <Button onClick={resetForm} variant="outline" className="g-text-sm">
-                <FormattedMessage id="feedback.failure.tryAgain" defaultMessage="Try again" />
-              </Button>
-            </div>
           </div>
         </div>
       )}
@@ -306,7 +350,7 @@ export function GbifFeedback({ pageType, onClose }: GbifFeedbackProps) {
             </div>
           </form>
 
-          <div className="g-text-xs g-mt-4 g-text-muted-foreground">
+          <div className="g-text-xs g-mt-1 g-text-muted-foreground">
             <p className="g-mb-2">
               <FormattedMessage
                 id="feedback.publicRepo"

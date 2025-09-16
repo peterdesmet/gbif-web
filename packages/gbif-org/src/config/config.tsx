@@ -57,8 +57,14 @@ export type Config = Endpoints & {
     localContextEnabled: boolean;
   };
   feedback?: {
+    enabled?: boolean;
     gbifFeedback?: boolean;
     showFeedbackInDataHeader?: boolean;
+    // only relevant for hosted portals
+    githubRepo?: string;
+    githubMessage?: string;
+    githubUsernames?: string[];
+    contactEmail?: string;
   };
   notFoundPageImageUrl?: string;
   defaultChecklistKey?: string;

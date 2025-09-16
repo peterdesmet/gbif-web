@@ -78,7 +78,11 @@ export function Header({ menu }: { menu: HeaderQuery }) {
           </Button>
         ) : (
           <Button asChild className="g-text-sm lg:g-inline-block g-hidden" variant="outline">
-            <Link to="/user/login">Login</Link>
+            <Link
+              to={`/user/login?returnUrl=${encodeURIComponent(`${pathname}${location.search}`)}`}
+            >
+              Login
+            </Link>
           </Button>
         )}
       </div>

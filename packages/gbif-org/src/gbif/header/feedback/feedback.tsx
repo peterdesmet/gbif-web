@@ -9,6 +9,8 @@ import { FormattedMessage } from 'react-intl';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataProviderFeedback } from './DataProviderFeedback';
 import { GbifFeedback } from './GbifFeedback';
+import { GithubFeedback, MailFeedback } from './GithubFeedback';
+import { useConfig } from '@/config/config';
 
 type PageType = {
   type: 'occurrenceKey' | null;
@@ -16,7 +18,7 @@ type PageType = {
   id: string | null;
 };
 
-type FeedbackOption = 'dataProvider' | 'gbif' | null;
+type FeedbackOption = 'gbif' | null;
 
 function getPageType(matches: ReturnType<typeof useMatches>): PageType {
   const page = matches.find((match) => match.id.startsWith('occurrenceKey-'));
@@ -29,7 +31,8 @@ function getPageType(matches: ReturnType<typeof useMatches>): PageType {
 
 export function FeedbackPopover({ trigger = <MdFeedback /> }): React.ReactElement {
   const [open, setOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<FeedbackOption>(null);
+  const { feedback } = useConfig();
+  const [selectedOption, setSelectedOption] = useState<FeedbackOption>('gbif'); //null
   const matches = useMatches();
   const [pageType, setPageType] = useState<PageType | null>(null);
   const {
@@ -62,6 +65,10 @@ export function FeedbackPopover({ trigger = <MdFeedback /> }): React.ReactElemen
     }
   }, [open]);
 
+  if (!feedback?.enabled) {
+    return <></>;
+  }
+
   const data = pageType?.id ? feedbackData : null;
 
   const hasDataProviderOptions =
@@ -77,37 +84,29 @@ export function FeedbackPopover({ trigger = <MdFeedback /> }): React.ReactElemen
   };
 
   const getTitle = () => {
-    if (!selectedOption) {
-      return <FormattedMessage id="feedback.title" defaultMessage="Questions and comments" />;
+    if (selectedOption === 'gbif') {
+      return <FormattedMessage id="feedback.contactGbif" defaultMessage="Contact GBIF" />;
     }
-    if (selectedOption === 'dataProvider') {
-      return (
-        <FormattedMessage
-          id="feedback.contactDataProvider"
-          defaultMessage="Contact data provider"
-        />
-      );
-    }
-    return <FormattedMessage id="feedback.contactUs" defaultMessage="Contact GBIF" />;
+    return <FormattedMessage id="feedback.title" defaultMessage="Questions and comments" />;
   };
 
   const getDescription = () => {
-    if (selectedOption === 'dataProvider') {
-      return null;
+    if (selectedOption === 'gbif') {
+      return (
+        <FormattedMessage
+          id="feedback.seeAlsoFaq"
+          defaultMessage="See also the {faqLink}"
+          values={{
+            faqLink: (
+              <DynamicLink className="g-underline" to="/faq" onClick={() => setOpen(false)}>
+                <FormattedMessage id="feedback.faq" defaultMessage="FAQ" />
+              </DynamicLink>
+            ),
+          }}
+        />
+      );
     }
-    return (
-      <FormattedMessage
-        id="feedback.seeAlsoFaq"
-        defaultMessage="See also the {faqLink}"
-        values={{
-          faqLink: (
-            <DynamicLink className="g-underline" to="/faq" onClick={() => setOpen(false)}>
-              <FormattedMessage id="feedback.faq" defaultMessage="FAQ" />
-            </DynamicLink>
-          ),
-        }}
-      />
-    );
+    return null;
   };
 
   const renderContent = () => {
@@ -115,18 +114,15 @@ export function FeedbackPopover({ trigger = <MdFeedback /> }): React.ReactElemen
     if (loading) {
       return (
         <Skeleton className="g-mt-4 g-w-full g-p-4 g-h-24 g-text-left g-border g-rounded-lg">
-          <FormattedMessage id="feedback.loading" defaultMessage="Loading..." />
+          Loading
         </Skeleton>
       );
     }
 
-    // Handle specific option selections
-    if (selectedOption === 'dataProvider' && data?.feedbackOptions) {
-      return <DataProviderFeedback feedbackOptions={data.feedbackOptions} onClose={handleClose} />;
-    }
-
     if (selectedOption === 'gbif') {
-      return <GbifFeedback pageType={pageType} onClose={handleClose} />;
+      if (feedback?.gbifFeedback !== false) {
+        return <GbifFeedback pageType={pageType} onClose={handleClose} />;
+      }
     }
 
     // Handle main content based on data provider options availability
@@ -137,46 +133,50 @@ export function FeedbackPopover({ trigger = <MdFeedback /> }): React.ReactElemen
     }
 
     // Default to GBIF feedback (covers error cases and no data provider options)
-    return <GbifFeedback pageType={pageType} onClose={handleClose} />;
+    if (feedback?.gbifFeedback) {
+      return <GbifFeedback pageType={pageType} onClose={handleClose} />;
+    } else {
+      return (
+        <div className="g-space-y-3">
+          <GithubFeedback onClose={handleClose} />
+          <MailFeedback onClose={handleClose} />
+        </div>
+      );
+    }
   };
 
-  const renderOptionSelection = () => (
-    <div className="g-space-y-4 g-mt-4">
-      <div className="g-space-y-3">
-        <button
-          onClick={() => setSelectedOption('dataProvider')}
-          className="g-w-full g-p-4 g-text-left g-border g-rounded-lg g-bg-gray-50 hover:g-bg-gray-100 g-transition-colors"
-        >
-          <h4 className="g-font-medium g-mb-1">
-            <FormattedMessage
-              id="feedback.contactDataProvider"
-              defaultMessage="Contact data provider"
-            />
-          </h4>
-          <p className="g-text-sm g-text-muted-foreground">
-            <FormattedMessage
-              id="feedback.contactDataProviderDescription"
-              defaultMessage="For questions about data quality, species information, or dataset-specific issues"
-            />
-          </p>
-        </button>
-        <button
-          onClick={() => setSelectedOption('gbif')}
-          className="g-w-full g-p-4 g-text-left g-border g-rounded-lg g-bg-gray-50 hover:g-bg-gray-100 g-transition-colors"
-        >
-          <h4 className="g-font-medium g-mb-1">
-            <FormattedMessage id="feedback.contactUs" defaultMessage="Contact GBIF" />
-          </h4>
-          <p className="g-text-sm g-text-muted-foreground">
-            <FormattedMessage
-              id="feedback.contactUsDescription"
-              defaultMessage="For website issues, data processing problems, or general GBIF questions"
-            />
-          </p>
-        </button>
+  const renderOptionSelection = () => {
+    const feedbackOptions = data?.feedbackOptions;
+    return (
+      <div className="g-space-y-4 g-mt-4">
+        <div className="g-space-y-3">
+          {feedback.gbifFeedback && (
+            <button
+              onClick={() => setSelectedOption('gbif')}
+              className="g-w-full g-p-4 g-text-left g-border g-rounded-lg g-bg-gray-50 hover:g-bg-gray-100 g-transition-colors"
+            >
+              <h4 className="g-font-medium g-mb-1">
+                <FormattedMessage id="feedback.contactUs" defaultMessage="Contact GBIF" />
+              </h4>
+              <p className="g-text-sm g-text-muted-foreground">
+                <FormattedMessage
+                  id="feedback.contactUsDescription"
+                  defaultMessage="For website issues, data processing problems, or general GBIF questions"
+                />
+              </p>
+            </button>
+          )}
+          <DataProviderFeedback feedbackOptions={feedbackOptions!} />
+          {!feedback?.gbifFeedback && (
+            <>
+              <GithubFeedback onClose={handleClose} />
+              <MailFeedback onClose={handleClose} />
+            </>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

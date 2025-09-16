@@ -92,6 +92,7 @@ export const gbifConfig: Config = {
   // ],
   notFoundPageImageUrl: '/img/404.jpg',
   feedback: {
+    enabled: true,
     gbifFeedback: true,
     showFeedbackInDataHeader: false,
   },
