@@ -53,6 +53,8 @@ type ApiKeysType = {
 // TODO: The config object should probably be refactored in the future with logical nesting
 export type Config = Endpoints & {
   version: number;
+  isGBIFOrg: boolean;
+  portalId?: string; // only for hosted portals
   experimentalFeatures: {
     localContextEnabled: boolean;
   };
