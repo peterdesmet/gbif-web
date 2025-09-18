@@ -232,8 +232,13 @@ function DownloadGbifOrg() {
                                 : 'g-bg-gray-900 hover:g-bg-gray-800 g-text-white'
                             }`}
                           >
-                            <Download size={16} />
-                            Download
+                            {format.hasNextStep && 'Configure'}
+                            {!format.hasNextStep && (
+                              <>
+                                <Download size={16} />
+                                Download
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>

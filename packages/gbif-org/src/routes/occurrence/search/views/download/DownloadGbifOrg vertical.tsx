@@ -94,7 +94,7 @@ const formatCards = [
   },
 ];
 
-function DownloadGbifOrg() {
+function DownloadGbifOrgVertical() {
   return (
     <div className="g-min-h-screen g-bg-gradient-to-br g-from-slate-50 g-to-slate-100 g-py-12 g-px-4">
       <div className="g-max-w-7xl g-mx-auto">
@@ -245,4 +245,4 @@ function DownloadGbifOrg() {
   );
 }
 
-export default DownloadGbifOrg;
+export default DownloadGbifOrgVertical;
