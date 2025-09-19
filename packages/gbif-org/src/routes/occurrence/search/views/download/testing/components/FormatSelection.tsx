@@ -1,18 +1,19 @@
+import { Button } from '@/components/ui/button';
 import React from 'react';
 import {
-  Check,
-  Download,
-  FileText,
-  List,
-  Archive,
-  Grid,
-  ChevronDown,
-  ChevronUp,
-  Info,
-  Zap,
-  Shield,
-  ChevronLeft,
-} from 'lucide-react';
+  FaCheck,
+  FaDownload,
+  FaFileAlt,
+  FaListUl,
+  FaArchive,
+  FaThLarge,
+  FaChevronDown,
+  FaChevronUp,
+  FaInfoCircle,
+  FaBolt,
+  FaShieldAlt,
+  FaChevronLeft,
+} from 'react-icons/fa';
 
 interface Format {
   title: string;
@@ -42,7 +43,7 @@ const formatCards: Format[] = [
   {
     title: 'SIMPLE',
     description: 'Basic occurrence data with interpreted fields only',
-    icon: FileText,
+    icon: FaFileAlt,
     popular: true,
     size: '417 GB',
     compatibility: 'Excel Ready',
@@ -72,7 +73,7 @@ const formatCards: Format[] = [
   {
     title: 'SPECIES LIST',
     description: 'Taxonomic checklist with occurrence counts',
-    icon: List,
+    icon: FaListUl,
     popular: false,
     size: 'Variable',
     compatibility: 'Universal',
@@ -103,7 +104,7 @@ const formatCards: Format[] = [
     title: 'DARWIN CORE ARCHIVE',
     hasNextStep: true,
     description: 'Complete biodiversity data package with all available information',
-    icon: Archive,
+    icon: FaArchive,
     popular: false,
     size: '1 TB',
     compatibility: 'Standards Compliant',
@@ -139,7 +140,7 @@ const formatCards: Format[] = [
     title: 'CUBE DATA',
     hasNextStep: true,
     description: 'Gridded occurrence counts by taxonomic, spatial and temporal dimensions',
-    icon: Grid,
+    icon: FaThLarge,
     popular: false,
     size: 'Compressed',
     compatibility: 'Analysis Ready',
@@ -185,13 +186,13 @@ export default function FormatSelection({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="g-max-w-4xl g-mx-auto g-space-y-4">
       {/* Back Button */}
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+        className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-6 g-transition-colors"
       >
-        <ChevronLeft size={20} />
+        <FaChevronLeft size={20} />
         Back to quality filters
       </button>
 
@@ -202,64 +203,60 @@ export default function FormatSelection({
         return (
           <div
             key={format.title}
-            className={`relative bg-white rounded-xl shadow-md border-2 transition-all duration-300 overflow-hidden ${
+            className={`g-relative g-bg-white g-rounded g-shadow-md g-border-2 g-transition-all g-duration-300 g-overflow-hidden ${
               format.popular
-                ? 'border-blue-500 ring-2 ring-blue-100'
-                : 'border-gray-200 hover:border-blue-300'
-            } ${isExpanded ? 'shadow-xl' : 'hover:shadow-lg'}`}
+                ? 'g-border-primary-500 g-ring-2 g-ring-primary-100'
+                : 'g-border-gray-200 hover:g-border-primary-300'
+            } ${isExpanded ? 'g-shadow-xl' : 'hover:g-shadow-lg'}`}
           >
             {format.popular && (
-              <div className="absolute top-0 right-0 bg-gradient-to-l from-blue-500 to-blue-600 text-white px-3 py-1 text-xs font-semibold rounded-bl-lg">
+              <div className="g-absolute g-top-0 g-right-0 g-bg-gradient-to-l g-from-primary-500 g-to-primary-600 g-text-white g-px-3 g-py-1 g-text-xs g-font-semibold g-rounded-bl-lg">
                 Most Popular
               </div>
             )}
 
             {/* Main Card Content */}
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-xl font-bold text-gray-900">{format.title}</h3>
-                        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+            <div className="g-p-6">
+              <div className="g-flex g-items-center g-justify-between">
+                <div className="g-flex-1">
+                  <div className="g-flex g-flex-col lg:g-flex-row lg:g-items-center lg:g-justify-between g-gap-4">
+                    <div className="g-flex-1">
+                      <div className="g-flex g-items-center g-gap-3 g-mb-1">
+                        <h3 className="g-text-xl g-font-bold g-text-gray-900">{format.title}</h3>
+                        <span className="g-text-sm g-text-gray-500 g-bg-gray-100 g-px-2 g-py-1 g-rounded">
                           {format.size}
                         </span>
-                        <div className="flex items-center gap-1">
-                          <Shield size={14} className="text-green-600" />
-                          <span className="text-sm text-green-600 font-medium">
+                        <div className="g-flex g-items-center g-gap-1">
+                          <FaShieldAlt size={14} className="g-text-green-600" />
+                          <span className="g-text-sm g-text-green-600 g-font-medium">
                             {format.compatibility}
                           </span>
                         </div>
                       </div>
-                      <p className="text-gray-600 text-sm mb-3">{format.description}</p>
+                      <p className="g-text-gray-600 g-text-sm g-mb-3">{format.description}</p>
 
                       {/* Compact Features */}
-                      <div className="flex flex-wrap gap-2">
+                      <div className="g-flex g-flex-wrap g-gap-2">
                         {format.features.map((feature, index) => (
                           <span
                             key={index}
-                            className="inline-flex items-center gap-1 text-xs bg-gray-50 text-gray-700 px-2 py-1 rounded-full"
+                            className="g-inline-flex g-items-center g-gap-1 g-text-xs g-bg-gray-50 g-text-gray-700 g-px-2 g-py-1 g-rounded-full"
                           >
-                            <Check size={12} className="text-green-600" />
+                            <FaCheck size={12} className="g-text-green-600" />
                             {feature}
                           </span>
                         ))}
                       </div>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
-                      <button
+                    <div className="g-flex g-flex-col lg:g-flex-row g-items-stretch lg:g-items-center g-gap-3">
+                      <Button
+                        variant={format.popular ? 'default' : 'outline'}
+                        size="default"
                         onClick={() => onFormatSelect(format)}
-                        className={`px-6 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${
-                          format.popular
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg'
-                            : 'bg-gray-900 hover:bg-gray-800 text-white'
-                        }`}
                       >
-                        <Download size={16} />
-                        Download
-                      </button>
+                        Configure
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -267,19 +264,19 @@ export default function FormatSelection({
             </div>
 
             {/* Footer with Expand Action */}
-            <div className="border-t border-gray-100 bg-gray-50">
+            <div className="g-border-t g-border-gray-100 g-bg-gray-50">
               <button
                 onClick={() => toggleCard(format.title)}
-                className="w-full px-6 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                className="g-w-full g-px-6 g-py-3 g-text-sm g-font-medium g-text-gray-600 hover:g-text-gray-900 hover:g-bg-gray-100 g-transition-colors g-flex g-items-center g-justify-center g-gap-2"
               >
                 {isExpanded ? (
                   <>
-                    <ChevronUp size={16} />
+                    <FaChevronUp size={16} />
                     Hide Details
                   </>
                 ) : (
                   <>
-                    <Info size={16} />
+                    <FaInfoCircle size={16} />
                     View Details & Specifications
                   </>
                 )}
@@ -288,19 +285,22 @@ export default function FormatSelection({
 
             {/* Expanded Content */}
             {isExpanded && (
-              <div className="bg-white border-t border-gray-200">
-                <div className="p-6 grid md:grid-cols-2 gap-6">
+              <div className="g-bg-white g-border-t g-border-gray-200">
+                <div className="g-p-6 g-grid md:g-grid-cols-2 g-gap-6">
                   {/* Extended Features */}
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                      <Zap size={16} className="text-blue-600" />
+                    <h4 className="g-font-semibold g-text-gray-900 g-mb-3 g-flex g-items-center g-gap-2">
+                      <FaBolt size={16} className="g-text-primary-600" />
                       Advanced Features
                     </h4>
-                    <ul className="space-y-2">
+                    <ul className="g-space-y-2">
                       {format.extendedFeatures.map((feature, index) => (
-                        <li key={index} className="flex items-start gap-2 text-sm">
-                          <Check size={14} className="text-green-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-700">{feature}</span>
+                        <li key={index} className="g-flex g-items-start g-gap-2 g-text-sm">
+                          <FaCheck
+                            size={14}
+                            className="g-text-green-600 g-mt-0.5 g-flex-shrink-0"
+                          />
+                          <span className="g-text-gray-700">{feature}</span>
                         </li>
                       ))}
                     </ul>
@@ -308,15 +308,18 @@ export default function FormatSelection({
 
                   {/* Technical Specifications */}
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                      <Info size={16} className="text-blue-600" />
+                    <h4 className="g-font-semibold g-text-gray-900 g-mb-3 g-flex g-items-center g-gap-2">
+                      <FaInfoCircle size={16} className="g-text-primary-600" />
                       Technical Specifications
                     </h4>
-                    <div className="space-y-2">
+                    <div className="g-space-y-2">
                       {Object.entries(format.technicalSpecs).map(([key, value]) => (
-                        <div key={key} className="flex justify-between items-center text-sm">
-                          <span className="text-gray-600">{key}:</span>
-                          <span className="font-medium text-gray-900">{value}</span>
+                        <div
+                          key={key}
+                          className="g-flex g-justify-between g-items-center g-text-sm"
+                        >
+                          <span className="g-text-gray-600">{key}:</span>
+                          <span className="g-font-medium g-text-gray-900">{value}</span>
                         </div>
                       ))}
                     </div>

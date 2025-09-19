@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
 import {
   FaFilter,
@@ -76,7 +77,7 @@ export default function QualityFilters({ onContinue }: QualityFiltersProps) {
       title: 'Coordinate Quality',
       icon: FaMapMarkerAlt,
       description: 'Filter records based on coordinate data quality',
-      color: 'blue',
+      color: 'primary',
       filters: [
         {
           key: 'requireCoordinates',
@@ -207,21 +208,20 @@ export default function QualityFilters({ onContinue }: QualityFiltersProps) {
     <div className="g-max-w-4xl g-mx-auto">
       {/* Header */}
       <div className="g-text-center g-mb-8">
-        <div className="g-flex g-items-center g-justify-center g-gap-3 g-mb-4">
-          <div className="g-p-3 g-bg-blue-100 g-rounded-lg">
-            <FaFilter size={24} className="g-text-blue-600" />
+        {/* <div className="g-flex g-items-center g-justify-center g-gap-3 g-mb-4">
+          <div className="g-p-3 g-bg-primary-100 g-rounded">
+            <FaFilter size={24} className="g-text-primary-600" />
           </div>
           <h1 className="g-text-2xl g-font-bold g-text-gray-900">Quality Filters</h1>
-        </div>
+        </div> */}
         <p className="g-text-gray-600 g-max-w-2xl g-mx-auto">
-          Apply quality filters to ensure your download contains only the data you need. These
-          filters help remove problematic records and focus on high-quality data.
+          Did you know? Most users improve data quality by applying filters. Learn more
         </p>
       </div>
 
-      <div className="g-grid g-lg:grid-cols-3 g-gap-8">
+      <div className="g-grid lg:g-grid-cols-3 g-gap-8">
         {/* Filter Sections */}
-        <div className="g-lg:col-span-2 g-space-y-4">
+        <div className="lg:g-col-span-2 g-space-y-4">
           {filterSections.map((section) => {
             const isExpanded = expandedSection === section.id;
             const activeCount = Object.entries(filters[section.id]).filter(
@@ -231,14 +231,14 @@ export default function QualityFilters({ onContinue }: QualityFiltersProps) {
             return (
               <div
                 key={section.id}
-                className="g-bg-white g-rounded-xl g-shadow-md g-border g-border-gray-200 g-overflow-hidden"
+                className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-overflow-hidden"
               >
                 <button
                   onClick={() => toggleSection(section.id)}
-                  className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between g-hover:bg-gray-50 g-transition-colors"
+                  className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
                 >
                   <div className="g-flex g-items-center g-gap-4">
-                    <div className={`g-p-2 g-bg-${section.color}-100 g-rounded-lg`}>
+                    <div className={`g-p-2 g-bg-${section.color}-100 g-rounded`}>
                       <section.icon size={20} className={`g-text-${section.color}-600`} />
                     </div>
                     <div>
@@ -267,7 +267,7 @@ export default function QualityFilters({ onContinue }: QualityFiltersProps) {
                         return (
                           <label
                             key={filter.key}
-                            className="g-flex g-items-start g-gap-4 g-p-4 g-bg-white g-rounded-lg g-border g-border-gray-200 g-hover:border-gray-300 g-cursor-pointer g-transition-colors"
+                            className="g-flex g-items-start g-gap-4 g-p-4 g-bg-white g-rounded g-border g-border-gray-200 hover:g-border-gray-300 g-cursor-pointer g-transition-colors"
                           >
                             <div className="g-flex-shrink-0 g-mt-1">
                               <input
@@ -276,7 +276,7 @@ export default function QualityFilters({ onContinue }: QualityFiltersProps) {
                                 onChange={(e) =>
                                   updateFilter(section.id, filter.key, e.target.checked)
                                 }
-                                className="g-h-4 g-w-4 g-text-blue-600 g-focus:ring-blue-500 g-border-gray-300 g-rounded"
+                                className="g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
                               />
                             </div>
                             <div className="g-flex-1">
@@ -312,14 +312,14 @@ export default function QualityFilters({ onContinue }: QualityFiltersProps) {
         </div>
 
         {/* Summary Sidebar */}
-        <div className="g-lg:col-span-1">
-          <div className="g-bg-white g-rounded-xl g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
+        <div className="lg:g-col-span-1">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
             <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Filter Summary</h3>
 
             <div className="g-space-y-3 g-text-sm g-mb-6">
               <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Active filters:</span>
-                <span className="g-font-medium g-text-blue-600">{getActiveFiltersCount()}</span>
+                <span className="g-font-medium g-text-primary-600">{getActiveFiltersCount()}</span>
               </div>
 
               {filterSections.map((section) => {
@@ -335,12 +335,12 @@ export default function QualityFilters({ onContinue }: QualityFiltersProps) {
               })}
             </div>
 
-            <div className="g-bg-blue-50 g-border g-border-blue-200 g-rounded-lg g-p-4 g-mb-6">
+            <div className="g-bg-primary-50 g-border g-border-primary-200 g-rounded g-p-4 g-mb-6">
               <div className="g-flex g-items-start g-gap-3">
-                <FaInfoCircle size={16} className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0" />
+                <FaInfoCircle size={16} className="g-text-primary-600 g-mt-0.5 g-flex-shrink-0" />
                 <div>
-                  <h4 className="g-font-medium g-text-blue-900 g-mb-1">Quality Impact</h4>
-                  <p className="g-text-blue-800 g-text-sm">
+                  <h4 className="g-font-medium g-text-primary-900 g-mb-1">Quality Impact</h4>
+                  <p className="g-text-primary-800 g-text-sm">
                     These filters will improve data quality but may reduce the total number of
                     records in your download.
                   </p>
@@ -348,13 +348,13 @@ export default function QualityFilters({ onContinue }: QualityFiltersProps) {
               </div>
             </div>
 
-            <button
+            <Button
               onClick={handleContinue}
-              className="g-w-full g-bg-gradient-to-r g-from-blue-500 g-to-blue-600 g-hover:from-blue-600 g-hover:to-blue-700 g-text-white g-font-semibold g-py-3 g-px-4 g-rounded-lg g-transition-all g-duration-200 g-flex g-items-center g-justify-center g-gap-2"
+              className="g-w-full g-flex g-items-center g-justify-center g-gap-2"
             >
               Continue to Formats
               <FaChevronRight size={16} />
-            </button>
+            </Button>
 
             <p className="g-text-xs g-text-gray-500 g-text-center g-mt-3">
               You can modify these filters later if needed

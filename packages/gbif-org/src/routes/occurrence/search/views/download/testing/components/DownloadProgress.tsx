@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Check,
-  Download,
-  Mail,
-  Clock,
-  FileText,
-  AlertCircle,
-  ExternalLink,
-  RefreshCw,
-} from 'lucide-react';
+  FaCheck,
+  FaDownload,
+  FaEnvelope,
+  FaClock,
+  FaFileAlt,
+  FaExclamationCircle,
+  FaExternalLinkAlt,
+  FaSyncAlt,
+} from 'react-icons/fa';
 
 interface DownloadProgressProps {
   qualityFilters: any;
@@ -86,18 +86,18 @@ export default function DownloadProgress({
   const IconComponent = selectedFormat.icon;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="g-max-w-4xl g-mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="p-3 bg-blue-100 rounded-lg">
-            <IconComponent size={24} className="text-blue-600" />
+      <div className="g-mb-8">
+        <div className="g-flex g-items-center g-gap-4 g-mb-6">
+          <div className="g-p-3 g-bg-primary-100 g-rounded">
+            <IconComponent size={24} className="g-text-primary-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="g-text-2xl g-font-bold g-text-gray-900">
               {isComplete ? 'Download Complete!' : 'Processing Your Download'}
             </h1>
-            <p className="text-gray-600">
+            <p className="g-text-gray-600">
               {isComplete
                 ? 'Your data is ready for download'
                 : 'Please keep this page open while we prepare your data'}
@@ -106,37 +106,39 @@ export default function DownloadProgress({
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="g-grid lg:g-grid-cols-3 g-gap-8">
         {/* Progress Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:g-col-span-2 g-space-y-6">
           {/* Progress Bar */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Processing Progress</h3>
-              <span className="text-2xl font-bold text-blue-600">{Math.round(progress)}%</span>
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6">
+            <div className="g-flex g-items-center g-justify-between g-mb-4">
+              <h3 className="g-font-semibold g-text-gray-900">Processing Progress</h3>
+              <span className="g-text-2xl g-font-bold g-text-primary-600">
+                {Math.round(progress)}%
+              </span>
             </div>
 
-            <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+            <div className="g-w-full g-bg-gray-200 g-rounded-full g-h-3 g-mb-4">
               <div
-                className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-1000 ease-out"
+                className="g-bg-gradient-to-r g-from-primary-500 g-to-primary-600 g-h-3 g-rounded-full g-transition-all g-duration-1000 g-ease-out"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
 
-            <div className="flex items-center gap-3 text-sm">
+            <div className="g-flex g-items-center g-gap-3 g-text-sm">
               {isComplete ? (
-                <div className="flex items-center gap-2 text-green-600">
-                  <Check size={16} />
-                  <span className="font-medium">Processing complete</span>
+                <div className="g-flex g-items-center g-gap-2 g-text-green-600">
+                  <FaCheck size={16} />
+                  <span className="g-font-medium">Processing complete</span>
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center gap-2 text-blue-600">
-                    <RefreshCw size={16} className="animate-spin" />
-                    <span className="font-medium">{currentStage.label}</span>
+                  <div className="g-flex g-items-center g-gap-2 g-text-primary-600">
+                    <FaSyncAlt size={16} className="g-animate-spin" />
+                    <span className="g-font-medium">{currentStage.label}</span>
                   </div>
-                  <span className="text-gray-500">•</span>
-                  <span className="text-gray-600">
+                  <span className="g-text-gray-500">•</span>
+                  <span className="g-text-gray-600">
                     {timeRemaining > 0
                       ? `~${formatTime(timeRemaining)} remaining`
                       : 'Finishing up...'}
@@ -147,46 +149,46 @@ export default function DownloadProgress({
           </div>
 
           {/* Stage Progress */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Processing Stages</h3>
-            <div className="space-y-4">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6">
+            <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Processing Stages</h3>
+            <div className="g-space-y-4">
               {stages.map((stageItem, index) => {
                 const isActive = stageItem.id === stage;
                 const isCompleted = index < currentStageIndex || isComplete;
                 const isCurrent = index === currentStageIndex;
 
                 return (
-                  <div key={stageItem.id} className="flex items-center gap-4">
+                  <div key={stageItem.id} className="g-flex g-items-center g-gap-4">
                     <div
-                      className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                      className={`g-flex-shrink-0 g-w-8 g-h-8 g-rounded-full g-flex g-items-center g-justify-center ${
                         isCompleted
-                          ? 'bg-green-100 text-green-600'
+                          ? 'g-bg-green-100 g-text-green-600'
                           : isCurrent
-                          ? 'bg-blue-100 text-blue-600'
-                          : 'bg-gray-100 text-gray-400'
+                          ? 'g-bg-primary-100 g-text-primary-600'
+                          : 'g-bg-gray-100 g-text-gray-400'
                       }`}
                     >
                       {isCompleted ? (
-                        <Check size={16} />
+                        <FaCheck size={16} />
                       ) : isCurrent ? (
-                        <RefreshCw size={16} className="animate-spin" />
+                        <FaSyncAlt size={16} className="g-animate-spin" />
                       ) : (
-                        <span className="text-sm font-medium">{index + 1}</span>
+                        <span className="g-text-sm g-font-medium">{index + 1}</span>
                       )}
                     </div>
-                    <div className="flex-1">
+                    <div className="g-flex-1">
                       <h4
-                        className={`font-medium ${
+                        className={`g-font-medium ${
                           isCompleted
-                            ? 'text-green-700'
+                            ? 'g-text-green-700'
                             : isCurrent
-                            ? 'text-blue-700'
-                            : 'text-gray-500'
+                            ? 'g-text-primary-700'
+                            : 'g-text-gray-500'
                         }`}
                       >
                         {stageItem.label}
                       </h4>
-                      <p className="text-sm text-gray-600">{stageItem.description}</p>
+                      <p className="g-text-sm g-text-gray-600">{stageItem.description}</p>
                     </div>
                   </div>
                 );
@@ -196,24 +198,26 @@ export default function DownloadProgress({
 
           {/* Download Ready */}
           {isComplete && (
-            <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 p-2 bg-green-100 rounded-lg">
-                  <Download size={24} className="text-green-600" />
+            <div className="g-bg-gradient-to-r g-from-green-50 g-to-green-100 g-border g-border-green-200 g-rounded g-p-6">
+              <div className="g-flex g-items-start g-gap-4">
+                <div className="g-flex-shrink-0 g-p-2 g-bg-green-100 g-rounded">
+                  <FaDownload size={24} className="g-text-green-600" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-green-900 mb-2">Your Download is Ready!</h3>
-                  <p className="text-green-800 text-sm mb-4">
+                <div className="g-flex-1">
+                  <h3 className="g-font-semibold g-text-green-900 g-mb-2">
+                    Your Download is Ready!
+                  </h3>
+                  <p className="g-text-green-800 g-text-sm g-mb-4">
                     We've successfully processed your {selectedFormat.title} download. The file is
                     now available for download and will remain accessible for 3 months.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
-                      <Download size={16} />
+                  <div className="g-flex g-flex-col sm:g-flex-row g-gap-3">
+                    <button className="g-bg-green-600 hover:g-bg-green-700 g-text-white g-font-semibold g-py-2 g-px-4 g-rounded g-transition-colors g-flex g-items-center g-gap-2">
+                      <FaDownload size={16} />
                       Download File ({selectedFormat.size})
                     </button>
-                    <button className="border border-green-600 text-green-600 hover:bg-green-50 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
-                      <ExternalLink size={16} />
+                    <button className="g-border g-border-green-600 g-text-green-600 hover:g-bg-green-50 g-font-semibold g-py-2 g-px-4 g-rounded g-transition-colors g-flex g-items-center g-gap-2">
+                      <FaExternalLinkAlt size={16} />
                       View Metadata
                     </button>
                   </div>
@@ -223,20 +227,20 @@ export default function DownloadProgress({
           )}
 
           {/* Email Notification */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 p-2 bg-blue-100 rounded-lg">
-                <Mail size={20} className="text-blue-600" />
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6">
+            <div className="g-flex g-items-start g-gap-4">
+              <div className="g-flex-shrink-0 g-p-2 g-bg-primary-100 g-rounded">
+                <FaEnvelope size={20} className="g-text-primary-600" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-2">Email Notification</h3>
-                <p className="text-gray-600 text-sm mb-3">
+              <div className="g-flex-1">
+                <h3 className="g-font-semibold g-text-gray-900 g-mb-2">Email Notification</h3>
+                <p className="g-text-gray-600 g-text-sm g-mb-3">
                   {isComplete
                     ? 'A download confirmation has been sent to your email address with the download link and citation information.'
                     : "We'll send you an email notification when your download is ready. You can safely close this page."}
                 </p>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Mail size={14} />
+                <div className="g-flex g-items-center g-gap-2 g-text-sm g-text-gray-500">
+                  <FaEnvelope size={14} />
                   <span>user@example.com</span>
                 </div>
               </div>
@@ -245,59 +249,59 @@ export default function DownloadProgress({
         </div>
 
         {/* Summary Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6 sticky top-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Download Details</h3>
+        <div className="lg:g-col-span-1">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
+            <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Download Details</h3>
 
-            <div className="space-y-3 text-sm mb-6">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Download ID:</span>
-                <span className="font-mono text-xs">{downloadId}</span>
+            <div className="g-space-y-3 g-text-sm g-mb-6">
+              <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">Download ID:</span>
+                <span className="g-font-mono g-text-xs">{downloadId}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Format:</span>
-                <span className="font-medium">{selectedFormat.title}</span>
+              <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">Format:</span>
+                <span className="g-font-medium">{selectedFormat.title}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Fields:</span>
-                <span className="font-medium">
+              <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">Fields:</span>
+                <span className="g-font-medium">
                   {configuration.fields.core.length + configuration.fields.optional.length}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">File Size:</span>
-                <span className="font-medium">{selectedFormat.size}</span>
+              <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">File Size:</span>
+                <span className="g-font-medium">{selectedFormat.size}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Started:</span>
-                <span className="font-medium">{new Date().toLocaleTimeString()}</span>
+              <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">Started:</span>
+                <span className="g-font-medium">{new Date().toLocaleTimeString()}</span>
               </div>
             </div>
 
             {isComplete && (
-              <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex items-center gap-2 text-green-700 text-sm font-medium mb-1">
-                  <Check size={14} />
+              <div className="g-mb-6 g-p-3 g-bg-green-50 g-border g-border-green-200 g-rounded">
+                <div className="g-flex g-items-center g-gap-2 g-text-green-700 g-text-sm g-font-medium g-mb-1">
+                  <FaCheck size={14} />
                   Ready for Download
                 </div>
-                <p className="text-green-600 text-xs">
+                <p className="g-text-green-600 g-text-xs">
                   Link expires:{' '}
                   {new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString()}
                 </p>
               </div>
             )}
 
-            <div className="space-y-3">
+            <div className="g-space-y-3">
               <button
                 onClick={onStartOver}
-                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+                className="g-w-full g-bg-gray-100 hover:g-bg-gray-200 g-text-gray-700 g-font-medium g-py-2 g-px-4 g-rounded g-transition-colors g-text-sm"
               >
                 Start New Download
               </button>
 
               {!isComplete && (
-                <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 p-2 rounded">
-                  <AlertCircle size={12} />
+                <div className="g-flex g-items-center g-gap-2 g-text-xs g-text-amber-700 g-bg-amber-50 g-p-2 g-rounded">
+                  <FaExclamationCircle size={12} />
                   <span>Keep this page open during processing</span>
                 </div>
               )}

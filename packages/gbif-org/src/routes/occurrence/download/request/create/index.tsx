@@ -5,6 +5,7 @@ import { CurrentFilterCard, JSONValidationError } from './components/currentFilt
 import { DownloadOptionsCard } from './components/downloadOptionsCard';
 import { RestoredPredicateNotice } from './components/restoredPredicateNotice';
 import { usePredicate } from './usePredicate';
+import App from '@/routes/occurrence/search/views/download/testing/app';
 
 export type Mode = 'editing' | 'viewing';
 
@@ -45,7 +46,8 @@ export function OccurrenceDownloadRequestCreate() {
           setValidationError={setValidationError}
         />
 
-        {!validationError && !predicateError && mode === 'viewing' && <DownloadOptionsCard />}
+        {/* {!validationError && !predicateError && mode === 'viewing' && <DownloadOptionsCard />} */}
+        <App />
       </ArticleTextContainer>
     </ArticleContainer>
   );

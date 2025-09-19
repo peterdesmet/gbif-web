@@ -16,6 +16,7 @@ import { LuCheckCheck as Check } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import QualityFilters from './testing/components/QualityFilters';
+import App from './testing/app';
 
 const verbatimExtensions = [
   'http://rs.tdwg.org/ac/terms/Multimedia',
@@ -251,6 +252,7 @@ function DownloadGbifOrg() {
           </p>
         </div>
 
+        <App />
         <QualityFilters onContinue={() => {}} />
 
         <div className="g-space-y-4">

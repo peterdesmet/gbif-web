@@ -3,6 +3,7 @@ import { DownloadHostedPortal } from './DownloadHostedPortal';
 import DownloadGbifOrg from './DownloadGbifOrg';
 import DownloadGbifOrgVertical from './DownloadGbifOrg vertical';
 import DownloadGbifOrgHorizontal from './DownloadGbifOrg horisontal';
+import App from './testing/app';
 
 export function Download() {
   const { isGBIFOrg } = useConfig();
@@ -11,7 +12,7 @@ export function Download() {
   } else {
     return (
       <>
-        <DownloadGbifOrg />
+        <App />
         {/* <DownloadGbifOrgVertical />
         <DownloadGbifOrgHorizontal /> */}
       </>

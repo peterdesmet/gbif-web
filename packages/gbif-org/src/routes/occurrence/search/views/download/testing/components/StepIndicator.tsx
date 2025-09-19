@@ -1,23 +1,23 @@
 import React from 'react';
-import { Check, Settings, FileText, Download, Filter } from 'lucide-react';
+import { FaCheck, FaCog, FaFileAlt, FaDownload, FaFilter } from 'react-icons/fa';
 
 interface StepIndicatorProps {
   currentStep: number;
 }
 
 const steps = [
-  { id: 1, name: 'Filters', icon: Filter, description: 'Apply quality filters' },
-  { id: 2, name: 'Format', icon: FileText, description: 'Choose download format' },
-  { id: 3, name: 'Configure', icon: Settings, description: 'Set options and fields' },
-  { id: 4, name: 'Terms', icon: FileText, description: 'Accept terms and conditions' },
-  { id: 5, name: 'Download', icon: Download, description: 'Processing and delivery' },
+  { id: 0, name: 'Filters', icon: FaFilter, description: 'Apply quality filters' },
+  { id: 1, name: 'Format', icon: FaFileAlt, description: 'Choose download format' },
+  { id: 2, name: 'Configure', icon: FaCog, description: 'Set options and fields' },
+  { id: 3, name: 'Terms', icon: FaFileAlt, description: 'Accept terms and conditions' },
+  { id: 4, name: 'Download', icon: FaDownload, description: 'Processing and delivery' },
 ];
 
 export default function StepIndicator({ currentStep }: StepIndicatorProps) {
   return (
-    <div className="mb-8">
+    <div className="g-mb-12">
       <nav aria-label="Progress">
-        <ol className="flex items-center justify-center">
+        <ol className="g-flex g-items-center g-justify-center">
           {steps.map((step, stepIdx) => {
             const isCompleted = currentStep > step.id;
             const isCurrent = currentStep === step.id;
@@ -26,48 +26,52 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
             return (
               <li
                 key={step.id}
-                className={`relative ${stepIdx !== steps.length - 1 ? 'pr-8 sm:pr-20' : ''}`}
+                className={`g-relative ${stepIdx !== steps.length - 1 ? 'g-pr-8 sm:g-pr-20' : ''}`}
               >
                 {stepIdx !== steps.length - 1 && (
-                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                  <div className="g-absolute g-inset-0 g-flex g-items-center" aria-hidden="true">
                     <div
-                      className={`h-0.5 w-full ${isCompleted ? 'bg-blue-600' : 'bg-gray-200'}`}
+                      className={`g-h-0.5 g-w-full ${
+                        isCompleted ? 'g-bg-primary-600' : 'g-bg-gray-200'
+                      }`}
                     />
                   </div>
                 )}
-                <div className="relative flex items-center justify-center">
+                <div className="g-relative g-flex g-items-center g-justify-center">
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
+                    className={`g-flex g-h-10 g-w-10 g-items-center g-justify-center g-rounded-full g-border-2 ${
                       isCompleted
-                        ? 'border-blue-600 bg-blue-600'
+                        ? 'g-border-primary-600 g-bg-primary-600'
                         : isCurrent
-                        ? 'border-blue-600 bg-white'
-                        : 'border-gray-300 bg-white'
+                        ? 'g-border-primary-600 g-bg-white'
+                        : 'g-border-gray-300 g-bg-white'
                     }`}
                   >
                     {isCompleted ? (
-                      <Check className="h-5 w-5 text-white" />
+                      <FaCheck className="g-h-5 g-w-5 g-text-white" />
                     ) : (
                       <IconComponent
-                        className={`h-5 w-5 ${isCurrent ? 'text-blue-600' : 'text-gray-500'}`}
+                        className={`g-h-5 g-w-5 ${
+                          isCurrent ? 'g-text-primary-600' : 'g-text-gray-500'
+                        }`}
                       />
                     )}
                   </div>
-                  <div className="absolute top-12 text-center">
+                  <div className="g-absolute g-top-12 g-text-center">
                     <div
-                      className={`text-sm font-medium ${
+                      className={`g-text-sm g-font-medium ${
                         isCurrent
-                          ? 'text-blue-600'
+                          ? 'g-text-primary-600'
                           : isCompleted
-                          ? 'text-blue-600'
-                          : 'text-gray-500'
+                          ? 'g-text-primary-600'
+                          : 'g-text-gray-500'
                       }`}
                     >
                       {step.name}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1 hidden sm:block">
+                    {/* <div className="g-text-xs g-text-gray-500 g-mt-1 g-hidden sm:g-block">
                       {step.description}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </li>

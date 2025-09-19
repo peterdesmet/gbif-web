@@ -1,13 +1,14 @@
+import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
 import {
-  ChevronLeft,
-  FileText,
-  Check,
-  AlertTriangle,
-  ExternalLink,
-  Download,
-  Clock,
-} from 'lucide-react';
+  FaChevronLeft,
+  FaFileAlt,
+  FaCheck,
+  FaExclamationTriangle,
+  FaExternalLinkAlt,
+  FaDownload,
+  FaClock,
+} from 'react-icons/fa';
 
 interface TermsStepProps {
   qualityFilters: any;
@@ -27,8 +28,8 @@ export default function TermsStep({
   const [acceptedTerms, setAcceptedTerms] = useState({
     dataUse: false,
     attribution: false,
-    privacy: false,
-    processing: false,
+    // privacy: false,
+    // processing: false,
   });
 
   const allTermsAccepted = Object.values(acceptedTerms).every(Boolean);
@@ -43,55 +44,55 @@ export default function TermsStep({
   const IconComponent = selectedFormat.icon;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="g-max-w-4xl g-mx-auto">
       {/* Header */}
-      <div className="mb-8">
+      <div className="g-mb-8">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+          className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-4 g-transition-colors"
         >
-          <ChevronLeft size={20} />
+          <FaChevronLeft size={20} />
           Back to configuration
         </button>
 
-        <div className="flex items-center gap-4 mb-6">
-          <div className="p-3 bg-blue-100 rounded-lg">
-            <IconComponent size={24} className="text-blue-600" />
+        {/* <div className="g-flex g-items-center g-gap-4 g-mb-6">
+          <div className="g-p-3 g-bg-primary-100 g-rounded">
+            <IconComponent size={24} className="g-text-primary-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Terms and Conditions</h1>
-            <p className="text-gray-600">Please review and accept the terms before downloading</p>
+            <h1 className="g-text-2xl g-font-bold g-text-gray-900">Terms and Conditions</h1>
+            <p className="g-text-gray-600">Please review and accept the terms before downloading</p>
           </div>
-        </div>
+        </div> */}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="g-grid lg:g-grid-cols-3 g-gap-8">
         {/* Terms Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:g-col-span-2 g-space-y-6">
           {/* Data Use Agreement */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-200">
-            <div className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 mt-1">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
+            <div className="g-p-6">
+              <div className="g-flex g-items-start g-gap-4">
+                <div className="g-flex-shrink-0 g-mt-1">
                   <input
                     type="checkbox"
                     id="dataUse"
                     checked={acceptedTerms.dataUse}
                     onChange={() => handleTermChange('dataUse')}
-                    className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="g-flex-1">
                   <label
                     htmlFor="dataUse"
-                    className="flex items-center gap-2 font-semibold text-gray-900 mb-2 cursor-pointer"
+                    className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                   >
-                    <FileText size={18} className="text-blue-600" />
+                    <FaFileAlt size={18} className="g-text-primary-600" />
                     Data Use Agreement
                   </label>
-                  <div className="text-sm text-gray-700 space-y-2">
+                  <div className="g-text-sm g-text-gray-700 g-space-y-2">
                     <p>By downloading this data, you agree to:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
+                    <ul className="g-list-disc g-list-inside g-space-y-1 g-ml-4">
                       <li>
                         Use the data for legitimate scientific, educational, or conservation
                         purposes
@@ -109,29 +110,29 @@ export default function TermsStep({
           </div>
 
           {/* Attribution Requirements */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-200">
-            <div className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 mt-1">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
+            <div className="g-p-6">
+              <div className="g-flex g-items-start g-gap-4">
+                <div className="g-flex-shrink-0 g-mt-1">
                   <input
                     type="checkbox"
                     id="attribution"
                     checked={acceptedTerms.attribution}
                     onChange={() => handleTermChange('attribution')}
-                    className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="g-flex-1">
                   <label
                     htmlFor="attribution"
-                    className="flex items-center gap-2 font-semibold text-gray-900 mb-2 cursor-pointer"
+                    className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                   >
-                    <ExternalLink size={18} className="text-blue-600" />
+                    <FaExternalLinkAlt size={18} className="g-text-primary-600" />
                     Attribution Requirements
                   </label>
-                  <div className="text-sm text-gray-700 space-y-2">
+                  <div className="g-text-sm g-text-gray-700 g-space-y-2">
                     <p>When using this data in publications or presentations, you must:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
+                    <ul className="g-list-disc g-list-inside g-space-y-1 g-ml-4">
                       <li>Cite GBIF as the data source with the download DOI</li>
                       <li>Acknowledge the original data publishers</li>
                       <li>Include the download date and dataset size in your methods</li>
@@ -139,9 +140,11 @@ export default function TermsStep({
                         Consider co-authorship for significant data contributors when appropriate
                       </li>
                     </ul>
-                    <div className="bg-gray-50 p-3 rounded-lg mt-3">
-                      <p className="font-medium text-gray-900 mb-1">Suggested citation format:</p>
-                      <p className="text-xs text-gray-600 font-mono">
+                    <div className="g-bg-gray-50 g-p-3 g-rounded g-mt-3">
+                      <p className="g-font-medium g-text-gray-900 g-mb-1">
+                        Suggested citation format:
+                      </p>
+                      <p className="g-text-xs g-text-gray-600 g-font-mono">
                         GBIF.org ({new Date().getFullYear()}) GBIF Occurrence Download
                         https://doi.org/10.15468/dl.xxxxxx accessed via GBIF.org on{' '}
                         {new Date().toLocaleDateString()}
@@ -154,29 +157,29 @@ export default function TermsStep({
           </div>
 
           {/* Privacy and Data Protection */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-200">
-            <div className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 mt-1">
+          {/* <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
+            <div className="g-p-6">
+              <div className="g-flex g-items-start g-gap-4">
+                <div className="g-flex-shrink-0 g-mt-1">
                   <input
                     type="checkbox"
                     id="privacy"
                     checked={acceptedTerms.privacy}
                     onChange={() => handleTermChange('privacy')}
-                    className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="g-flex-1">
                   <label
                     htmlFor="privacy"
-                    className="flex items-center gap-2 font-semibold text-gray-900 mb-2 cursor-pointer"
+                    className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                   >
-                    <AlertTriangle size={18} className="text-amber-600" />
+                    <FaExclamationTriangle size={18} className="g-text-amber-600" />
                     Privacy and Sensitive Data
                   </label>
-                  <div className="text-sm text-gray-700 space-y-2">
+                  <div className="g-text-sm g-text-gray-700 g-space-y-2">
                     <p>Please be aware that:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
+                    <ul className="g-list-disc g-list-inside g-space-y-1 g-ml-4">
                       <li>
                         Some records may contain precise locality information for sensitive species
                       </li>
@@ -195,32 +198,32 @@ export default function TermsStep({
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Processing Agreement */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-200">
-            <div className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 mt-1">
+          {/* <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
+            <div className="g-p-6">
+              <div className="g-flex g-items-start g-gap-4">
+                <div className="g-flex-shrink-0 g-mt-1">
                   <input
                     type="checkbox"
                     id="processing"
                     checked={acceptedTerms.processing}
                     onChange={() => handleTermChange('processing')}
-                    className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="g-flex-1">
                   <label
                     htmlFor="processing"
-                    className="flex items-center gap-2 font-semibold text-gray-900 mb-2 cursor-pointer"
+                    className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                   >
-                    <Clock size={18} className="text-blue-600" />
+                    <FaClock size={18} className="g-text-primary-600" />
                     Processing and Delivery
                   </label>
-                  <div className="text-sm text-gray-700 space-y-2">
+                  <div className="g-text-sm g-text-gray-700 g-space-y-2">
                     <p>I understand that:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
+                    <ul className="g-list-disc g-list-inside g-space-y-1 g-ml-4">
                       <li>Large downloads may take several hours to process</li>
                       <li>I will receive an email notification when the download is ready</li>
                       <li>Download links will expire after 3 months</li>
@@ -230,47 +233,47 @@ export default function TermsStep({
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Summary Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6 sticky top-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Download Summary</h3>
+        <div className="lg:g-col-span-1">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
+            <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Download Summary</h3>
 
-            <div className="space-y-3 text-sm mb-6">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Format:</span>
-                <span className="font-medium">{selectedFormat.title}</span>
+            <div className="g-space-y-3 g-text-sm g-mb-6">
+              <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">Format:</span>
+                <span className="g-font-medium">{selectedFormat.title}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Fields:</span>
-                <span className="font-medium">
+              <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">Fields:</span>
+                <span className="g-font-medium">
                   {configuration.fields.core.length + configuration.fields.optional.length}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Est. Size:</span>
-                <span className="font-medium">{selectedFormat.size}</span>
+              <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">Est. Size:</span>
+                <span className="g-font-medium">{selectedFormat.size}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Processing:</span>
-                <span className="font-medium">
+              <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">Processing:</span>
+                <span className="g-font-medium">
                   {selectedFormat.technicalSpecs['Processing Time']}
                 </span>
               </div>
             </div>
 
-            <div className="space-y-3 mb-6">
-              <h4 className="font-medium text-gray-900">Terms Status</h4>
+            <div className="g-space-y-3 g-mb-6">
+              <h4 className="g-font-medium g-text-gray-900">Terms Status</h4>
               {Object.entries(acceptedTerms).map(([key, accepted]) => (
-                <div key={key} className="flex items-center gap-2 text-sm">
+                <div key={key} className="g-flex g-items-center g-gap-2 g-text-sm">
                   {accepted ? (
-                    <Check size={16} className="text-green-600" />
+                    <FaCheck size={16} className="g-text-green-600" />
                   ) : (
-                    <div className="w-4 h-4 border-2 border-gray-300 rounded"></div>
+                    <div className="g-w-4 g-h-4 g-border-2 g-border-gray-300 g-rounded"></div>
                   )}
-                  <span className={accepted ? 'text-green-700' : 'text-gray-600'}>
+                  <span className={accepted ? 'g-text-green-700' : 'g-text-gray-600'}>
                     {key === 'dataUse' && 'Data Use Agreement'}
                     {key === 'attribution' && 'Attribution Requirements'}
                     {key === 'privacy' && 'Privacy & Sensitive Data'}
@@ -280,21 +283,17 @@ export default function TermsStep({
               ))}
             </div>
 
-            <button
+            <Button
               onClick={onAccept}
               disabled={!allTermsAccepted}
-              className={`w-full font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
-                allTermsAccepted
-                  ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+              className={`g-w-full g-flex g-items-center g-justify-center g-gap-2`}
             >
-              <Download size={16} />
+              <FaDownload size={16} />
               {allTermsAccepted ? 'Start Download' : 'Accept All Terms'}
-            </button>
+            </Button>
 
             {!allTermsAccepted && (
-              <p className="text-xs text-gray-500 text-center mt-2">
+              <p className="g-text-xs g-text-gray-500 g-text-center g-mt-2">
                 Please accept all terms to continue
               </p>
             )}

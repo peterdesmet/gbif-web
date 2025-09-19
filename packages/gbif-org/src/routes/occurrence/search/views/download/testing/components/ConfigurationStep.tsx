@@ -1,14 +1,15 @@
+import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
 import {
-  ChevronLeft,
-  Settings,
-  Database,
-  Globe,
-  FileText,
-  Check,
-  Info,
-  AlertCircle,
-} from 'lucide-react';
+  FaChevronLeft,
+  FaCog,
+  FaDatabase,
+  FaGlobe,
+  FaFileAlt,
+  FaCheck,
+  FaInfoCircle,
+  FaExclamationTriangle,
+} from 'react-icons/fa';
 
 interface ConfigurationStepProps {
   qualityFilters: any;
@@ -109,15 +110,15 @@ export default function ConfigurationStep({
       <div className="g-mb-8">
         <button
           onClick={onBack}
-          className="g-flex g-items-center g-gap-2 g-text-gray-600 g-hover:text-gray-900 g-mb-4 g-transition-colors"
+          className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-4 g-transition-colors"
         >
-          <ChevronLeft size={20} />
+          <FaChevronLeft size={20} />
           Back to format selection
         </button>
 
-        <div className="g-flex g-items-center g-gap-4 g-mb-4">
-          <div className="g-p-3 g-bg-blue-100 g-rounded-lg">
-            <IconComponent size={24} className="g-text-blue-600" />
+        {/* <div className="g-flex g-items-center g-gap-4 g-mb-4">
+          <div className="g-p-3 g-bg-primary-100 g-rounded">
+            <IconComponent size={24} className="g-text-primary-600" />
           </div>
           <div>
             <h1 className="g-text-2xl g-font-bold g-text-gray-900">
@@ -127,28 +128,28 @@ export default function ConfigurationStep({
           </div>
         </div>
 
-        <div className="g-bg-blue-50 g-border g-border-blue-200 g-rounded-lg g-p-4">
+        <div className="g-bg-primary-50 g-border g-border-primary-200 g-rounded g-p-4">
           <div className="g-flex g-items-start g-gap-3">
-            <Info size={20} className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0" />
+            <FaInfoCircle size={20} className="g-text-primary-600 g-mt-0.5 g-flex-shrink-0" />
             <div>
-              <h3 className="g-font-semibold g-text-blue-900 g-mb-1">Estimated Download Size</h3>
-              <p className="g-text-blue-800 g-text-sm">{selectedFormat.estimatedSize}</p>
+              <h3 className="g-font-semibold g-text-primary-900 g-mb-1">Estimated Download Size</h3>
+              <p className="g-text-primary-800 g-text-sm">{selectedFormat.estimatedSize}</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
-      <div className="g-grid g-lg:grid-cols-3 g-gap-8">
+      <div className="g-grid lg:g-grid-cols-3 g-gap-8">
         {/* Configuration Sections */}
-        <div className="g-lg:col-span-2 g-space-y-6">
+        <div className="lg:g-col-span-2 g-space-y-6">
           {/* Fields Selection */}
-          <div className="g-bg-white g-rounded-xl g-shadow-md g-border g-border-gray-200">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
             <button
               onClick={() => setActiveSection(activeSection === 'fields' ? null : 'fields')}
-              className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between g-hover:bg-gray-50 g-transition-colors"
+              className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
             >
               <div className="g-flex g-items-center g-gap-3">
-                <Database size={20} className="g-text-blue-600" />
+                <FaDatabase size={20} className="g-text-primary-600" />
                 <div>
                   <h3 className="g-font-semibold g-text-gray-900">Data Fields</h3>
                   <p className="g-text-sm g-text-gray-600">
@@ -166,20 +167,20 @@ export default function ConfigurationStep({
                 {/* Core Fields */}
                 <div className="g-mb-6">
                   <h4 className="g-font-medium g-text-gray-900 g-mb-3 g-flex g-items-center g-gap-2">
-                    <Check size={16} className="g-text-green-600" />
+                    <FaCheck size={16} className="g-text-green-600" />
                     Core Fields (Required)
                   </h4>
                   <div className="g-space-y-2">
                     {coreFields.map((field) => (
                       <div
                         key={field.id}
-                        className="g-flex g-items-center g-justify-between g-p-3 g-bg-green-50 g-rounded-lg g-border g-border-green-200"
+                        className="g-flex g-items-center g-justify-between g-p-3 g-bg-green-50 g-rounded g-border g-border-green-200"
                       >
                         <div>
                           <span className="g-font-medium g-text-gray-900">{field.label}</span>
                           <p className="g-text-sm g-text-gray-600">{field.description}</p>
                         </div>
-                        <Check size={16} className="g-text-green-600" />
+                        <FaCheck size={16} className="g-text-green-600" />
                       </div>
                     ))}
                   </div>
@@ -188,17 +189,17 @@ export default function ConfigurationStep({
                 {/* Optional Fields */}
                 <div>
                   <h4 className="g-font-medium g-text-gray-900 g-mb-3">Optional Fields</h4>
-                  <div className="g-grid g-md:grid-cols-2 g-gap-2">
+                  <div className="g-grid md:g-grid-cols-2 g-gap-2">
                     {optionalFields.map((field) => (
                       <label
                         key={field.id}
-                        className="g-flex g-items-center g-p-3 g-rounded-lg g-border g-border-gray-200 g-hover:bg-gray-50 g-cursor-pointer g-transition-colors"
+                        className="g-flex g-items-center g-p-3 g-rounded g-border g-border-gray-200 hover:g-bg-gray-50 g-cursor-pointer g-transition-colors"
                       >
                         <input
                           type="checkbox"
                           checked={config.fields.optional.includes(field.id)}
                           onChange={() => toggleOptionalField(field.id)}
-                          className="g-mr-3 g-h-4 g-w-4 g-text-blue-600 g-focus:ring-blue-500 g-border-gray-300 g-rounded"
+                          className="g-mr-3 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
                         />
                         <div className="g-flex-1">
                           <span className="g-font-medium g-text-gray-900 g-text-sm">
@@ -215,13 +216,13 @@ export default function ConfigurationStep({
           </div>
 
           {/* Taxonomy Configuration */}
-          <div className="g-bg-white g-rounded-xl g-shadow-md g-border g-border-gray-200">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
             <button
               onClick={() => setActiveSection(activeSection === 'taxonomy' ? null : 'taxonomy')}
-              className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between g-hover:bg-gray-50 g-transition-colors"
+              className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
             >
               <div className="g-flex g-items-center g-gap-3">
-                <Globe size={20} className="g-text-blue-600" />
+                <FaGlobe size={20} className="g-text-primary-600" />
                 <div>
                   <h3 className="g-font-semibold g-text-gray-900">Taxonomy & Standards</h3>
                   <p className="g-text-sm g-text-gray-600">
@@ -240,7 +241,7 @@ export default function ConfigurationStep({
                   <select
                     value={config.taxonomy}
                     onChange={(e) => setConfig((prev) => ({ ...prev, taxonomy: e.target.value }))}
-                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded-lg g-focus:ring-2 g-focus:ring-blue-500 g-focus:border-blue-500"
+                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded g-focus:ring-2 g-focus:ring-primary-500 g-focus:border-primary-500"
                   >
                     <option value="gbif">GBIF Backbone Taxonomy</option>
                     <option value="col">Catalogue of Life</option>
@@ -257,7 +258,7 @@ export default function ConfigurationStep({
                     onChange={(e) =>
                       setConfig((prev) => ({ ...prev, coordinates: e.target.value }))
                     }
-                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded-lg g-focus:ring-2 g-focus:ring-blue-500 g-focus:border-blue-500"
+                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded g-focus:ring-2 g-focus:ring-primary-500 g-focus:border-primary-500"
                   >
                     <option value="wgs84">WGS84 (World Geodetic System 1984)</option>
                     <option value="original">Original (as provided)</option>
@@ -268,13 +269,13 @@ export default function ConfigurationStep({
           </div>
 
           {/* Format Configuration */}
-          <div className="g-bg-white g-rounded-xl g-shadow-md g-border g-border-gray-200">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
             <button
               onClick={() => setActiveSection(activeSection === 'format' ? null : 'format')}
-              className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between g-hover:bg-gray-50 g-transition-colors"
+              className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
             >
               <div className="g-flex g-items-center g-gap-3">
-                <FileText size={20} className="g-text-blue-600" />
+                <FaFileAlt size={20} className="g-text-primary-600" />
                 <div>
                   <h3 className="g-font-semibold g-text-gray-900">File Format Options</h3>
                   <p className="g-text-sm g-text-gray-600">Configure output format and encoding</p>
@@ -291,7 +292,7 @@ export default function ConfigurationStep({
                   <select
                     value={config.delimiter}
                     onChange={(e) => setConfig((prev) => ({ ...prev, delimiter: e.target.value }))}
-                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded-lg g-focus:ring-2 g-focus:ring-blue-500 g-focus:border-blue-500"
+                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded g-focus:ring-2 g-focus:ring-primary-500 g-focus:border-primary-500"
                   >
                     <option value="tab">Tab-delimited (recommended)</option>
                     <option value="comma">Comma-separated (CSV)</option>
@@ -306,7 +307,7 @@ export default function ConfigurationStep({
                   <select
                     value={config.encoding}
                     onChange={(e) => setConfig((prev) => ({ ...prev, encoding: e.target.value }))}
-                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded-lg g-focus:ring-2 g-focus:ring-blue-500 g-focus:border-blue-500"
+                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded g-focus:ring-2 g-focus:ring-primary-500 g-focus:border-primary-500"
                   >
                     <option value="utf8">UTF-8 (recommended)</option>
                     <option value="latin1">Latin-1 (ISO 8859-1)</option>
@@ -319,8 +320,8 @@ export default function ConfigurationStep({
         </div>
 
         {/* Summary Sidebar */}
-        <div className="g-lg:col-span-1">
-          <div className="g-bg-white g-rounded-xl g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
+        <div className="lg:g-col-span-1">
+          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
             <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Download Summary</h3>
 
             <div className="g-space-y-3 g-text-sm">
@@ -349,20 +350,20 @@ export default function ConfigurationStep({
             </div>
 
             <div className="g-mt-6 g-pt-4 g-border-t g-border-gray-200">
-              <div className="g-flex g-items-center g-gap-2 g-text-sm g-text-amber-700 g-bg-amber-50 g-p-3 g-rounded-lg g-mb-4">
-                <AlertCircle size={16} />
+              <div className="g-flex g-items-center g-gap-2 g-text-sm g-text-amber-700 g-bg-amber-50 g-p-3 g-rounded g-mb-4">
+                <FaExclamationTriangle size={16} />
                 <span>
                   Estimated processing time: {selectedFormat.technicalSpecs['Processing Time']}
                 </span>
               </div>
 
-              <button
+              <Button
                 onClick={handleContinue}
-                className="g-w-full g-bg-gradient-to-r g-from-blue-500 g-to-blue-600 g-hover:from-blue-600 g-hover:to-blue-700 g-text-white g-font-semibold g-py-3 g-px-4 g-rounded-lg g-transition-all g-duration-200 g-flex g-items-center g-justify-center g-gap-2"
+                className="g-w-full g-flex g-items-center g-justify-center g-gap-2"
               >
-                <Settings size={16} />
+                <FaCog size={16} />
                 Continue to Terms
-              </button>
+              </Button>
             </div>
           </div>
         </div>
