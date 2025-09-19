@@ -15,6 +15,72 @@ import {
 import { LuCheckCheck as Check } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import QualityFilters from './testing/components/QualityFilters';
+
+const verbatimExtensions = [
+  'http://rs.tdwg.org/ac/terms/Multimedia',
+  'http://data.ggbn.org/schemas/ggbn/terms/Amplification',
+  'http://purl.org/germplasm/germplasmTerm#GermplasmAccession',
+  'http://purl.org/germplasm/germplasmTerm#MeasurementScore',
+  'http://purl.org/germplasm/germplasmTerm#MeasurementTrait',
+  'http://purl.org/germplasm/germplasmTerm#MeasurementTrial',
+  'http://rs.tdwg.org/dwc/terms/Identification',
+  'http://rs.gbif.org/terms/1.0/Identifier',
+  'http://rs.gbif.org/terms/1.0/Image',
+  'http://rs.tdwg.org/dwc/terms/MeasurementOrFact',
+  'http://rs.gbif.org/terms/1.0/Multimedia',
+  'http://rs.gbif.org/terms/1.0/Reference',
+  'http://rs.tdwg.org/dwc/terms/ResourceRelationship',
+  'http://data.ggbn.org/schemas/ggbn/terms/Cloning',
+  'http://data.ggbn.org/schemas/ggbn/terms/GelImage',
+  'http://data.ggbn.org/schemas/ggbn/terms/Loan',
+  'http://data.ggbn.org/schemas/ggbn/terms/MaterialSample',
+  'http://data.ggbn.org/schemas/ggbn/terms/Permit',
+  'http://data.ggbn.org/schemas/ggbn/terms/Preparation',
+  'http://data.ggbn.org/schemas/ggbn/terms/Preservation',
+  'http://rs.iobis.org/obis/terms/ExtendedMeasurementOrFact',
+  'http://rs.tdwg.org/chrono/terms/ChronometricAge',
+  'http://rs.gbif.org/terms/1.0/DNADerivedData',
+];
+
+// Mock record counts for each extension
+const extensionCounts: Record<string, number> = {
+  'http://rs.tdwg.org/ac/terms/Multimedia': 2456789,
+  'http://data.ggbn.org/schemas/ggbn/terms/Amplification': 0,
+  'http://purl.org/germplasm/germplasmTerm#GermplasmAccession': 45231,
+  'http://purl.org/germplasm/germplasmTerm#MeasurementScore': 12847,
+  'http://purl.org/germplasm/germplasmTerm#MeasurementTrait': 23591,
+  'http://purl.org/germplasm/germplasmTerm#MeasurementTrial': 8934,
+  'http://rs.tdwg.org/dwc/terms/Identification': 5847293,
+  'http://rs.gbif.org/terms/1.0/Identifier': 3274815,
+  'http://rs.gbif.org/terms/1.0/Image': 1842637,
+  'http://rs.tdwg.org/dwc/terms/MeasurementOrFact': 8963421,
+  'http://rs.gbif.org/terms/1.0/Multimedia': 3847291,
+  'http://rs.gbif.org/terms/1.0/Reference': 742856,
+  'http://rs.tdwg.org/dwc/terms/ResourceRelationship': 284739,
+  'http://data.ggbn.org/schemas/ggbn/terms/Cloning': 0,
+  'http://data.ggbn.org/schemas/ggbn/terms/GelImage': 15847,
+  'http://data.ggbn.org/schemas/ggbn/terms/Loan': 0,
+  'http://data.ggbn.org/schemas/ggbn/terms/MaterialSample': 947382,
+  'http://data.ggbn.org/schemas/ggbn/terms/Permit': 28475,
+  'http://data.ggbn.org/schemas/ggbn/terms/Preparation': 584729,
+  'http://data.ggbn.org/schemas/ggbn/terms/Preservation': 392847,
+  'http://rs.iobis.org/obis/terms/ExtendedMeasurementOrFact': 1847293,
+  'http://rs.tdwg.org/chrono/terms/ChronometricAge': 94738,
+  'http://rs.gbif.org/terms/1.0/DNADerivedData': 247583,
+};
+
+const formatCount = (count: number): string => {
+  if (count === 0) return '0';
+  if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+  if (count >= 1000) return `${(count / 1000).toFixed(0)}K`;
+  return count.toString();
+};
+
+const getExtensionName = (url: string): string => {
+  const parts = url.split(/[/#]/);
+  return parts[parts.length - 1];
+};
 
 const formatCards = [
   {
@@ -153,9 +219,26 @@ const formatCards = [
 
 function DownloadGbifOrg() {
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [showDarwinCoreConfig, setShowDarwinCoreConfig] = useState(false);
+  const [selectedExtensions, setSelectedExtensions] = useState<string[]>([]);
 
   const toggleCard = (title: string) => {
     setExpandedCard(expandedCard === title ? null : title);
+  };
+
+  const handleExtensionToggle = (extension: string) => {
+    setSelectedExtensions((prev) =>
+      prev.includes(extension) ? prev.filter((ext) => ext !== extension) : [...prev, extension]
+    );
+  };
+
+  const handleDarwinCoreConfig = () => {
+    setShowDarwinCoreConfig(true);
+  };
+
+  const handleDownloadDarwinCore = () => {
+    console.log('Downloading Darwin Core Archive with extensions:', selectedExtensions);
+    // Implementation for actual download would go here
   };
 
   return (
@@ -167,6 +250,8 @@ function DownloadGbifOrg() {
             levels of data completeness and processing.
           </p>
         </div>
+
+        <QualityFilters onContinue={() => {}} />
 
         <div className="g-space-y-4">
           {formatCards.map((format) => {
@@ -226,6 +311,11 @@ function DownloadGbifOrg() {
 
                         <div className="g-flex g-flex-col lg:g-flex-row g-items-stretch lg:g-items-center g-gap-3">
                           <button
+                            onClick={() =>
+                              format.hasNextStep && format.title === 'DARWIN CORE ARCHIVE'
+                                ? handleDarwinCoreConfig()
+                                : undefined
+                            }
                             className={`g-px-6 g-py-2 g-rounded-lg g-font-semibold g-transition-all g-duration-200 g-flex g-items-center g-gap-2 ${
                               format.popular
                                 ? 'g-bg-gradient-to-r g-from-primary-500 g-to-primary-600 hover:g-from-primary-600 hover:g-to-primary-700 g-text-white g-shadow-md hover:g-shadow-lg'
@@ -314,6 +404,143 @@ function DownloadGbifOrg() {
             );
           })}
         </div>
+
+        {/* Darwin Core Archive Configuration Card */}
+        {showDarwinCoreConfig && (
+          <div className="g-mt-8 g-bg-white g-rounded-xl g-shadow-md g-border-2 g-border-primary-300 g-overflow-hidden">
+            <div className="g-bg-gradient-to-r g-from-primary-500 g-to-primary-600 g-text-white g-px-6 g-py-4">
+              <h3 className="g-text-xl g-font-bold g-flex g-items-center g-gap-2">
+                <Archive size={20} />
+                Configure Darwin Core Archive
+              </h3>
+              <p className="g-text-primary-100 g-text-sm g-mt-1">
+                Select the extensions you want to include in your download
+              </p>
+            </div>
+
+            <div className="g-p-6">
+              <div className="g-mb-6">
+                <div className="g-flex g-items-center g-justify-between g-mb-4">
+                  <h4 className="g-font-semibold g-text-gray-900">Available Extensions</h4>
+                  <div className="g-flex g-gap-2">
+                    <button
+                      onClick={() =>
+                        setSelectedExtensions(
+                          verbatimExtensions.filter((ext) => (extensionCounts[ext] || 0) > 0)
+                        )
+                      }
+                      className="g-text-sm g-text-primary-600 hover:g-text-primary-700 g-font-medium"
+                    >
+                      Select All
+                    </button>
+                    <span className="g-text-gray-300">|</span>
+                    <button
+                      onClick={() => setSelectedExtensions([])}
+                      className="g-text-sm g-text-gray-600 hover:g-text-gray-700 g-font-medium"
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                </div>
+
+                <div className="g-grid g-grid-cols-1 md:g-grid-cols-2 lg:g-grid-cols-3 g-gap-3 g-max-h-96 g-overflow-y-auto g-pr-2">
+                  {verbatimExtensions.map((extension) => {
+                    const extensionName = getExtensionName(extension);
+                    const isSelected = selectedExtensions.includes(extension);
+                    const recordCount = extensionCounts[extension] || 0;
+                    const hasData = recordCount > 0;
+
+                    return (
+                      <label
+                        key={extension}
+                        className={`g-flex g-items-start g-gap-3 g-p-3 g-rounded-lg g-border-2 g-transition-all g-duration-200 ${
+                          !hasData
+                            ? 'g-border-gray-100 g-bg-gray-50 g-cursor-not-allowed g-opacity-60'
+                            : isSelected
+                            ? 'g-border-primary-300 g-bg-primary-50 g-cursor-pointer'
+                            : 'g-border-gray-200 hover:g-border-gray-300 hover:g-bg-gray-50 g-cursor-pointer'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          disabled={!hasData}
+                          onChange={() => hasData && handleExtensionToggle(extension)}
+                          className={`g-mt-0.5 g-w-4 g-h-4 g-border-gray-300 g-rounded focus:g-ring-2 ${
+                            !hasData
+                              ? 'g-text-gray-300 g-cursor-not-allowed'
+                              : 'g-text-primary-600 focus:g-ring-primary-500'
+                          }`}
+                        />
+                        <div className="g-flex-1 g-min-w-0">
+                          <div className="g-flex g-items-center g-justify-between g-gap-2">
+                            <div
+                              className={`g-font-medium g-text-sm g-leading-tight ${
+                                hasData ? 'g-text-gray-900' : 'g-text-gray-400'
+                              }`}
+                            >
+                              {extensionName}
+                            </div>
+                            <div
+                              className={`g-text-xs g-px-2 g-py-1 g-rounded-full g-font-medium ${
+                                !hasData
+                                  ? 'g-bg-gray-100 g-text-gray-400'
+                                  : recordCount >= 1000000
+                                  ? 'g-bg-green-100 g-text-green-700'
+                                  : recordCount >= 100000
+                                  ? 'g-bg-blue-100 g-text-blue-700'
+                                  : 'g-bg-yellow-100 g-text-yellow-700'
+                              }`}
+                            >
+                              {formatCount(recordCount)}
+                            </div>
+                          </div>
+                          <div
+                            className={`g-text-xs g-mt-1 g-break-all ${
+                              hasData ? 'g-text-gray-500' : 'g-text-gray-300'
+                            }`}
+                          >
+                            {extension}
+                          </div>
+                          {!hasData && (
+                            <div className="g-text-xs g-text-gray-400 g-mt-1 g-italic">
+                              No records available
+                            </div>
+                          )}
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="g-border-t g-border-gray-200 g-pt-6">
+                <div className="g-flex g-items-center g-justify-between">
+                  <div className="g-text-sm g-text-gray-600">
+                    <span className="g-font-medium">{selectedExtensions.length}</span> of{' '}
+                    {verbatimExtensions.filter((ext) => (extensionCounts[ext] || 0) > 0).length}{' '}
+                    available extensions selected
+                  </div>
+                  <div className="g-flex g-gap-3">
+                    <button
+                      onClick={() => setShowDarwinCoreConfig(false)}
+                      className="g-px-4 g-py-2 g-text-gray-600 hover:g-text-gray-700 g-font-medium g-transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleDownloadDarwinCore}
+                      className="g-px-6 g-py-2 g-bg-gradient-to-r g-from-primary-500 g-to-primary-600 hover:g-from-primary-600 hover:g-to-primary-700 g-text-white g-rounded-lg g-font-semibold g-transition-all g-duration-200 g-flex g-items-center g-gap-2 g-shadow-md hover:g-shadow-lg"
+                    >
+                      <Download size={16} />
+                      Download Darwin Core Archive
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="g-text-center g-mt-12">
           <p className="g-text-gray-600 g-text-sm g-max-w-4xl g-mx-auto">

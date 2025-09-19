@@ -12,8 +12,8 @@ export function Download() {
     return (
       <>
         <DownloadGbifOrg />
-        <DownloadGbifOrgVertical />
-        <DownloadGbifOrgHorizontal />
+        {/* <DownloadGbifOrgVertical />
+        <DownloadGbifOrgHorizontal /> */}
       </>
     );
   }
