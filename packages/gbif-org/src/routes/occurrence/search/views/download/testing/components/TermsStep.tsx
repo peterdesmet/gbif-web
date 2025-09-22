@@ -41,8 +41,6 @@ export default function TermsStep({
     }));
   };
 
-  const IconComponent = selectedFormat.icon;
-
   return (
     <div className="g-max-w-4xl g-mx-auto">
       {/* Header */}
@@ -248,7 +246,7 @@ export default function TermsStep({
               </div>
               <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Extensions:</span>
-                <span className="g-font-medium">{configuration.extensions.length}</span>
+                <span className="g-font-medium">{configuration?.extensions?.length ?? 0}</span>
               </div>
               <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Est. Size:</span>

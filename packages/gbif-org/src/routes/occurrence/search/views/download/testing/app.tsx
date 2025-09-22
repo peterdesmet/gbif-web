@@ -16,9 +16,10 @@ function App() {
     setCurrentStep(1);
   };
 
-  const handleFormatSelect = (format: any) => {
+  const handleFormatSelect = (format: any, config: any) => {
     setSelectedFormat(format);
-    setCurrentStep(2);
+    setConfiguration(config);
+    setCurrentStep(3);
   };
 
   const handleConfigurationComplete = (config: any) => {
@@ -82,7 +83,7 @@ function App() {
           <TermsStep
             selectedFormat={selectedFormat}
             configuration={configuration}
-            onBack={handleBackToConfiguration}
+            onBack={handleBackToFormat}
             onAccept={handleTermsAccept}
           />
         )}

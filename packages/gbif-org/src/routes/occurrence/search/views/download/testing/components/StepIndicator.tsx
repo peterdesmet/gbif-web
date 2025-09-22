@@ -1,14 +1,16 @@
 import React from 'react';
-import { FaCheck, FaCog, FaFileAlt, FaDownload, FaFilter } from 'react-icons/fa';
+import { FaCheck, FaCog, FaFileAlt, FaDownload, FaFilter, FaBroom } from 'react-icons/fa';
+import { GiMagicBroom } from 'react-icons/gi';
+import { PiBroomBold } from 'react-icons/pi';
 
 interface StepIndicatorProps {
   currentStep: number;
 }
 
 const steps = [
-  { id: 0, name: 'Filters', icon: FaFilter, description: 'Apply quality filters' },
-  { id: 1, name: 'Format', icon: FaFileAlt, description: 'Choose download format' },
-  { id: 2, name: 'Configure', icon: FaCog, description: 'Set options and fields' },
+  { id: 0, name: 'Filters', icon: PiBroomBold, description: 'Apply quality filters' },
+  { id: 1, name: 'Config', icon: FaCog, description: 'Choose download format' }, // FaFileAlt
+  // { id: 2, name: 'Configure', icon: FaCog, description: 'Set options and fields' },
   { id: 3, name: 'Terms', icon: FaFileAlt, description: 'Accept terms and conditions' },
   { id: 4, name: 'Download', icon: FaDownload, description: 'Processing and delivery' },
 ];
