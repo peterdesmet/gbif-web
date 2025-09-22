@@ -20,9 +20,7 @@ interface Format {
   hasNextStep?: boolean;
   description: string;
   icon: any;
-  popular: boolean;
   size: string;
-  compatibility: string;
   features: string[];
   extendedFeatures: string[];
   technicalSpecs: Record<string, string>;
@@ -44,10 +42,8 @@ const formatCards: Format[] = [
     title: 'SIMPLE',
     description: 'Basic occurrence data with interpreted fields only',
     icon: FaFileAlt,
-    popular: true,
     size: '417 GB',
-    compatibility: 'Excel Ready',
-    features: ['Interpreted data only', 'CSV format', 'Coordinates included', 'Quick processing'],
+    features: ['Interpreted data only', 'Single CSV file', 'Coordinates included'],
     extendedFeatures: [
       'Tab-delimited CSV format optimized for Excel',
       'Pre-processed and cleaned occurrence records',
@@ -74,10 +70,8 @@ const formatCards: Format[] = [
     title: 'SPECIES LIST',
     description: 'Taxonomic checklist with occurrence counts',
     icon: FaListUl,
-    popular: false,
-    size: 'Variable',
-    compatibility: 'Universal',
-    features: ['Species aggregation', 'Occurrence counts', 'CSV format', 'No coordinates'],
+    size: '2 MB',
+    features: ['Species aggregation', 'Occurrence counts', 'Single CSV file'],
     extendedFeatures: [
       'Species-level taxonomic aggregation with full hierarchy',
       'Occurrence count statistics by taxon',
@@ -105,15 +99,8 @@ const formatCards: Format[] = [
     hasNextStep: true,
     description: 'Complete biodiversity data package with all available information',
     icon: FaArchive,
-    popular: false,
     size: '1 TB',
-    compatibility: 'Standards Compliant',
-    features: [
-      'Raw + interpreted data',
-      'Multimedia links',
-      'Darwin Core standard',
-      'Extensible format',
-    ],
+    features: ['Raw + interpreted data', 'Multimedia links', 'Multiple csv files'],
     extendedFeatures: [
       'Full Darwin Core Archive format compliance',
       'Customizable data extensions and vocabularies',
@@ -141,9 +128,7 @@ const formatCards: Format[] = [
     hasNextStep: true,
     description: 'Gridded occurrence counts by taxonomic, spatial and temporal dimensions',
     icon: FaThLarge,
-    popular: false,
     size: 'Compressed',
-    compatibility: 'Analysis Ready',
     features: [
       'Grid aggregation',
       'Multi-dimensional',
@@ -197,24 +182,13 @@ export default function FormatSelection({
       </button>
 
       {formatCards.map((format) => {
-        const IconComponent = format.icon;
         const isExpanded = expandedCard === format.title;
 
         return (
           <div
             key={format.title}
-            className={`g-relative g-bg-white g-rounded g-shadow-md g-border-2 g-transition-all g-duration-300 g-overflow-hidden ${
-              format.popular
-                ? 'g-border-primary-500 g-ring-2 g-ring-primary-100'
-                : 'g-border-gray-200 hover:g-border-primary-300'
-            } ${isExpanded ? 'g-shadow-xl' : 'hover:g-shadow-lg'}`}
+            className={`g-relative g-bg-white g-rounded g-shadow-md g-border-2 g-transition-all g-duration-300 g-overflow-hidden g-border-gray-200`}
           >
-            {format.popular && (
-              <div className="g-absolute g-top-0 g-right-0 g-bg-gradient-to-l g-from-primary-500 g-to-primary-600 g-text-white g-px-3 g-py-1 g-text-xs g-font-semibold g-rounded-bl-lg">
-                Most Popular
-              </div>
-            )}
-
             {/* Main Card Content */}
             <div className="g-p-6">
               <div className="g-flex g-items-center g-justify-between">
@@ -222,16 +196,10 @@ export default function FormatSelection({
                   <div className="g-flex g-flex-col lg:g-flex-row lg:g-items-center lg:g-justify-between g-gap-4">
                     <div className="g-flex-1">
                       <div className="g-flex g-items-center g-gap-3 g-mb-1">
-                        <h3 className="g-text-xl g-font-bold g-text-gray-900">{format.title}</h3>
+                        <h3 className="g-text-base g-font-bold g-text-gray-900">{format.title}</h3>
                         <span className="g-text-sm g-text-gray-500 g-bg-gray-100 g-px-2 g-py-1 g-rounded">
                           {format.size}
                         </span>
-                        <div className="g-flex g-items-center g-gap-1">
-                          <FaShieldAlt size={14} className="g-text-green-600" />
-                          <span className="g-text-sm g-text-green-600 g-font-medium">
-                            {format.compatibility}
-                          </span>
-                        </div>
                       </div>
                       <p className="g-text-gray-600 g-text-sm g-mb-3">{format.description}</p>
 
@@ -250,11 +218,7 @@ export default function FormatSelection({
                     </div>
 
                     <div className="g-flex g-flex-col lg:g-flex-row g-items-stretch lg:g-items-center g-gap-3">
-                      <Button
-                        variant={format.popular ? 'default' : 'outline'}
-                        size="default"
-                        onClick={() => onFormatSelect(format)}
-                      >
+                      <Button size="default" onClick={() => onFormatSelect(format)}>
                         Configure
                       </Button>
                     </div>
@@ -264,7 +228,7 @@ export default function FormatSelection({
             </div>
 
             {/* Footer with Expand Action */}
-            <div className="g-border-t g-border-gray-100 g-bg-gray-50">
+            {/* <div className="g-border-t g-border-gray-100 g-bg-gray-50">
               <button
                 onClick={() => toggleCard(format.title)}
                 className="g-w-full g-px-6 g-py-3 g-text-sm g-font-medium g-text-gray-600 hover:g-text-gray-900 hover:g-bg-gray-100 g-transition-colors g-flex g-items-center g-justify-center g-gap-2"
@@ -281,7 +245,7 @@ export default function FormatSelection({
                   </>
                 )}
               </button>
-            </div>
+            </div> */}
 
             {/* Expanded Content */}
             {isExpanded && (

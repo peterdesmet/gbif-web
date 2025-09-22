@@ -3,12 +3,11 @@ import React, { useState } from 'react';
 import {
   FaChevronLeft,
   FaCog,
-  FaDatabase,
   FaGlobe,
   FaFileAlt,
-  FaCheck,
   FaInfoCircle,
   FaExclamationTriangle,
+  FaPuzzlePiece,
 } from 'react-icons/fa';
 
 interface ConfigurationStepProps {
@@ -18,6 +17,36 @@ interface ConfigurationStepProps {
   onContinue: (config: any) => void;
 }
 
+// Extension data with URLs
+const AVAILABLE_EXTENSIONS = [
+  { url: 'http://rs.tdwg.org/ac/terms/Multimedia', name: 'Multimedia' },
+  { url: 'http://data.ggbn.org/schemas/ggbn/terms/Amplification', name: 'Amplification' },
+  { url: 'http://purl.org/germplasm/germplasmTerm#GermplasmAccession', name: 'GermplasmAccession' },
+  { url: 'http://purl.org/germplasm/germplasmTerm#MeasurementScore', name: 'MeasurementScore' },
+  { url: 'http://purl.org/germplasm/germplasmTerm#MeasurementTrait', name: 'MeasurementTrait' },
+  { url: 'http://purl.org/germplasm/germplasmTerm#MeasurementTrial', name: 'MeasurementTrial' },
+  { url: 'http://rs.tdwg.org/dwc/terms/Identification', name: 'Identification' },
+  { url: 'http://rs.gbif.org/terms/1.0/Identifier', name: 'Identifier' },
+  { url: 'http://rs.gbif.org/terms/1.0/Image', name: 'Image' },
+  { url: 'http://rs.tdwg.org/dwc/terms/MeasurementOrFact', name: 'MeasurementOrFact' },
+  { url: 'http://rs.gbif.org/terms/1.0/Multimedia', name: 'Multimedia' },
+  { url: 'http://rs.gbif.org/terms/1.0/Reference', name: 'Reference' },
+  { url: 'http://rs.tdwg.org/dwc/terms/ResourceRelationship', name: 'ResourceRelationship' },
+  { url: 'http://data.ggbn.org/schemas/ggbn/terms/Cloning', name: 'Cloning' },
+  { url: 'http://data.ggbn.org/schemas/ggbn/terms/GelImage', name: 'GelImage' },
+  { url: 'http://data.ggbn.org/schemas/ggbn/terms/Loan', name: 'Loan' },
+  { url: 'http://data.ggbn.org/schemas/ggbn/terms/MaterialSample', name: 'MaterialSample' },
+  { url: 'http://data.ggbn.org/schemas/ggbn/terms/Permit', name: 'Permit' },
+  { url: 'http://data.ggbn.org/schemas/ggbn/terms/Preparation', name: 'Preparation' },
+  { url: 'http://data.ggbn.org/schemas/ggbn/terms/Preservation', name: 'Preservation' },
+  {
+    url: 'http://rs.iobis.org/obis/terms/ExtendedMeasurementOrFact',
+    name: 'ExtendedMeasurementOrFact',
+  },
+  { url: 'http://rs.tdwg.org/chrono/terms/ChronometricAge', name: 'ChronometricAge' },
+  { url: 'http://rs.gbif.org/terms/1.0/DNADerivedData', name: 'DNADerivedData' },
+];
+
 export default function ConfigurationStep({
   qualityFilters,
   selectedFormat,
@@ -25,76 +54,24 @@ export default function ConfigurationStep({
   onContinue,
 }: ConfigurationStepProps) {
   const [config, setConfig] = useState({
-    fields: {
-      core: ['scientificName', 'decimalLatitude', 'decimalLongitude', 'eventDate', 'basisOfRecord'],
-      optional: [],
-      custom: [],
-    },
     taxonomy: 'gbif',
-    coordinates: 'wgs84',
-    dateFormat: 'iso8601',
-    encoding: 'utf8',
+    extensions: [] as string[],
     delimiter: 'tab',
+    encoding: 'utf8',
   });
 
-  const [activeSection, setActiveSection] = useState<string | null>('fields');
+  const [activeSection, setActiveSection] = useState<string | null>('taxonomy');
 
-  const coreFields = [
-    {
-      id: 'scientificName',
-      label: 'Scientific Name',
-      description: 'The full scientific name',
-      required: true,
-    },
-    {
-      id: 'decimalLatitude',
-      label: 'Decimal Latitude',
-      description: 'Latitude in decimal degrees',
-      required: true,
-    },
-    {
-      id: 'decimalLongitude',
-      label: 'Decimal Longitude',
-      description: 'Longitude in decimal degrees',
-      required: true,
-    },
-    { id: 'eventDate', label: 'Event Date', description: 'Date of the occurrence', required: true },
-    {
-      id: 'basisOfRecord',
-      label: 'Basis of Record',
-      description: 'Nature of the data record',
-      required: true,
-    },
-  ];
+  const isDarwinCoreArchive =
+    selectedFormat?.title === 'DARWIN CORE ARCHIVE' ||
+    selectedFormat?.title?.includes('Darwin Core');
 
-  const optionalFields = [
-    { id: 'kingdom', label: 'Kingdom', description: 'Taxonomic kingdom' },
-    { id: 'phylum', label: 'Phylum', description: 'Taxonomic phylum' },
-    { id: 'class', label: 'Class', description: 'Taxonomic class' },
-    { id: 'order', label: 'Order', description: 'Taxonomic order' },
-    { id: 'family', label: 'Family', description: 'Taxonomic family' },
-    { id: 'genus', label: 'Genus', description: 'Taxonomic genus' },
-    { id: 'species', label: 'Species', description: 'Taxonomic species' },
-    { id: 'country', label: 'Country', description: 'Country of occurrence' },
-    { id: 'stateProvince', label: 'State/Province', description: 'State or province' },
-    { id: 'locality', label: 'Locality', description: 'Specific locality description' },
-    { id: 'elevation', label: 'Elevation', description: 'Elevation in meters' },
-    { id: 'depth', label: 'Depth', description: 'Depth in meters' },
-    { id: 'institutionCode', label: 'Institution Code', description: 'Code for the institution' },
-    { id: 'collectionCode', label: 'Collection Code', description: 'Code for the collection' },
-    { id: 'catalogNumber', label: 'Catalog Number', description: 'Catalog number of specimen' },
-    { id: 'recordedBy', label: 'Recorded By', description: 'Person who recorded the occurrence' },
-  ];
-
-  const toggleOptionalField = (fieldId: string) => {
+  const toggleExtension = (extensionUrl: string) => {
     setConfig((prev) => ({
       ...prev,
-      fields: {
-        ...prev.fields,
-        optional: prev.fields.optional.includes(fieldId)
-          ? prev.fields.optional.filter((id) => id !== fieldId)
-          : [...prev.fields.optional, fieldId],
-      },
+      extensions: prev.extensions.includes(extensionUrl)
+        ? prev.extensions.filter((url) => url !== extensionUrl)
+        : [...prev.extensions, extensionUrl],
     }));
   };
 
@@ -115,106 +92,11 @@ export default function ConfigurationStep({
           <FaChevronLeft size={20} />
           Back to format selection
         </button>
-
-        {/* <div className="g-flex g-items-center g-gap-4 g-mb-4">
-          <div className="g-p-3 g-bg-primary-100 g-rounded">
-            <IconComponent size={24} className="g-text-primary-600" />
-          </div>
-          <div>
-            <h1 className="g-text-2xl g-font-bold g-text-gray-900">
-              Configure {selectedFormat.title} Download
-            </h1>
-            <p className="g-text-gray-600">{selectedFormat.description}</p>
-          </div>
-        </div>
-
-        <div className="g-bg-primary-50 g-border g-border-primary-200 g-rounded g-p-4">
-          <div className="g-flex g-items-start g-gap-3">
-            <FaInfoCircle size={20} className="g-text-primary-600 g-mt-0.5 g-flex-shrink-0" />
-            <div>
-              <h3 className="g-font-semibold g-text-primary-900 g-mb-1">Estimated Download Size</h3>
-              <p className="g-text-primary-800 g-text-sm">{selectedFormat.estimatedSize}</p>
-            </div>
-          </div>
-        </div> */}
       </div>
 
       <div className="g-grid lg:g-grid-cols-3 g-gap-8">
         {/* Configuration Sections */}
         <div className="lg:g-col-span-2 g-space-y-6">
-          {/* Fields Selection */}
-          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
-            <button
-              onClick={() => setActiveSection(activeSection === 'fields' ? null : 'fields')}
-              className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
-            >
-              <div className="g-flex g-items-center g-gap-3">
-                <FaDatabase size={20} className="g-text-primary-600" />
-                <div>
-                  <h3 className="g-font-semibold g-text-gray-900">Data Fields</h3>
-                  <p className="g-text-sm g-text-gray-600">
-                    Select which fields to include in your download
-                  </p>
-                </div>
-              </div>
-              <div className="g-text-sm g-text-gray-500">
-                {config.fields.core.length + config.fields.optional.length} fields selected
-              </div>
-            </button>
-
-            {activeSection === 'fields' && (
-              <div className="g-border-t g-border-gray-200 g-p-6">
-                {/* Core Fields */}
-                <div className="g-mb-6">
-                  <h4 className="g-font-medium g-text-gray-900 g-mb-3 g-flex g-items-center g-gap-2">
-                    <FaCheck size={16} className="g-text-green-600" />
-                    Core Fields (Required)
-                  </h4>
-                  <div className="g-space-y-2">
-                    {coreFields.map((field) => (
-                      <div
-                        key={field.id}
-                        className="g-flex g-items-center g-justify-between g-p-3 g-bg-green-50 g-rounded g-border g-border-green-200"
-                      >
-                        <div>
-                          <span className="g-font-medium g-text-gray-900">{field.label}</span>
-                          <p className="g-text-sm g-text-gray-600">{field.description}</p>
-                        </div>
-                        <FaCheck size={16} className="g-text-green-600" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Optional Fields */}
-                <div>
-                  <h4 className="g-font-medium g-text-gray-900 g-mb-3">Optional Fields</h4>
-                  <div className="g-grid md:g-grid-cols-2 g-gap-2">
-                    {optionalFields.map((field) => (
-                      <label
-                        key={field.id}
-                        className="g-flex g-items-center g-p-3 g-rounded g-border g-border-gray-200 hover:g-bg-gray-50 g-cursor-pointer g-transition-colors"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={config.fields.optional.includes(field.id)}
-                          onChange={() => toggleOptionalField(field.id)}
-                          className="g-mr-3 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
-                        />
-                        <div className="g-flex-1">
-                          <span className="g-font-medium g-text-gray-900 g-text-sm">
-                            {field.label}
-                          </span>
-                          <p className="g-text-xs g-text-gray-600">{field.description}</p>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
           {/* Taxonomy Configuration */}
           <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
             <button
@@ -224,52 +106,138 @@ export default function ConfigurationStep({
               <div className="g-flex g-items-center g-gap-3">
                 <FaGlobe size={20} className="g-text-primary-600" />
                 <div>
-                  <h3 className="g-font-semibold g-text-gray-900">Taxonomy & Standards</h3>
+                  <h3 className="g-font-semibold g-text-gray-900">Taxonomic Reference</h3>
                   <p className="g-text-sm g-text-gray-600">
-                    Configure taxonomic backbone and data standards
+                    Select the taxonomic backbone for species names
                   </p>
                 </div>
               </div>
+              <div className="g-text-sm g-text-gray-500">{config.taxonomy.toUpperCase()}</div>
             </button>
 
             {activeSection === 'taxonomy' && (
-              <div className="g-border-t g-border-gray-200 g-p-6 g-space-y-4">
-                <div>
-                  <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                    Taxonomic Backbone
+              <div className="g-border-t g-border-gray-200 g-p-6">
+                <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-3">
+                  Taxonomic Backbone
+                </label>
+                <div className="g-space-y-2">
+                  <label className="g-flex g-items-start g-p-4 g-border g-border-gray-300 g-rounded g-cursor-pointer hover:g-bg-gray-50 g-transition-colors">
+                    <input
+                      type="radio"
+                      name="taxonomy"
+                      value="gbif"
+                      checked={config.taxonomy === 'gbif'}
+                      onChange={(e) => setConfig((prev) => ({ ...prev, taxonomy: e.target.value }))}
+                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300"
+                    />
+                    <div className="g-ml-3">
+                      <span className="g-font-medium g-text-gray-900">GBIF Backbone Taxonomy</span>
+                      <p className="g-text-sm g-text-gray-600">Recommended - Most comprehensive</p>
+                    </div>
                   </label>
-                  <select
-                    value={config.taxonomy}
-                    onChange={(e) => setConfig((prev) => ({ ...prev, taxonomy: e.target.value }))}
-                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded g-focus:ring-2 g-focus:ring-primary-500 g-focus:border-primary-500"
-                  >
-                    <option value="gbif">GBIF Backbone Taxonomy</option>
-                    <option value="col">Catalogue of Life</option>
-                    <option value="itis">ITIS (Integrated Taxonomic Information System)</option>
-                  </select>
-                </div>
 
-                <div>
-                  <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                    Coordinate Reference System
+                  <label className="g-flex g-items-start g-p-4 g-border g-border-gray-300 g-rounded g-cursor-pointer hover:g-bg-gray-50 g-transition-colors">
+                    <input
+                      type="radio"
+                      name="taxonomy"
+                      value="col"
+                      checked={config.taxonomy === 'col'}
+                      onChange={(e) => setConfig((prev) => ({ ...prev, taxonomy: e.target.value }))}
+                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300"
+                    />
+                    <div className="g-ml-3">
+                      <span className="g-font-medium g-text-gray-900">Catalogue of Life</span>
+                      <p className="g-text-sm g-text-gray-600">International standard reference</p>
+                    </div>
                   </label>
-                  <select
-                    value={config.coordinates}
-                    onChange={(e) =>
-                      setConfig((prev) => ({ ...prev, coordinates: e.target.value }))
-                    }
-                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded g-focus:ring-2 g-focus:ring-primary-500 g-focus:border-primary-500"
-                  >
-                    <option value="wgs84">WGS84 (World Geodetic System 1984)</option>
-                    <option value="original">Original (as provided)</option>
-                  </select>
+
+                  <label className="g-flex g-items-start g-p-4 g-border g-border-gray-300 g-rounded g-cursor-pointer hover:g-bg-gray-50 g-transition-colors">
+                    <input
+                      type="radio"
+                      name="taxonomy"
+                      value="itis"
+                      checked={config.taxonomy === 'itis'}
+                      onChange={(e) => setConfig((prev) => ({ ...prev, taxonomy: e.target.value }))}
+                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300"
+                    />
+                    <div className="g-ml-3">
+                      <span className="g-font-medium g-text-gray-900">ITIS</span>
+                      <p className="g-text-sm g-text-gray-600">
+                        Integrated Taxonomic Information System
+                      </p>
+                    </div>
+                  </label>
                 </div>
               </div>
             )}
           </div>
 
+          {/* Extensions Selection (Darwin Core Archive only) */}
+          {isDarwinCoreArchive && (
+            <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
+              <button
+                onClick={() =>
+                  setActiveSection(activeSection === 'extensions' ? null : 'extensions')
+                }
+                className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
+              >
+                <div className="g-flex g-items-center g-gap-3">
+                  <FaPuzzlePiece size={20} className="g-text-primary-600" />
+                  <div>
+                    <h3 className="g-font-semibold g-text-gray-900">Extensions</h3>
+                    <p className="g-text-sm g-text-gray-600">
+                      Select additional data extensions to include
+                    </p>
+                  </div>
+                </div>
+                <div className="g-text-sm g-text-gray-500">{config.extensions.length} selected</div>
+              </button>
+
+              {activeSection === 'extensions' && (
+                <div className="g-border-t g-border-gray-200 g-p-6">
+                  <div className="g-mb-4 g-bg-blue-50 g-border g-border-blue-200 g-rounded g-p-4">
+                    <div className="g-flex g-items-start g-gap-3">
+                      <FaInfoCircle
+                        size={16}
+                        className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0"
+                      />
+                      <p className="g-text-sm g-text-blue-800">
+                        Extensions provide additional data fields beyond the core occurrence data.
+                        Only select extensions that are relevant to your research needs.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="g-grid md:g-grid-cols-2 g-gap-3">
+                    {AVAILABLE_EXTENSIONS.map((extension) => (
+                      <label
+                        key={extension.url}
+                        className="g-flex g-items-start g-p-3 g-rounded g-border g-border-gray-200 hover:g-bg-gray-50 g-cursor-pointer g-transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={config.extensions.includes(extension.url)}
+                          onChange={() => toggleExtension(extension.url)}
+                          className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
+                        />
+                        <div className="g-ml-3 g-flex-1">
+                          <span className="g-font-medium g-text-gray-900 g-text-sm">
+                            {extension.name}
+                          </span>
+                          <p className="g-text-xs g-text-gray-500 g-break-all g-mt-0.5">
+                            {extension.url}
+                          </p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Format Configuration */}
-          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
+          {/* <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
             <button
               onClick={() => setActiveSection(activeSection === 'format' ? null : 'format')}
               className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
@@ -316,7 +284,7 @@ export default function ConfigurationStep({
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* Summary Sidebar */}
@@ -330,18 +298,18 @@ export default function ConfigurationStep({
                 <span className="g-font-medium">{selectedFormat.title}</span>
               </div>
               <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Fields:</span>
-                <span className="g-font-medium">
-                  {config.fields.core.length + config.fields.optional.length}
-                </span>
-              </div>
-              <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Taxonomy:</span>
                 <span className="g-font-medium">{config.taxonomy.toUpperCase()}</span>
               </div>
+              {isDarwinCoreArchive && (
+                <div className="g-flex g-justify-between">
+                  <span className="g-text-gray-600">Extensions:</span>
+                  <span className="g-font-medium">{config.extensions.length}</span>
+                </div>
+              )}
               <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Coordinates:</span>
-                <span className="g-font-medium">{config.coordinates.toUpperCase()}</span>
+                <span className="g-text-gray-600">Delimiter:</span>
+                <span className="g-font-medium">{config.delimiter.toUpperCase()}</span>
               </div>
               <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Encoding:</span>
@@ -353,7 +321,8 @@ export default function ConfigurationStep({
               <div className="g-flex g-items-center g-gap-2 g-text-sm g-text-amber-700 g-bg-amber-50 g-p-3 g-rounded g-mb-4">
                 <FaExclamationTriangle size={16} />
                 <span>
-                  Estimated processing time: {selectedFormat.technicalSpecs['Processing Time']}
+                  Estimated processing time:{' '}
+                  {selectedFormat.technicalSpecs?.['Processing Time'] || '5-15 minutes'}
                 </span>
               </div>
 

@@ -7,7 +7,7 @@ import DownloadProgress from './components/DownloadProgress';
 import QualityFilters from './components/QualityFilters';
 
 function App() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const [selectedFormat, setSelectedFormat] = useState(null);
   const [configuration, setConfiguration] = useState(null);
 

@@ -247,10 +247,8 @@ export default function TermsStep({
                 <span className="g-font-medium">{selectedFormat.title}</span>
               </div>
               <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Fields:</span>
-                <span className="g-font-medium">
-                  {configuration.fields.core.length + configuration.fields.optional.length}
-                </span>
+                <span className="g-text-gray-600">Extensions:</span>
+                <span className="g-font-medium">{configuration.extensions.length}</span>
               </div>
               <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Est. Size:</span>
