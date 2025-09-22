@@ -54,7 +54,7 @@ type ApiKeysType = {
 export type Config = Endpoints & {
   version: number;
   isGBIFOrg: boolean;
-  portalId?: string; // only for hosted portals
+  testSite: boolean; // clearly indicate that it is a test site
   experimentalFeatures: {
     localContextEnabled: boolean;
   };
