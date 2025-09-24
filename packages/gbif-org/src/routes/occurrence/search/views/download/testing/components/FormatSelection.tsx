@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/largeCard';
 import { ChevronUpIcon } from '@radix-ui/react-icons';
 import React from 'react';
 import {
@@ -36,6 +37,7 @@ interface Format {
 interface FormatSelectionProps {
   qualityFilters: any;
   onFormatSelect: (format: Format, config: any) => void;
+  onQuickDownload?: (format: Format, config: any) => void;
   onBack: () => void;
 }
 
@@ -241,46 +243,15 @@ const formatCards: Format[] = [
 export default function FormatSelection({
   qualityFilters,
   onFormatSelect,
+  onQuickDownload,
   onBack,
 }: FormatSelectionProps) {
-  const [expandedCard, setExpandedCard] = React.useState<string | null>(null);
-  const [configurations, setConfigurations] = React.useState<Record<string, any>>({
+  const [configurations] = React.useState<Record<string, any>>({
     'OCCURRENCE LIST': { taxonomy: 'gbif' },
     'SPECIES LIST': { taxonomy: 'gbif' },
     'DARWIN CORE ARCHIVE': { taxonomy: 'gbif', extensions: [] },
     'CUBE DATA': { taxonomy: 'gbif' },
   });
-
-  const toggleCard = (title: string) => {
-    setExpandedCard(expandedCard === title ? null : title);
-  };
-
-  const updateConfiguration = (formatTitle: string, key: string, value: any) => {
-    setConfigurations((prev) => ({
-      ...prev,
-      [formatTitle]: {
-        ...prev[formatTitle],
-        [key]: value,
-      },
-    }));
-  };
-
-  const toggleExtension = (formatTitle: string, extensionId: string) => {
-    setConfigurations((prev) => {
-      const currentExtensions = prev[formatTitle]?.extensions || [];
-      const newExtensions = currentExtensions.includes(extensionId)
-        ? currentExtensions.filter((id: string) => id !== extensionId)
-        : [...currentExtensions, extensionId];
-
-      return {
-        ...prev,
-        [formatTitle]: {
-          ...prev[formatTitle],
-          extensions: newExtensions,
-        },
-      };
-    });
-  };
 
   return (
     <div className="g-max-w-4xl g-mx-auto g-space-y-4">
@@ -293,184 +264,79 @@ export default function FormatSelection({
         Back to quality filters
       </button>
 
-      {formatCards.map((format) => {
-        const isExpanded = expandedCard === format.title;
-        const config = configurations[format.title] || {};
-
-        return (
-          <div
-            key={format.title}
-            className={`g-relative g-bg-white g-rounded g-shadow-md g-border-2 g-transition-all g-duration-300 g-overflow-hidden g-border-gray-200`}
-          >
-            {/* Main Card Content */}
-            <div className="g-p-6">
-              <div className="g-flex g-items-center g-justify-between">
-                <div className="g-flex-1">
-                  <div className="g-flex g-flex-col lg:g-flex-row lg:g-items-end lg:g-justify-between g-gap-4">
-                    <div className="g-flex-1">
-                      <div className="g-flex g-items-center g-gap-3 g-mb-1">
-                        <h3 className="g-text-base g-font-bold g-text-gray-900">{format.title}</h3>
-                        <span className="g-text-sm g-text-gray-500 g-bg-gray-100 g-px-2 g-py-1 g-rounded">
-                          {format.size}
-                        </span>
-                      </div>
-                      <p className="g-text-gray-600 g-text-sm g-mb-3">{format.description}</p>
-
-                      {/* Compact Features */}
-                      <div className="g-flex g-flex-wrap g-gap-2">
-                        {format.features.map((feature, index) => (
-                          <span
-                            key={index}
-                            className="g-inline-flex g-items-center g-gap-1 g-text-xs g-bg-gray-50 g-text-gray-700 g-px-2 g-py-1 g-rounded-full"
-                          >
-                            <FaCheck size={12} className="g-text-green-600" />
-                            {feature}
+      <Card className="g-rounded-lg">
+        {formatCards.map((format) => {
+          return (
+            <div
+              key={format.title}
+              className={`g-border-b g-overflow-hidden g-border-gray-200 last:g-border-0`}
+            >
+              {/* Main Card Content */}
+              <div className="g-p-6">
+                <div className="g-flex g-items-center g-justify-between">
+                  <div className="g-flex-1">
+                    <div className="g-flex g-flex-col lg:g-flex-row lg:g-items-end lg:g-justify-between g-gap-4">
+                      <div className="g-flex-1">
+                        <div className="g-flex g-items-center g-gap-3 g-mb-1">
+                          <h3 className="g-text-base g-font-bold g-text-gray-900">
+                            {format.title}
+                          </h3>
+                          <span className="g-text-sm g-text-gray-500 g-bg-gray-100 g-px-2 g-py-1 g-rounded">
+                            {format.size}
                           </span>
-                        ))}
-
-                        {/* Info Pills */}
-                        <span className="g-inline-flex g-items-center g-gap-1 g-text-xs g-bg-blue-50 g-text-blue-700 g-px-2 g-py-1 g-rounded-full">
-                          <FaInfoCircle size={12} className="g-text-blue-600" />
-                          {config.taxonomy === 'gbif' && 'GBIF Backbone'}
-                          {config.taxonomy === 'col' && 'Catalogue of Life'}
-                          {config.taxonomy === 'itis' && 'ITIS'}
-                        </span>
-
-                        {format.title === 'DARWIN CORE ARCHIVE' &&
-                          config.extensions?.length > 0 && (
-                            <span className="g-inline-flex g-items-center g-gap-1 g-text-xs g-bg-blue-50 g-text-blue-700 g-px-2 g-py-1 g-rounded-full">
-                              <FaInfoCircle size={12} className="g-text-blue-600" />
-                              {config.extensions.length} extension
-                              {config.extensions.length !== 1 ? 's' : ''}
-                            </span>
-                          )}
-                      </div>
-                    </div>
-
-                    <div className="g-flex g-flex-col lg:g-flex-row g-items-stretch lg:g-items-center g-gap-3">
-                      <Button
-                        size="default"
-                        onClick={() => onFormatSelect(format, configurations[format.title])}
-                      >
-                        Select
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer with Expand Action */}
-            <div className="g-border-t g-border-gray-100 g-bg-gray-50">
-              <button
-                onClick={() => toggleCard(format.title)}
-                className="g-w-full g-px-6 g-py-3 g-text-sm g-font-medium g-text-gray-600 hover:g-text-gray-900 hover:g-bg-gray-100 g-transition-colors g-flex g-items-center g-justify-center g-gap-2"
-              >
-                {isExpanded ? (
-                  <>
-                    <FiChevronUp size={16} />
-                    Hide Configuration
-                  </>
-                ) : (
-                  <>
-                    <FiSettings size={16} />
-                    Configure Options
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Configuration Content */}
-            {isExpanded && (
-              <div className="g-bg-white g-border-t g-border-gray-200">
-                <div className="g-p-6">
-                  <h4 className="g-font-semibold g-text-gray-900 g-mb-4 g-flex g-items-center g-gap-2">
-                    <FiSettings size={16} className="g-text-blue-600" />
-                    Configuration Options
-                  </h4>
-
-                  {/* Taxonomy Selection */}
-                  <div>
-                    <h5 className="g-font-medium g-text-gray-900 g-mb-3">Reference Taxonomy</h5>
-                    <div className="g-space-y-2">
-                      {taxonomyOptions.map((option) => (
-                        <label
-                          key={option.id}
-                          className="g-flex g-items-start g-gap-3 g-p-3 g-rounded-lg g-border g-border-gray-200 hover:g-bg-gray-50 g-cursor-pointer g-transition-colors"
-                        >
-                          <input
-                            type="radio"
-                            name={`taxonomy-${format.title}`}
-                            value={option.id}
-                            checked={config.taxonomy === option.id}
-                            onChange={(e) =>
-                              updateConfiguration(format.title, 'taxonomy', e.target.value)
-                            }
-                            className="g-mt-1 g-h-4 g-w-4 g-text-blue-600 focus:g-ring-blue-500 g-border-gray-300"
-                          />
-                          <div className="g-flex-1">
-                            <div className="g-flex g-items-center g-gap-2">
-                              <span className="g-font-medium g-text-gray-900">{option.name}</span>
-                              {option.id === 'gbif' && (
-                                <span className="g-text-xs g-bg-green-100 g-text-green-700 g-px-2 g-py-0.5 g-rounded-full g-font-medium">
-                                  Recommended
-                                </span>
-                              )}
-                            </div>
-                            <p className="g-text-sm g-text-gray-600 g-mt-1">{option.description}</p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Darwin Core Extensions (only for Darwin Core Archive) */}
-                  {format.title === 'DARWIN CORE ARCHIVE' && (
-                    <div className="g-mt-6">
-                      <h5 className="g-font-medium g-text-gray-900 g-mb-3">Data Extensions</h5>
-                      <p className="g-text-sm g-text-gray-600 g-mb-4">
-                        Select additional data types to include in your download. Extensions provide
-                        specialized data beyond core occurrence records.
-                      </p>
-                      <div className="g-grid md:g-grid-cols-2 g-gap-2 g-max-h-64 g-overflow-y-auto">
-                        {darwinCoreExtensions.map((extension) => (
-                          <label
-                            key={extension.id}
-                            className="g-flex g-items-start g-gap-3 g-p-3 g-rounded-lg g-border g-border-gray-200 hover:g-bg-gray-50 g-cursor-pointer g-transition-colors"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={config.extensions?.includes(extension.id) || false}
-                              onChange={() => toggleExtension(format.title, extension.id)}
-                              className="g-mt-1 g-h-4 g-w-4 g-text-blue-600 focus:g-ring-blue-500 g-border-gray-300 g-rounded"
-                            />
-                            <div className="g-flex-1">
-                              <span className="g-font-medium g-text-gray-900 g-text-sm">
-                                {extension.name}
-                              </span>
-                              <p className="g-text-xs g-text-gray-600 g-mt-1">
-                                {extension.description}
-                              </p>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                      {config.extensions?.length > 0 && (
-                        <div className="g-mt-3 g-p-2 g-bg-blue-50 g-rounded-lg">
-                          <p className="g-text-sm g-text-blue-700">
-                            <strong>{config.extensions.length}</strong> extension
-                            {config.extensions.length !== 1 ? 's' : ''} selected
-                          </p>
                         </div>
-                      )}
+                        <p className="g-text-gray-600 g-text-sm g-mb-3">{format.description}</p>
+
+                        {/* Compact Features */}
+                        <div className="g-flex g-flex-wrap g-gap-2">
+                          {format.features.map((feature, index) => (
+                            <span
+                              key={index}
+                              className="g-inline-flex g-items-center g-gap-1 g-text-xs g-bg-gray-50 g-text-gray-700 g-px-2 g-py-1 g-rounded-full"
+                            >
+                              <FaCheck size={12} className="g-text-green-600" />
+                              {feature}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="g-flex g-flex-col g-items-stretch g-gap-3">
+                        {format.title === 'OCCURRENCE LIST' || format.title === 'SPECIES LIST' ? (
+                          <>
+                            <Button
+                              variant="subtle"
+                              onClick={() => onFormatSelect(format, configurations[format.title])}
+                            >
+                              {/* <FiSettings className="g-inline g-mr-1" size={14} /> */}
+                              Configure
+                            </Button>
+                            <Button
+                              size="default"
+                              onClick={() =>
+                                onQuickDownload?.(format, configurations[format.title])
+                              }
+                            >
+                              Download
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            size="default"
+                            onClick={() => onFormatSelect(format, configurations[format.title])}
+                          >
+                            Configure
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-        );
-      })}
+            </div>
+          );
+        })}
+      </Card>
     </div>
   );
 }

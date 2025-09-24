@@ -18,8 +18,14 @@ function App() {
 
   const handleFormatSelect = (format: any, config: any) => {
     setSelectedFormat(format);
+    // setConfiguration(config);
+    setCurrentStep(2);
+  };
+
+  const handleQuickDownload = (format: any, config: any) => {
+    setSelectedFormat(format);
     setConfiguration(config);
-    setCurrentStep(3);
+    setCurrentStep(3); // Skip configuration step and go straight to terms
   };
 
   const handleConfigurationComplete = (config: any) => {
@@ -68,7 +74,11 @@ function App() {
         {currentStep === 0 && <QualityFilters onContinue={handleFilterSelect} />}
 
         {currentStep === 1 && (
-          <FormatSelection onFormatSelect={handleFormatSelect} onBack={handleBackToFilters} />
+          <FormatSelection
+            onFormatSelect={handleFormatSelect}
+            onQuickDownload={handleQuickDownload}
+            onBack={handleBackToFilters}
+          />
         )}
 
         {currentStep === 2 && selectedFormat && (
@@ -83,7 +93,7 @@ function App() {
           <TermsStep
             selectedFormat={selectedFormat}
             configuration={configuration}
-            onBack={handleBackToFormat}
+            onBack={handleBackToConfiguration}
             onAccept={handleTermsAccept}
           />
         )}

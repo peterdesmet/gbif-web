@@ -10,9 +10,9 @@ interface StepIndicatorProps {
 const steps = [
   { id: 0, name: 'Filters', icon: PiBroomBold, description: 'Apply quality filters' },
   { id: 1, name: 'Format', icon: FaCog, description: 'Choose download format' }, // FaFileAlt
-  // { id: 2, name: 'Configure', icon: FaCog, description: 'Set options and fields' },
-  { id: 3, name: 'Terms', icon: FaFileAlt, description: 'Accept terms and conditions' },
-  { id: 4, name: 'Download', icon: FaDownload, description: 'Processing and delivery' },
+  { id: 2, name: 'Configure', icon: FaCog, description: 'Set options and fields' },
+  // { id: 3, name: 'Terms', icon: FaFileAlt, description: 'Accept terms and conditions' },
+  { id: 3, name: 'Download', icon: FaDownload, description: 'Processing and delivery' },
 ];
 
 export default function StepIndicator({ currentStep }: StepIndicatorProps) {
