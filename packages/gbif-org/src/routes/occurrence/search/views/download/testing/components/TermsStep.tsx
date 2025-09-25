@@ -112,7 +112,7 @@ export default function TermsStep({
 
           {/* Large Download Warning - Conditional */}
           {isLargeDownload && (
-            <div className="g-bg-white g-rounded g-shadow-md g-border g-border-red-200">
+            <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
               <div className="g-p-6">
                 <div className="g-flex g-items-start g-gap-4">
                   <div className="g-flex-shrink-0 g-mt-1">
@@ -127,12 +127,12 @@ export default function TermsStep({
                   <div className="g-flex-1">
                     <label
                       htmlFor="largeDownload"
-                      className="g-flex g-items-center g-gap-2 g-font-semibold g-text-red-900 g-mb-2 g-cursor-pointer"
+                      className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                     >
-                      <FaExclamationTriangle size={18} className="g-text-red-600" />
+                      <FaExclamationTriangle size={18} className="g-text-yellow-600" />
                       Large Download Warning
                     </label>
-                    <div className="g-text-sm g-text-red-800 g-space-y-3">
+                    <div className="g-text-sm g-text-gray-700 g-space-y-3">
                       <p>
                         <strong>The estimated size of this download is 1 TB.</strong> On a 50 Mb/s
                         internet connection, this would take 57 hours to download.
@@ -150,8 +150,8 @@ export default function TermsStep({
                         computer. You will probably need access to a distributed computing service
                         or 'Big Data' tools.
                       </p>
-                      <div className="g-mt-4 g-p-3 g-bg-red-50 g-border g-border-red-200 g-rounded">
-                        <p className="g-text-sm g-font-medium g-text-red-900">
+                      <div className="g-mt-4 g-p-3 g-bg-gray-50 g-border g-border-gray-200 g-rounded">
+                        <p className="g-text-sm g-font-medium g-text-gray-900">
                           Please check the box above to acknowledge that you understand these risks
                           and have access to suitable tools for handling this large dataset.
                         </p>
@@ -278,7 +278,7 @@ export default function TermsStep({
             <div className="g-space-y-3 g-mb-6">
               <h4 className="g-font-medium g-text-gray-900">Terms Status</h4>
               {Object.entries(acceptedTerms).map(([key, accepted]) => (
-                <div key={key} className="g-flex g-items-center g-gap-2 g-text-sm">
+                <div key={key} className="g-flex g-items-start g-gap-2 g-text-sm">
                   {accepted ? (
                     <FaCheck size={16} className="g-text-green-600" />
                   ) : (
@@ -305,7 +305,7 @@ export default function TermsStep({
 
             {!allTermsAccepted && (
               <p className="g-text-xs g-text-gray-500 g-text-center g-mt-2">
-                Please accept all terms to continue
+                Please complete all requirements to continue
               </p>
             )}
           </div>
