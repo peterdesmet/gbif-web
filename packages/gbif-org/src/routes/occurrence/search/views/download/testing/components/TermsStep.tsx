@@ -25,9 +25,12 @@ export default function TermsStep({
   onBack,
   onAccept,
 }: TermsStepProps) {
+  // Hardcoded flag to show large download warning - replace with actual logic later
+  const isLargeDownload = true;
+
   const [acceptedTerms, setAcceptedTerms] = useState({
     dataUse: false,
-    attribution: false,
+    ...(isLargeDownload && { largeDownload: false }),
     // privacy: false,
     // processing: false,
   });
@@ -107,52 +110,58 @@ export default function TermsStep({
             </div>
           </div>
 
-          {/* Attribution Requirements */}
-          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
-            <div className="g-p-6">
-              <div className="g-flex g-items-start g-gap-4">
-                <div className="g-flex-shrink-0 g-mt-1">
-                  <input
-                    type="checkbox"
-                    id="attribution"
-                    checked={acceptedTerms.attribution}
-                    onChange={() => handleTermChange('attribution')}
-                    className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
-                  />
-                </div>
-                <div className="g-flex-1">
-                  <label
-                    htmlFor="attribution"
-                    className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
-                  >
-                    <FaExternalLinkAlt size={18} className="g-text-primary-600" />
-                    Attribution Requirements
-                  </label>
-                  <div className="g-text-sm g-text-gray-700 g-space-y-2">
-                    <p>When using this data in publications or presentations, you must:</p>
-                    <ul className="g-list-disc g-list-inside g-space-y-1 g-ml-4">
-                      <li>Cite GBIF as the data source with the download DOI</li>
-                      <li>Acknowledge the original data publishers</li>
-                      <li>Include the download date and dataset size in your methods</li>
-                      <li>
-                        Consider co-authorship for significant data contributors when appropriate
-                      </li>
-                    </ul>
-                    <div className="g-bg-gray-50 g-p-3 g-rounded g-mt-3">
-                      <p className="g-font-medium g-text-gray-900 g-mb-1">
-                        Suggested citation format:
+          {/* Large Download Warning - Conditional */}
+          {isLargeDownload && (
+            <div className="g-bg-white g-rounded g-shadow-md g-border g-border-red-200">
+              <div className="g-p-6">
+                <div className="g-flex g-items-start g-gap-4">
+                  <div className="g-flex-shrink-0 g-mt-1">
+                    <input
+                      type="checkbox"
+                      id="largeDownload"
+                      checked={acceptedTerms.largeDownload || false}
+                      onChange={() => handleTermChange('largeDownload')}
+                      className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
+                    />
+                  </div>
+                  <div className="g-flex-1">
+                    <label
+                      htmlFor="largeDownload"
+                      className="g-flex g-items-center g-gap-2 g-font-semibold g-text-red-900 g-mb-2 g-cursor-pointer"
+                    >
+                      <FaExclamationTriangle size={18} className="g-text-red-600" />
+                      Large Download Warning
+                    </label>
+                    <div className="g-text-sm g-text-red-800 g-space-y-3">
+                      <p>
+                        <strong>The estimated size of this download is 1 TB.</strong> On a 50 Mb/s
+                        internet connection, this would take 57 hours to download.
                       </p>
-                      <p className="g-text-xs g-text-gray-600 g-font-mono">
-                        GBIF.org ({new Date().getFullYear()}) GBIF Occurrence Download
-                        https://doi.org/10.15468/dl.xxxxxx accessed via GBIF.org on{' '}
-                        {new Date().toLocaleDateString()}
+                      <p>
+                        Once you have downloaded the file, you will need approximately{' '}
+                        <strong>6 TB of free disk space</strong> to unzip the data.
                       </p>
+                      <p>
+                        The dataset has <strong>3,509,434,147 data rows</strong>.
+                      </p>
+                      <p>
+                        You will not be able to view or analyse the data in Excel or similar
+                        applications. A dataset of this size is difficult to analyse on an ordinary
+                        computer. You will probably need access to a distributed computing service
+                        or 'Big Data' tools.
+                      </p>
+                      <div className="g-mt-4 g-p-3 g-bg-red-50 g-border g-border-red-200 g-rounded">
+                        <p className="g-text-sm g-font-medium g-text-red-900">
+                          Please check the box above to acknowledge that you understand these risks
+                          and have access to suitable tools for handling this large dataset.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Privacy and Data Protection */}
           {/* <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
@@ -246,7 +255,9 @@ export default function TermsStep({
               </div>
               <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Taxonomy:</span>
-                <span className="g-font-medium">{configuration?.taxonomy?.toUpperCase() ?? 'GBIF'}</span>
+                <span className="g-font-medium">
+                  {configuration?.taxonomy?.toUpperCase() ?? 'GBIF'}
+                </span>
               </div>
               <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Extensions:</span>
@@ -275,7 +286,7 @@ export default function TermsStep({
                   )}
                   <span className={accepted ? 'g-text-green-700' : 'g-text-gray-600'}>
                     {key === 'dataUse' && 'Data Use Agreement'}
-                    {key === 'attribution' && 'Attribution Requirements'}
+                    {key === 'largeDownload' && 'Large Download Acknowledgment'}
                     {key === 'privacy' && 'Privacy & Sensitive Data'}
                     {key === 'processing' && 'Processing & Delivery'}
                   </span>
