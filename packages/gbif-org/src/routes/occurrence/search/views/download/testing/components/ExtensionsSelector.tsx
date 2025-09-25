@@ -190,6 +190,23 @@ export default function ExtensionsSelector({ selectedExtensions, onChange, isExp
             </div>
           </div>
 
+          <div className="g-flex g-gap-2 g-mb-4">
+            <button
+              onClick={() => onChange(AVAILABLE_EXTENSIONS.map(ext => ext.url))}
+              className="g-px-3 g-py-1 g-text-sm g-bg-primary-600 g-text-white g-rounded hover:g-bg-primary-700 g-transition-colors"
+              type="button"
+            >
+              Select All
+            </button>
+            <button
+              onClick={() => onChange([])}
+              className="g-px-3 g-py-1 g-text-sm g-bg-gray-600 g-text-white g-rounded hover:g-bg-gray-700 g-transition-colors"
+              type="button"
+            >
+              Deselect All
+            </button>
+          </div>
+
           <div className="g-grid g-gap-3">
             {AVAILABLE_EXTENSIONS.map((extension) => (
               <label
