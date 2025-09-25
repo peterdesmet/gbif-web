@@ -41,83 +41,6 @@ interface FormatSelectionProps {
   onBack: () => void;
 }
 
-const darwinCoreExtensions = [
-  { id: 'multimedia', name: 'Multimedia', description: 'Images, sounds, and videos' },
-  {
-    id: 'measurements',
-    name: 'Measurements or Facts',
-    description: 'Quantitative measurements and qualitative facts',
-  },
-  {
-    id: 'resourceRelationship',
-    name: 'Resource Relationship',
-    description: 'Relationships between resources',
-  },
-  { id: 'identification', name: 'Identification', description: 'Taxonomic determinations' },
-  {
-    id: 'chronometricAge',
-    name: 'Chronometric Age',
-    description: 'Geological and archaeological age data',
-  },
-  { id: 'references', name: 'References', description: 'Literature and citation references' },
-  { id: 'materialSample', name: 'Material Sample', description: 'Physical samples and specimens' },
-  {
-    id: 'amplification',
-    name: 'Amplification',
-    description: 'DNA amplification and sequencing data',
-  },
-  { id: 'loan', name: 'Loan', description: 'Specimen loan information' },
-  { id: 'permit', name: 'Permit', description: 'Collection and export permits' },
-  { id: 'preparation', name: 'Preparation', description: 'Specimen preparation methods' },
-  { id: 'preservation', name: 'Preservation', description: 'Preservation methods and materials' },
-  {
-    id: 'geologicalContext',
-    name: 'Geological Context',
-    description: 'Geological and stratigraphic information',
-  },
-  {
-    id: 'extendedMeasurements',
-    name: 'Extended Measurements',
-    description: 'Additional measurement data',
-  },
-  { id: 'audubon', name: 'Audubon Core', description: 'Multimedia metadata standard' },
-  { id: 'germplasm', name: 'Germplasm', description: 'Genetic resource information' },
-  { id: 'cloning', name: 'Cloning', description: 'Cloning and propagation data' },
-  {
-    id: 'distribution',
-    name: 'Species Distribution',
-    description: 'Species distribution and range data',
-  },
-  {
-    id: 'description',
-    name: 'Species Profile',
-    description: 'Ecological and biological descriptions',
-  },
-  {
-    id: 'vernacular',
-    name: 'Vernacular Names',
-    description: 'Common names in different languages',
-  },
-];
-
-const taxonomyOptions = [
-  {
-    id: 'gbif',
-    name: 'GBIF Backbone Taxonomy',
-    description: 'Recommended for most users - comprehensive and regularly updated',
-  },
-  {
-    id: 'col',
-    name: 'Catalogue of Life',
-    description: 'Global species checklist with expert-verified names',
-  },
-  {
-    id: 'itis',
-    name: 'ITIS',
-    description: 'Integrated Taxonomic Information System - North American focus',
-  },
-];
-
 const formatCards: Format[] = [
   {
     title: 'OCCURRENCE LIST',
@@ -305,7 +228,7 @@ export default function FormatSelection({
                         {format.title === 'OCCURRENCE LIST' || format.title === 'SPECIES LIST' ? (
                           <>
                             <Button
-                              variant="subtle"
+                              variant="ghost"
                               onClick={() => onFormatSelect(format, configurations[format.title])}
                             >
                               {/* <FiSettings className="g-inline g-mr-1" size={14} /> */}
