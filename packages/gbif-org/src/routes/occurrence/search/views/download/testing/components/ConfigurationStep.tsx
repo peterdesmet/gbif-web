@@ -3,12 +3,11 @@ import React, { useState } from 'react';
 import {
   FaChevronLeft,
   FaCog,
-  FaGlobe,
-  FaFileAlt,
-  FaInfoCircle,
   FaExclamationTriangle,
-  FaPuzzlePiece,
 } from 'react-icons/fa';
+import TaxonomySelector from './TaxonomySelector';
+import ExtensionsSelector from './ExtensionsSelector';
+import CubeDimensionsSelector from './CubeDimensionsSelector';
 
 interface ConfigurationStepProps {
   qualityFilters: any;
@@ -17,148 +16,24 @@ interface ConfigurationStepProps {
   onContinue: (config: any) => void;
 }
 
-// Extension data with URLs
+// Format-specific configuration interfaces
+interface BaseConfig {
+  taxonomy: string;
+  delimiter: string;
+  encoding: string;
+}
 
-const AVAILABLE_EXTENSIONS = [
-  {
-    url: 'http://rs.tdwg.org/ac/terms/Multimedia',
-    name: 'Multimedia',
-    description:
-      'Audubon Core extension for multimedia content including images, audio, video, and other digital media associated with specimens or observations',
-  },
-  {
-    url: 'http://data.ggbn.org/schemas/ggbn/terms/Amplification',
-    name: 'Amplification',
-    description:
-      'GGBN extension for DNA/RNA amplification data including PCR conditions, primers, and amplicon information',
-  },
-  {
-    url: 'http://purl.org/germplasm/germplasmTerm#GermplasmAccession',
-    name: 'GermplasmAccession',
-    description:
-      'Germplasm extension for plant genetic resource accession data including breeding lines, cultivars, and seed bank information',
-  },
-  {
-    url: 'http://purl.org/germplasm/germplasmTerm#MeasurementScore',
-    name: 'MeasurementScore',
-    description:
-      'Germplasm extension for recording measurement scores and evaluation data from field trials and assessments',
-  },
-  {
-    url: 'http://purl.org/germplasm/germplasmTerm#MeasurementTrait',
-    name: 'MeasurementTrait',
-    description:
-      'Germplasm extension for defining measurable traits and characteristics evaluated in germplasm collections',
-  },
-  {
-    url: 'http://purl.org/germplasm/germplasmTerm#MeasurementTrial',
-    name: 'MeasurementTrial',
-    description:
-      'Germplasm extension for trial and experiment metadata where germplasm measurements and evaluations are conducted',
-  },
-  {
-    url: 'http://rs.tdwg.org/dwc/terms/Identification',
-    name: 'Identification',
-    description:
-      'Darwin Core extension for taxonomic identifications, including determiner information, dates, and identification history',
-  },
-  {
-    url: 'http://rs.gbif.org/terms/1.0/Identifier',
-    name: 'Identifier',
-    description:
-      'GBIF extension for alternative identifiers and cross-references to external databases and systems',
-  },
-  {
-    url: 'http://rs.gbif.org/terms/1.0/Image',
-    name: 'Image',
-    description:
-      'GBIF extension specifically for image metadata including licensing, spatial resolution, and technical specifications',
-  },
-  {
-    url: 'http://rs.tdwg.org/dwc/terms/MeasurementOrFact',
-    name: 'MeasurementOrFact',
-    description:
-      'Darwin Core extension for quantitative and qualitative measurements, facts, and characteristics of specimens or observations',
-  },
-  {
-    url: 'http://rs.gbif.org/terms/1.0/Multimedia',
-    name: 'Multimedia',
-    description:
-      'GBIF-specific multimedia extension for digital media files with enhanced metadata and licensing information',
-  },
-  {
-    url: 'http://rs.gbif.org/terms/1.0/Reference',
-    name: 'Reference',
-    description:
-      'GBIF extension for bibliographic references and literature citations associated with specimens or data records',
-  },
-  {
-    url: 'http://rs.tdwg.org/dwc/terms/ResourceRelationship',
-    name: 'ResourceRelationship',
-    description:
-      'Darwin Core extension for expressing relationships between different resources, specimens, or data records',
-  },
-  {
-    url: 'http://data.ggbn.org/schemas/ggbn/terms/Cloning',
-    name: 'Cloning',
-    description:
-      'GGBN extension for molecular cloning procedures and vector information used in genetic research',
-  },
-  {
-    url: 'http://data.ggbn.org/schemas/ggbn/terms/GelImage',
-    name: 'GelImage',
-    description:
-      'GGBN extension for gel electrophoresis images and associated metadata from molecular biology procedures',
-  },
-  {
-    url: 'http://data.ggbn.org/schemas/ggbn/terms/Loan',
-    name: 'Loan',
-    description:
-      'GGBN extension for tracking specimen and sample loans between institutions including terms and conditions',
-  },
-  {
-    url: 'http://data.ggbn.org/schemas/ggbn/terms/MaterialSample',
-    name: 'MaterialSample',
-    description:
-      'GGBN extension for physical material samples including tissue samples, DNA extracts, and other derived materials',
-  },
-  {
-    url: 'http://data.ggbn.org/schemas/ggbn/terms/Permit',
-    name: 'Permit',
-    description:
-      'GGBN extension for permits and legal authorizations required for specimen collection, export, and research activities',
-  },
-  {
-    url: 'http://data.ggbn.org/schemas/ggbn/terms/Preparation',
-    name: 'Preparation',
-    description:
-      'GGBN extension for specimen preparation methods and protocols used in processing biological samples',
-  },
-  {
-    url: 'http://data.ggbn.org/schemas/ggbn/terms/Preservation',
-    name: 'Preservation',
-    description:
-      'GGBN extension for preservation methods, storage conditions, and long-term maintenance of biological samples',
-  },
-  {
-    url: 'http://rs.iobis.org/obis/terms/ExtendedMeasurementOrFact',
-    name: 'ExtendedMeasurementOrFact',
-    description:
-      'OBIS extension for enhanced marine and aquatic measurements including environmental parameters and species-specific data',
-  },
-  {
-    url: 'http://rs.tdwg.org/chrono/terms/ChronometricAge',
-    name: 'ChronometricAge',
-    description:
-      'Chronometric Age extension for absolute age determinations using radiometric and other dating methods',
-  },
-  {
-    url: 'http://rs.gbif.org/terms/1.0/DNADerivedData',
-    name: 'DNADerivedData',
-    description:
-      'GBIF extension for DNA sequence data, genomic information, and molecular data derived from specimens',
-  },
-];
+interface DarwinCoreConfig extends BaseConfig {
+  extensions: string[];
+}
+
+interface CubeConfig extends BaseConfig {
+  dimensions: {
+    spatialResolution: string;
+    temporalResolution: string;
+    taxonomicLevel: string;
+  };
+}
 
 export default function ConfigurationStep({
   qualityFilters,
@@ -166,30 +41,96 @@ export default function ConfigurationStep({
   onBack,
   onContinue,
 }: ConfigurationStepProps) {
-  const [config, setConfig] = useState({
-    taxonomy: 'gbif',
-    extensions: [] as string[],
-    delimiter: 'tab',
-    encoding: 'utf8',
-  });
+  const formatTitle = selectedFormat?.title;
+  const isDarwinCoreArchive = formatTitle === 'DARWIN CORE ARCHIVE' || formatTitle?.includes('Darwin Core');
+  const isCubeData = formatTitle === 'CUBE DATA';
+  
+  // Initialize configuration based on format
+  const getInitialConfig = () => {
+    const baseConfig = {
+      taxonomy: 'gbif',
+      delimiter: 'tab',
+      encoding: 'utf8',
+    };
 
+    if (isDarwinCoreArchive) {
+      return { ...baseConfig, extensions: [] } as DarwinCoreConfig;
+    }
+    
+    if (isCubeData) {
+      return {
+        ...baseConfig,
+        dimensions: {
+          spatialResolution: '0.1deg',
+          temporalResolution: 'year',
+          taxonomicLevel: 'species',
+        },
+      } as CubeConfig;
+    }
+    
+    return baseConfig;
+  };
+
+  const [config, setConfig] = useState(getInitialConfig());
   const [activeSection, setActiveSection] = useState<string | null>('taxonomy');
 
-  const isDarwinCoreArchive =
-    selectedFormat?.title === 'DARWIN CORE ARCHIVE' ||
-    selectedFormat?.title?.includes('Darwin Core');
+  const handleTaxonomyChange = (taxonomy: string) => {
+    setConfig((prev) => ({ ...prev, taxonomy }));
+  };
 
-  const toggleExtension = (extensionUrl: string) => {
-    setConfig((prev) => ({
-      ...prev,
-      extensions: prev.extensions.includes(extensionUrl)
-        ? prev.extensions.filter((url) => url !== extensionUrl)
-        : [...prev.extensions, extensionUrl],
-    }));
+  const handleExtensionsChange = (extensions: string[]) => {
+    if (isDarwinCoreArchive) {
+      setConfig((prev) => ({ ...prev, extensions }));
+    }
+  };
+
+  const handleDimensionsChange = (dimensions: any) => {
+    if (isCubeData) {
+      setConfig((prev) => ({ ...prev, dimensions }));
+    }
   };
 
   const handleContinue = () => {
     onContinue(config);
+  };
+
+  const toggleSection = (section: string) => {
+    setActiveSection(activeSection === section ? null : section);
+  };
+
+  // Get configuration summary for sidebar
+  const getConfigSummary = () => {
+    const summary = [
+      { label: 'Format', value: selectedFormat.title },
+      { label: 'Taxonomy', value: config.taxonomy.toUpperCase() },
+    ];
+
+    if (isDarwinCoreArchive && 'extensions' in config) {
+      summary.push({ label: 'Extensions', value: config.extensions.length.toString() });
+    }
+
+    if (isCubeData && 'dimensions' in config) {
+      const dims = config.dimensions;
+      summary.push({
+        label: 'Spatial Res.',
+        value: dims.spatialResolution
+      });
+      summary.push({
+        label: 'Temporal Res.',
+        value: dims.temporalResolution
+      });
+      summary.push({
+        label: 'Taxonomic Level',
+        value: dims.taxonomicLevel
+      });
+    }
+
+    summary.push(
+      { label: 'Delimiter', value: config.delimiter.toUpperCase() },
+      { label: 'Encoding', value: config.encoding.toUpperCase() }
+    );
+
+    return summary;
   };
 
   return (
@@ -208,194 +149,33 @@ export default function ConfigurationStep({
       <div className="g-grid lg:g-grid-cols-3 g-gap-8">
         {/* Configuration Sections */}
         <div className="lg:g-col-span-2 g-space-y-6">
-          {/* Taxonomy Configuration */}
-          <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
-            <button
-              onClick={() => setActiveSection(activeSection === 'taxonomy' ? null : 'taxonomy')}
-              className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
-            >
-              <div className="g-flex g-items-center g-gap-3">
-                <FaGlobe size={20} className="g-text-primary-600" />
-                <div>
-                  <h3 className="g-font-semibold g-text-gray-900">Taxonomic Reference</h3>
-                  <p className="g-text-sm g-text-gray-600">
-                    Select the taxonomic backbone for species names
-                  </p>
-                </div>
-              </div>
-              <div className="g-text-sm g-text-gray-500">{config.taxonomy.toUpperCase()}</div>
-            </button>
+          {/* Taxonomy Configuration - Always shown */}
+          <TaxonomySelector
+            value={config.taxonomy}
+            onChange={handleTaxonomyChange}
+            isExpanded={activeSection === 'taxonomy'}
+            onToggle={() => toggleSection('taxonomy')}
+          />
 
-            {activeSection === 'taxonomy' && (
-              <div className="g-border-t g-border-gray-200 g-p-6">
-                <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-3">
-                  Taxonomic Backbone
-                </label>
-                <div className="g-space-y-2">
-                  <label className="g-flex g-items-start g-p-4 g-border g-border-gray-300 g-rounded g-cursor-pointer hover:g-bg-gray-50 g-transition-colors">
-                    <input
-                      type="radio"
-                      name="taxonomy"
-                      value="gbif"
-                      checked={config.taxonomy === 'gbif'}
-                      onChange={(e) => setConfig((prev) => ({ ...prev, taxonomy: e.target.value }))}
-                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300"
-                    />
-                    <div className="g-ml-3">
-                      <span className="g-font-medium g-text-gray-900">GBIF Backbone Taxonomy</span>
-                      <p className="g-text-sm g-text-gray-600">Recommended - Most comprehensive</p>
-                    </div>
-                  </label>
-
-                  <label className="g-flex g-items-start g-p-4 g-border g-border-gray-300 g-rounded g-cursor-pointer hover:g-bg-gray-50 g-transition-colors">
-                    <input
-                      type="radio"
-                      name="taxonomy"
-                      value="col"
-                      checked={config.taxonomy === 'col'}
-                      onChange={(e) => setConfig((prev) => ({ ...prev, taxonomy: e.target.value }))}
-                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300"
-                    />
-                    <div className="g-ml-3">
-                      <span className="g-font-medium g-text-gray-900">Catalogue of Life</span>
-                      <p className="g-text-sm g-text-gray-600">International standard reference</p>
-                    </div>
-                  </label>
-
-                  <label className="g-flex g-items-start g-p-4 g-border g-border-gray-300 g-rounded g-cursor-pointer hover:g-bg-gray-50 g-transition-colors">
-                    <input
-                      type="radio"
-                      name="taxonomy"
-                      value="itis"
-                      checked={config.taxonomy === 'itis'}
-                      onChange={(e) => setConfig((prev) => ({ ...prev, taxonomy: e.target.value }))}
-                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300"
-                    />
-                    <div className="g-ml-3">
-                      <span className="g-font-medium g-text-gray-900">ITIS</span>
-                      <p className="g-text-sm g-text-gray-600">
-                        Integrated Taxonomic Information System
-                      </p>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Extensions Selection (Darwin Core Archive only) */}
-          {isDarwinCoreArchive && (
-            <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
-              <button
-                onClick={() =>
-                  setActiveSection(activeSection === 'extensions' ? null : 'extensions')
-                }
-                className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
-              >
-                <div className="g-flex g-items-center g-gap-3">
-                  <FaPuzzlePiece size={20} className="g-text-primary-600" />
-                  <div>
-                    <h3 className="g-font-semibold g-text-gray-900">Extensions</h3>
-                    <p className="g-text-sm g-text-gray-600">
-                      Select additional data extensions to include
-                    </p>
-                  </div>
-                </div>
-                <div className="g-text-sm g-text-gray-500">{config.extensions.length} selected</div>
-              </button>
-
-              {activeSection === 'extensions' && (
-                <div className="g-border-t g-border-gray-200 g-p-6">
-                  <div className="g-mb-4 g-bg-blue-50 g-border g-border-blue-200 g-rounded g-p-4">
-                    <div className="g-flex g-items-start g-gap-3">
-                      <FaInfoCircle
-                        size={16}
-                        className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0"
-                      />
-                      <p className="g-text-sm g-text-blue-800">
-                        Extensions provide additional data fields beyond the core occurrence data.
-                        Only select extensions that are relevant to your research needs.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="g-grid g-gap-3">
-                    {AVAILABLE_EXTENSIONS.map((extension) => (
-                      <label
-                        key={extension.url}
-                        className="g-flex g-items-start g-p-3 g-rounded g-border g-border-gray-200 hover:g-bg-gray-50 g-cursor-pointer g-transition-colors"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={config.extensions.includes(extension.url)}
-                          onChange={() => toggleExtension(extension.url)}
-                          className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
-                        />
-                        <div className="g-ml-3 g-flex-1">
-                          <span className="g-font-medium g-text-gray-900 g-text-sm">
-                            {extension.name}
-                          </span>
-                          <p className="g-text-xs g-text-gray-500 g-break-all g-mt-0.5">
-                            {extension.description}
-                          </p>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+          {/* Extensions Selection - Only for Darwin Core Archive */}
+          {isDarwinCoreArchive && 'extensions' in config && (
+            <ExtensionsSelector
+              selectedExtensions={config.extensions}
+              onChange={handleExtensionsChange}
+              isExpanded={activeSection === 'extensions'}
+              onToggle={() => toggleSection('extensions')}
+            />
           )}
 
-          {/* Format Configuration */}
-          {/* <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
-            <button
-              onClick={() => setActiveSection(activeSection === 'format' ? null : 'format')}
-              className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
-            >
-              <div className="g-flex g-items-center g-gap-3">
-                <FaFileAlt size={20} className="g-text-primary-600" />
-                <div>
-                  <h3 className="g-font-semibold g-text-gray-900">File Format Options</h3>
-                  <p className="g-text-sm g-text-gray-600">Configure output format and encoding</p>
-                </div>
-              </div>
-            </button>
-
-            {activeSection === 'format' && (
-              <div className="g-border-t g-border-gray-200 g-p-6 g-space-y-4">
-                <div>
-                  <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                    Field Delimiter
-                  </label>
-                  <select
-                    value={config.delimiter}
-                    onChange={(e) => setConfig((prev) => ({ ...prev, delimiter: e.target.value }))}
-                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded g-focus:ring-2 g-focus:ring-primary-500 g-focus:border-primary-500"
-                  >
-                    <option value="tab">Tab-delimited (recommended)</option>
-                    <option value="comma">Comma-separated (CSV)</option>
-                    <option value="pipe">Pipe-delimited</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                    Character Encoding
-                  </label>
-                  <select
-                    value={config.encoding}
-                    onChange={(e) => setConfig((prev) => ({ ...prev, encoding: e.target.value }))}
-                    className="g-w-full g-p-3 g-border g-border-gray-300 g-rounded g-focus:ring-2 g-focus:ring-primary-500 g-focus:border-primary-500"
-                  >
-                    <option value="utf8">UTF-8 (recommended)</option>
-                    <option value="latin1">Latin-1 (ISO 8859-1)</option>
-                    <option value="ascii">ASCII</option>
-                  </select>
-                </div>
-              </div>
-            )}
-          </div> */}
+          {/* Cube Dimensions - Only for Cube Data */}
+          {isCubeData && 'dimensions' in config && (
+            <CubeDimensionsSelector
+              dimensions={config.dimensions}
+              onChange={handleDimensionsChange}
+              isExpanded={activeSection === 'dimensions'}
+              onToggle={() => toggleSection('dimensions')}
+            />
+          )}
         </div>
 
         {/* Summary Sidebar */}
@@ -404,28 +184,12 @@ export default function ConfigurationStep({
             <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Download Summary</h3>
 
             <div className="g-space-y-3 g-text-sm">
-              <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Format:</span>
-                <span className="g-font-medium">{selectedFormat.title}</span>
-              </div>
-              <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Taxonomy:</span>
-                <span className="g-font-medium">{config.taxonomy.toUpperCase()}</span>
-              </div>
-              {isDarwinCoreArchive && (
-                <div className="g-flex g-justify-between">
-                  <span className="g-text-gray-600">Extensions:</span>
-                  <span className="g-font-medium">{config.extensions.length}</span>
+              {getConfigSummary().map((item) => (
+                <div key={item.label} className="g-flex g-justify-between">
+                  <span className="g-text-gray-600">{item.label}:</span>
+                  <span className="g-font-medium">{item.value}</span>
                 </div>
-              )}
-              <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Delimiter:</span>
-                <span className="g-font-medium">{config.delimiter.toUpperCase()}</span>
-              </div>
-              <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Encoding:</span>
-                <span className="g-font-medium">{config.encoding.toUpperCase()}</span>
-              </div>
+              ))}
             </div>
 
             <div className="g-mt-6 g-pt-4 g-border-t g-border-gray-200">
