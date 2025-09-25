@@ -72,7 +72,19 @@ export default function ConfigurationStep({
   };
 
   const [config, setConfig] = useState(getInitialConfig());
-  const [activeSection, setActiveSection] = useState<string | null>('taxonomy');
+  
+  // Determine which section should be expanded initially
+  const getInitialActiveSection = () => {
+    if (isDarwinCoreArchive) {
+      return 'extensions'; // Expand extensions for Darwin Core Archive
+    }
+    if (isCubeData) {
+      return 'dimensions'; // Expand dimensions for Cube Data
+    }
+    return 'taxonomy'; // Default to taxonomy if no other options
+  };
+  
+  const [activeSection, setActiveSection] = useState<string | null>(getInitialActiveSection());
 
   const handleTaxonomyChange = (taxonomy: string) => {
     setConfig((prev) => ({ ...prev, taxonomy }));
