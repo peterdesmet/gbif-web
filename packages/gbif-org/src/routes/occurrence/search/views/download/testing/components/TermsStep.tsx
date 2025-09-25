@@ -245,6 +245,10 @@ export default function TermsStep({
                 <span className="g-font-medium">{selectedFormat.title}</span>
               </div>
               <div className="g-flex g-justify-between">
+                <span className="g-text-gray-600">Taxonomy:</span>
+                <span className="g-font-medium">{configuration?.taxonomy?.toUpperCase() ?? 'GBIF'}</span>
+              </div>
+              <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Extensions:</span>
                 <span className="g-font-medium">{configuration?.extensions?.length ?? 0}</span>
               </div>
