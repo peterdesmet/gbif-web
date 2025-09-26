@@ -1,6 +1,17 @@
 import { FaThLarge, FaInfoCircle } from 'react-icons/fa';
+import { useState } from 'react';
+import { DynamicLink } from '@/components';
+import { generateCubeSql } from '@/services/cubeService';
 
-interface CubeDimensions {
+interface CubeDimensionsSelectorProps {
+  dimensions: CubeDimensions;
+  onChange: (dimensions: CubeDimensions) => void;
+  isExpanded: boolean;
+  onToggle: () => void;
+  query?: any; // Current search query to determine which filters to show
+}
+
+export interface CubeDimensions {
   // Core dimensions
   spatialResolution: string;
   temporalResolution: string;
@@ -24,14 +35,6 @@ interface CubeDimensions {
   removeRecordsAtCentroids: boolean;
   removeFossilsAndLiving: boolean;
   removeAbsenceRecords: boolean;
-}
-
-interface CubeDimensionsSelectorProps {
-  dimensions: CubeDimensions;
-  onChange: (dimensions: CubeDimensions) => void;
-  isExpanded: boolean;
-  onToggle: () => void;
-  query?: any; // Current search query to determine which filters to show
 }
 
 const TAXONOMIC_GROUPS = [
@@ -79,8 +82,39 @@ export default function CubeDimensionsSelector({
   onToggle,
   query = {},
 }: CubeDimensionsSelectorProps) {
+  const [isGeneratingSql, setIsGeneratingSql] = useState(false);
+  const [sqlError, setSqlError] = useState<string | null>(null);
+
   const updateDimensions = (updates: Partial<CubeDimensions>) => {
     onChange({ ...dimensions, ...updates });
+  };
+
+  const handleEditSql = async (event: React.MouseEvent) => {
+    debugger;
+    event.preventDefault();
+    event.stopPropagation();
+
+    setIsGeneratingSql(true);
+    setSqlError(null);
+
+    try {
+      const result = await generateCubeSql(dimensions, undefined, query);
+      if (!result.sql) {
+        // If no SQL generated, navigate to empty SQL editor
+        window.location.href = '/occurrence/download/sql';
+        return;
+      }
+
+      // Navigate to SQL editor with generated SQL
+
+      const searchParams = new URLSearchParams({ sql: result.sql });
+      window.location.href = `/occurrence/download/sql?${searchParams.toString()}`;
+    } catch (error) {
+      console.error('Failed to generate SQL:', error);
+      setSqlError('Failed to generate SQL. Please try again.');
+    } finally {
+      setIsGeneratingSql(false);
+    }
   };
 
   const getHigherTaxonomicGroups = () => {
@@ -494,6 +528,25 @@ export default function CubeDimensionsSelector({
               At least one dimension must be selected
             </div>
           )}
+
+          {/* Edit SQL Link */}
+          <div className="g-mt-6 g-pt-6 g-border-t g-border-gray-200">
+            <div className="g-flex g-items-center g-justify-between">
+              <div>
+                <button
+                  onClick={handleEditSql}
+                  disabled={!isFormValid() || isGeneratingSql}
+                  className="g-text-primary-600 hover:g-text-primary-700 g-text-sm g-font-medium g-underline disabled:g-text-gray-400 disabled:g-no-underline"
+                >
+                  {isGeneratingSql ? 'Generating SQL...' : 'Edit as SQL'}
+                </button>
+                <p className="g-text-xs g-text-gray-600 g-mt-1">
+                  Generate SQL query and edit in the SQL editor
+                </p>
+                {sqlError && <p className="g-text-xs g-text-red-600 g-mt-1">{sqlError}</p>}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
