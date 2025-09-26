@@ -77,7 +77,7 @@ function App() {
           <FormatSelection
             onFormatSelect={handleFormatSelect}
             onQuickDownload={handleQuickDownload}
-            onBack={handleBackToFilters}
+            // onBack={handleBackToFilters}
           />
         )}
 
@@ -104,17 +104,6 @@ function App() {
             configuration={configuration}
             onStartOver={handleStartOver}
           />
-        )}
-
-        {/* Footer */}
-        {currentStep === 1 && (
-          <div className="g-text-center g-mt-8">
-            <p className="g-text-gray-600 g-text-sm">
-              All downloads are provided in tab-delimited CSV format for compatibility with Excel
-              and other analysis tools. Darwin Core Archive format follows international
-              biodiversity data standards and allows for extension selection in the next step.
-            </p>
-          </div>
         )}
       </div>
     </div>

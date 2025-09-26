@@ -38,7 +38,7 @@ interface FormatSelectionProps {
   qualityFilters: any;
   onFormatSelect: (format: Format, config: any) => void;
   onQuickDownload?: (format: Format, config: any) => void;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 const formatCards: Format[] = [
@@ -179,13 +179,15 @@ export default function FormatSelection({
   return (
     <div className="g-max-w-4xl g-mx-auto g-space-y-4">
       {/* Back Button */}
-      <button
-        onClick={onBack}
-        className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-6 g-transition-colors"
-      >
-        <FaChevronLeft size={20} />
-        Back to quality filters
-      </button>
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-6 g-transition-colors"
+        >
+          <FaChevronLeft size={20} />
+          Back to quality filters
+        </button>
+      )}
 
       <Card className="g-rounded-lg">
         {formatCards.map((format) => {
@@ -260,6 +262,9 @@ export default function FormatSelection({
           );
         })}
       </Card>
+      <div className="g-text-center g-mt-8">
+        <p className="g-text-gray-600 g-text-sm">We also support</p>
+      </div>
     </div>
   );
 }

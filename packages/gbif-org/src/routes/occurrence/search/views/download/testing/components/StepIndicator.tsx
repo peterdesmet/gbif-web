@@ -1,21 +1,27 @@
-import React from 'react';
-import { FaCheck, FaCog, FaFileAlt, FaDownload, FaFilter, FaBroom } from 'react-icons/fa';
-import { GiMagicBroom } from 'react-icons/gi';
-import { PiBroomBold } from 'react-icons/pi';
+import { FaCheck, FaCog, FaFileAlt, FaDownload, FaFilter } from 'react-icons/fa';
+import { ComponentType } from 'react';
 
-interface StepIndicatorProps {
-  currentStep: number;
+export interface Step {
+  id: number;
+  name: string;
+  icon: ComponentType<{ className?: string }>;
+  description: string;
 }
 
-const steps = [
-  { id: 0, name: 'Filters', icon: PiBroomBold, description: 'Apply quality filters' },
+export const downloadSteps: Step[] = [
+  // { id: 0, name: 'Filters', icon: FaFilter, description: 'Apply quality filters' },
   { id: 1, name: 'Format', icon: FaCog, description: 'Choose download format' }, // FaFileAlt
   { id: 2, name: 'Configure', icon: FaCog, description: 'Set options and fields' },
   // { id: 3, name: 'Terms', icon: FaFileAlt, description: 'Accept terms and conditions' },
   { id: 3, name: 'Download', icon: FaDownload, description: 'Processing and delivery' },
 ];
 
-export default function StepIndicator({ currentStep }: StepIndicatorProps) {
+interface StepIndicatorProps {
+  currentStep: number;
+  steps: Step[];
+}
+
+export default function StepIndicator({ currentStep, steps = downloadSteps }: StepIndicatorProps) {
   return (
     <div className="g-mb-12">
       <nav aria-label="Progress">
