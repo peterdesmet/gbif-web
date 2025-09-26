@@ -1,4 +1,3 @@
-import React from 'react';
 import { FaThLarge, FaInfoCircle } from 'react-icons/fa';
 
 interface CubeDimensions {
@@ -6,19 +5,19 @@ interface CubeDimensions {
   spatialResolution: string;
   temporalResolution: string;
   taxonomicLevel: string;
-  
+
   // Spatial configuration
   spatial: string;
   resolution: number | string;
   randomize: 'YES' | 'NO';
-  
+
   // Uncertainty options
   includeTemporalUncertainty: 'YES' | 'NO';
   includeSpatialUncertainty: 'YES' | 'NO';
-  
+
   // Higher taxonomy groups
   selectedHigherTaxonomyGroups: string[];
-  
+
   // Data quality filters
   removeRecordsWithGeospatialIssues: boolean;
   removeRecordsTaxonIssues: boolean;
@@ -44,44 +43,33 @@ const TAXONOMIC_GROUPS = [
   'GENUS',
   'SPECIES',
   'ACCEPTED_TAXON',
-  'EXACT_TAXON'
+  'EXACT_TAXON',
 ];
 
-const TEMPORAL_GROUPS = [
-  'YEAR',
-  'YEARMONTH',
-  'DATE'
-];
+const TEMPORAL_GROUPS = ['YEAR', 'YEARMONTH', 'DATE'];
 
 const SPATIAL_GROUPS = [
   'EEA_REFERENCE_GRID',
   'EXTENDED_QUARTER_DEGREE_GRID',
   'ISEA3H_GRID',
   'MILITARY_GRID_REFERENCE_SYSTEM',
-  'COUNTRY'
+  'COUNTRY',
 ];
 
-const HIGHER_TAXONOMIC_OPTIONS = [
-  'KINGDOM',
-  'PHYLUM',
-  'CLASS',
-  'ORDER',
-  'FAMILY',
-  'GENUS'
-];
+const HIGHER_TAXONOMIC_OPTIONS = ['KINGDOM', 'PHYLUM', 'CLASS', 'ORDER', 'FAMILY', 'GENUS'];
 
 const RESOLUTION_OPTIONS: Record<string, number[]> = {
   EEA_REFERENCE_GRID: [25, 100, 250, 1000, 10000, 50000, 100000],
   EXTENDED_QUARTER_DEGREE_GRID: [0, 1, 2, 3, 4, 5, 6],
   ISEA3H_GRID: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
-  MILITARY_GRID_REFERENCE_SYSTEM: [0, 1, 10, 100, 1000, 10000, 100000]
+  MILITARY_GRID_REFERENCE_SYSTEM: [0, 1, 10, 100, 1000, 10000, 100000],
 };
 
 const RESOLUTION_DEFAULTS: Record<string, number> = {
   EEA_REFERENCE_GRID: 1000,
   EXTENDED_QUARTER_DEGREE_GRID: 2,
   ISEA3H_GRID: 9,
-  MILITARY_GRID_REFERENCE_SYSTEM: 1000
+  MILITARY_GRID_REFERENCE_SYSTEM: 1000,
 };
 
 export default function CubeDimensionsSelector({
@@ -89,9 +77,8 @@ export default function CubeDimensionsSelector({
   onChange,
   isExpanded,
   onToggle,
-  query = {}
+  query = {},
 }: CubeDimensionsSelectorProps) {
-  
   const updateDimensions = (updates: Partial<CubeDimensions>) => {
     onChange({ ...dimensions, ...updates });
   };
@@ -119,13 +106,17 @@ export default function CubeDimensionsSelector({
   const toggleHigherTaxonomyGroup = (group: string) => {
     const current = dimensions.selectedHigherTaxonomyGroups || [];
     const updated = current.includes(group)
-      ? current.filter(g => g !== group)
+      ? current.filter((g) => g !== group)
       : [...current, group];
     updateDimensions({ selectedHigherTaxonomyGroups: updated });
   };
 
   const isFormValid = () => {
-    return !!(dimensions.taxonomicLevel || dimensions.temporalResolution || (dimensions.spatial && dimensions.resolution));
+    return !!(
+      dimensions.taxonomicLevel ||
+      dimensions.temporalResolution ||
+      (dimensions.spatial && dimensions.resolution)
+    );
   };
 
   const higherTaxonomicGroups = getHigherTaxonomicGroups();
@@ -147,7 +138,8 @@ export default function CubeDimensionsSelector({
           </div>
         </div>
         <div className="g-text-sm g-text-gray-500">
-          {dimensions.spatial || 'None'} × {dimensions.temporalResolution || 'None'} × {dimensions.taxonomicLevel || 'None'}
+          {dimensions.spatial || 'None'} × {dimensions.temporalResolution || 'None'} ×{' '}
+          {dimensions.taxonomicLevel || 'None'}
         </div>
       </button>
 
@@ -157,7 +149,8 @@ export default function CubeDimensionsSelector({
             <div className="g-flex g-items-start g-gap-3">
               <FaInfoCircle size={16} className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0" />
               <p className="g-text-sm g-text-blue-800">
-                Cube data aggregates occurrence records across three dimensions. At least one dimension must be selected.
+                Cube data aggregates occurrence records across three dimensions. At least one
+                dimension must be selected.
               </p>
             </div>
           </div>
@@ -165,7 +158,7 @@ export default function CubeDimensionsSelector({
           {/* Dimensions */}
           <fieldset className="g-space-y-6">
             <legend className="g-text-lg g-font-medium g-text-gray-900 g-mb-4">Dimensions</legend>
-            
+
             {/* Taxonomic Dimension */}
             <div>
               <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
@@ -181,7 +174,9 @@ export default function CubeDimensionsSelector({
               >
                 <option value="">None selected</option>
                 {TAXONOMIC_GROUPS.map((group) => (
-                  <option key={group} value={group}>{group}</option>
+                  <option key={group} value={group}>
+                    {group}
+                  </option>
                 ))}
               </select>
             </div>
@@ -191,9 +186,7 @@ export default function CubeDimensionsSelector({
               <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
                 Temporal dimension
               </label>
-              <p className="g-text-sm g-text-gray-600 g-mb-3">
-                Group occurrences by time period
-              </p>
+              <p className="g-text-sm g-text-gray-600 g-mb-3">Group occurrences by time period</p>
               <select
                 value={dimensions.temporalResolution || ''}
                 onChange={(e) => updateDimensions({ temporalResolution: e.target.value })}
@@ -201,16 +194,16 @@ export default function CubeDimensionsSelector({
               >
                 <option value="">None selected</option>
                 {TEMPORAL_GROUPS.map((group) => (
-                  <option key={group} value={group}>{group}</option>
+                  <option key={group} value={group}>
+                    {group}
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* Spatial Dimension */}
             <div>
-              <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                Grid
-              </label>
+              <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">Grid</label>
               <p className="g-text-sm g-text-gray-600 g-mb-3">
                 Spatial grid system for aggregation
               </p>
@@ -221,7 +214,9 @@ export default function CubeDimensionsSelector({
               >
                 <option value="">None selected</option>
                 {SPATIAL_GROUPS.map((group) => (
-                  <option key={group} value={group}>{group}</option>
+                  <option key={group} value={group}>
+                    {group}
+                  </option>
                 ))}
               </select>
 
@@ -239,9 +234,13 @@ export default function CubeDimensionsSelector({
                     onChange={(e) => updateDimensions({ resolution: parseInt(e.target.value) })}
                     className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
                   >
-                    <option value="" disabled>None selected</option>
+                    <option value="" disabled>
+                      None selected
+                    </option>
                     {(RESOLUTION_OPTIONS[dimensions.spatial] || []).map((res) => (
-                      <option key={res} value={res}>{res}</option>
+                      <option key={res} value={res}>
+                        {res}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -263,7 +262,9 @@ export default function CubeDimensionsSelector({
                         name="randomize"
                         value="YES"
                         checked={dimensions.randomize === 'YES'}
-                        onChange={(e) => updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })}
+                        onChange={(e) =>
+                          updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })
+                        }
                         className="g-h-4 g-w-4 g-text-primary-600"
                       />
                       <span className="g-text-sm">Yes</span>
@@ -274,7 +275,9 @@ export default function CubeDimensionsSelector({
                         name="randomize"
                         value="NO"
                         checked={dimensions.randomize === 'NO'}
-                        onChange={(e) => updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })}
+                        onChange={(e) =>
+                          updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })
+                        }
                         className="g-h-4 g-w-4 g-text-primary-600"
                       />
                       <span className="g-text-sm">No</span>
@@ -288,7 +291,7 @@ export default function CubeDimensionsSelector({
           {/* Measurements */}
           <fieldset className="g-space-y-6">
             <legend className="g-text-lg g-font-medium g-text-gray-900 g-mb-4">Measurements</legend>
-            
+
             <div>
               <label className="g-flex g-items-start g-gap-3">
                 <input type="checkbox" checked disabled className="g-mt-1 g-h-4 g-w-4" />
@@ -341,7 +344,11 @@ export default function CubeDimensionsSelector({
                     name="includeSpatialUncertainty"
                     value="YES"
                     checked={dimensions.includeSpatialUncertainty === 'YES'}
-                    onChange={(e) => updateDimensions({ includeSpatialUncertainty: e.target.value as 'YES' | 'NO' })}
+                    onChange={(e) =>
+                      updateDimensions({
+                        includeSpatialUncertainty: e.target.value as 'YES' | 'NO',
+                      })
+                    }
                     className="g-h-4 g-w-4 g-text-primary-600"
                   />
                   <span className="g-text-sm">Yes</span>
@@ -352,7 +359,11 @@ export default function CubeDimensionsSelector({
                     name="includeSpatialUncertainty"
                     value="NO"
                     checked={dimensions.includeSpatialUncertainty === 'NO'}
-                    onChange={(e) => updateDimensions({ includeSpatialUncertainty: e.target.value as 'YES' | 'NO' })}
+                    onChange={(e) =>
+                      updateDimensions({
+                        includeSpatialUncertainty: e.target.value as 'YES' | 'NO',
+                      })
+                    }
                     className="g-h-4 g-w-4 g-text-primary-600"
                   />
                   <span className="g-text-sm">No</span>
@@ -375,7 +386,11 @@ export default function CubeDimensionsSelector({
                     name="includeTemporalUncertainty"
                     value="YES"
                     checked={dimensions.includeTemporalUncertainty === 'YES'}
-                    onChange={(e) => updateDimensions({ includeTemporalUncertainty: e.target.value as 'YES' | 'NO' })}
+                    onChange={(e) =>
+                      updateDimensions({
+                        includeTemporalUncertainty: e.target.value as 'YES' | 'NO',
+                      })
+                    }
                     className="g-h-4 g-w-4 g-text-primary-600"
                   />
                   <span className="g-text-sm">Yes</span>
@@ -386,7 +401,11 @@ export default function CubeDimensionsSelector({
                     name="includeTemporalUncertainty"
                     value="NO"
                     checked={dimensions.includeTemporalUncertainty === 'NO'}
-                    onChange={(e) => updateDimensions({ includeTemporalUncertainty: e.target.value as 'YES' | 'NO' })}
+                    onChange={(e) =>
+                      updateDimensions({
+                        includeTemporalUncertainty: e.target.value as 'YES' | 'NO',
+                      })
+                    }
                     className="g-h-4 g-w-4 g-text-primary-600"
                   />
                   <span className="g-text-sm">No</span>
@@ -401,20 +420,22 @@ export default function CubeDimensionsSelector({
             <p className="g-text-sm g-text-gray-600 g-mb-4">
               Apply quality filters to exclude problematic records
             </p>
-            
+
             <div className="g-space-y-3">
               {!query.has_geospatial_issue && (
                 <label className="g-flex g-items-start g-gap-3">
                   <input
                     type="checkbox"
                     checked={dimensions.removeRecordsWithGeospatialIssues}
-                    onChange={(e) => updateDimensions({ removeRecordsWithGeospatialIssues: e.target.checked })}
+                    onChange={(e) =>
+                      updateDimensions({ removeRecordsWithGeospatialIssues: e.target.checked })
+                    }
                     className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
                   />
                   <span className="g-text-sm">Remove records with known geospatial issues</span>
                 </label>
               )}
-              
+
               <label className="g-flex g-items-start g-gap-3">
                 <input
                   type="checkbox"
@@ -424,19 +445,21 @@ export default function CubeDimensionsSelector({
                 />
                 <span className="g-text-sm">Remove records matched to a higher taxon</span>
               </label>
-              
+
               {!query.distance_from_centroid_in_meters && (
                 <label className="g-flex g-items-start g-gap-3">
                   <input
                     type="checkbox"
                     checked={dimensions.removeRecordsAtCentroids}
-                    onChange={(e) => updateDimensions({ removeRecordsAtCentroids: e.target.checked })}
+                    onChange={(e) =>
+                      updateDimensions({ removeRecordsAtCentroids: e.target.checked })
+                    }
                     className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
                   />
                   <span className="g-text-sm">Remove records located at country centroids</span>
                 </label>
               )}
-              
+
               {!query.basis_of_record && (
                 <label className="g-flex g-items-start g-gap-3">
                   <input
@@ -445,10 +468,12 @@ export default function CubeDimensionsSelector({
                     onChange={(e) => updateDimensions({ removeFossilsAndLiving: e.target.checked })}
                     className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
                   />
-                  <span className="g-text-sm">Remove records that are fossils or living specimens</span>
+                  <span className="g-text-sm">
+                    Remove records that are fossils or living specimens
+                  </span>
                 </label>
               )}
-              
+
               {!query.occurrence_status && (
                 <label className="g-flex g-items-start g-gap-3">
                   <input
