@@ -4,6 +4,7 @@ import { OccurrenceDownloadSqlCreate } from './create';
 import { OccurrenceDownloadSqlPage } from './sql';
 
 export const occurrenceDownloadSqlRoute: RouteObjectWithPlugins = {
+  id: 'occurrenceDownloadSql',
   path: 'occurrence/download/sql',
   element: <OccurrenceDownloadSqlPage />,
   children: [
