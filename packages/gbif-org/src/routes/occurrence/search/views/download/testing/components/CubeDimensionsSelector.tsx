@@ -1,7 +1,7 @@
 import { FaThLarge, FaInfoCircle } from 'react-icons/fa';
 import { useState } from 'react';
 import { DynamicLink } from '@/components';
-import { generateCubeSql } from '@/services/cubeService';
+import { generateCubeSql } from './cubeService';
 
 interface CubeDimensionsSelectorProps {
   dimensions: CubeDimensions;

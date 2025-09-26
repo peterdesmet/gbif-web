@@ -106,6 +106,22 @@ export default function ConfigurationStep({
     onContinue(config);
   };
 
+  // Validation logic for cube data
+  const isCubeConfigValid = () => {
+    if (!isCubeData || !('dimensions' in config)) {
+      return true; // Not cube data, so no validation needed
+    }
+    
+    const dimensions = config.dimensions;
+    return !!(
+      dimensions.spatialResolution ||
+      dimensions.temporalResolution ||
+      dimensions.taxonomicLevel
+    );
+  };
+
+  const canContinue = isCubeData ? isCubeConfigValid() : true;
+
   const toggleSection = (section: string) => {
     setActiveSection(activeSection === section ? null : section);
   };
@@ -213,9 +229,16 @@ export default function ConfigurationStep({
                 </span>
               </div>
 
+              {!canContinue && (
+                <div className="g-text-red-600 g-text-sm g-font-medium g-mb-4">
+                  At least one dimension must be selected for cube data
+                </div>
+              )}
+              
               <Button
                 onClick={handleContinue}
-                className="g-w-full g-flex g-items-center g-justify-center g-gap-2"
+                disabled={!canContinue}
+                className="g-w-full g-flex g-items-center g-justify-center g-gap-2 disabled:g-opacity-50 disabled:g-cursor-not-allowed"
               >
                 <FaCog size={16} />
                 Continue to Terms
