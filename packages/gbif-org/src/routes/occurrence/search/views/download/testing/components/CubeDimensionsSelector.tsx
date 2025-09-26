@@ -1,5 +1,5 @@
 import { FaThLarge, FaInfoCircle } from 'react-icons/fa';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DynamicLink } from '@/components';
 import { generateCubeSql } from './cubeService';
 
@@ -9,6 +9,7 @@ interface CubeDimensionsSelectorProps {
   isExpanded: boolean;
   onToggle: () => void;
   query?: any; // Current search query to determine which filters to show
+  onValidationChange?: (isValid: boolean) => void;
 }
 
 export interface CubeDimensions {
@@ -81,6 +82,7 @@ export default function CubeDimensionsSelector({
   isExpanded,
   onToggle,
   query = {},
+  onValidationChange,
 }: CubeDimensionsSelectorProps) {
   const [isGeneratingSql, setIsGeneratingSql] = useState(false);
   const [sqlError, setSqlError] = useState<string | null>(null);
@@ -88,6 +90,13 @@ export default function CubeDimensionsSelector({
   const updateDimensions = (updates: Partial<CubeDimensions>) => {
     onChange({ ...dimensions, ...updates });
   };
+
+  // Notify parent component of validation changes
+  useEffect(() => {
+    if (onValidationChange) {
+      onValidationChange(isFormValid());
+    }
+  }, [dimensions, onValidationChange]);
 
   const handleEditSql = async (event: React.MouseEvent) => {
     debugger;
@@ -146,11 +155,12 @@ export default function CubeDimensionsSelector({
   };
 
   const isFormValid = () => {
-    return !!(
-      dimensions.taxonomicLevel ||
-      dimensions.temporalResolution ||
-      (dimensions.spatial && dimensions.resolution)
-    );
+    const hasTaxonomic = dimensions.taxonomicLevel && dimensions.taxonomicLevel !== '';
+    const hasTemporal = dimensions.temporalResolution && dimensions.temporalResolution !== '';
+    const hasSpatial = dimensions.spatial && dimensions.spatial !== '' &&
+                     (dimensions.spatial === 'COUNTRY' || (dimensions.resolution && dimensions.resolution !== ''));
+    
+    return hasTaxonomic || hasTemporal || hasSpatial;
   };
 
   const higherTaxonomicGroups = getHigherTaxonomicGroups();
@@ -172,8 +182,8 @@ export default function CubeDimensionsSelector({
           </div>
         </div>
         <div className="g-text-sm g-text-gray-500">
-          {dimensions.spatial || 'None'} × {dimensions.temporalResolution || 'None'} ×{' '}
-          {dimensions.taxonomicLevel || 'None'}
+          {(dimensions.spatial && dimensions.spatial !== '') ? dimensions.spatial : 'None'} × {(dimensions.temporalResolution && dimensions.temporalResolution !== '') ? dimensions.temporalResolution : 'None'} ×{' '}
+          {(dimensions.taxonomicLevel && dimensions.taxonomicLevel !== '') ? dimensions.taxonomicLevel : 'None'}
         </div>
       </button>
 

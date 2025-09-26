@@ -72,6 +72,7 @@ export default function ConfigurationStep({
   };
 
   const [config, setConfig] = useState(getInitialConfig());
+  const [isCubeValid, setIsCubeValid] = useState(false);
   
   // Determine which section should be expanded initially
   const getInitialActiveSection = () => {
@@ -102,25 +103,24 @@ export default function ConfigurationStep({
     }
   };
 
+  const handleCubeValidationChange = (isValid: boolean) => {
+    setIsCubeValid(isValid);
+  };
+
   const handleContinue = () => {
     onContinue(config);
   };
 
   // Validation logic for cube data
   const isCubeConfigValid = () => {
-    if (!isCubeData || !('dimensions' in config)) {
+    if (!isCubeData) {
       return true; // Not cube data, so no validation needed
     }
     
-    const dimensions = config.dimensions;
-    return !!(
-      dimensions.spatialResolution ||
-      dimensions.temporalResolution ||
-      dimensions.taxonomicLevel
-    );
+    return isCubeValid;
   };
 
-  const canContinue = isCubeData ? isCubeConfigValid() : true;
+  const canContinue = isCubeConfigValid();
 
   const toggleSection = (section: string) => {
     setActiveSection(activeSection === section ? null : section);
@@ -202,6 +202,7 @@ export default function ConfigurationStep({
               onChange={handleDimensionsChange}
               isExpanded={activeSection === 'dimensions'}
               onToggle={() => toggleSection('dimensions')}
+              onValidationChange={handleCubeValidationChange}
             />
           )}
         </div>
