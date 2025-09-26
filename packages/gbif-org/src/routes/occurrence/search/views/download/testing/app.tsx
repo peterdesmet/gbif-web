@@ -58,15 +58,6 @@ function App() {
   return (
     <div className="g-min-h-screen g-py-8 g-px-4">
       <div className="g-max-w-6xl g-mx-auto">
-        {/* Header */}
-        {/* <div className="g-text-center g-mb-8">
-          <h1 className="g-text-3xl g-font-bold g-text-gray-900 g-mb-3">GBIF Download Options</h1>
-          <p className="g-text-gray-600 g-max-w-2xl g-mx-auto">
-            Choose the format that best suits your research needs. Each option provides different
-            levels of data completeness and processing.
-          </p>
-        </div> */}
-
         {/* Step Indicator */}
         <StepIndicator currentStep={currentStep} />
 

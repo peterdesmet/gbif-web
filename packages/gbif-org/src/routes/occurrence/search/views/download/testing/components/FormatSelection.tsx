@@ -1,41 +1,18 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/largeCard';
-import { ChevronUpIcon } from '@radix-ui/react-icons';
+import { DynamicLink } from '@/reactRouterPlugins';
 import React from 'react';
-import {
-  FaCheck,
-  FaDownload,
-  FaFileAlt,
-  FaListUl,
-  FaArchive,
-  FaThLarge,
-  FaChevronDown,
-  FaChevronUp,
-  FaInfoCircle,
-  FaBolt,
-  FaShieldAlt,
-  FaChevronLeft,
-} from 'react-icons/fa';
-import { FiChevronUp, FiSettings } from 'react-icons/fi';
+import { FaFileAlt, FaListUl, FaArchive, FaThLarge, FaChevronLeft } from 'react-icons/fa';
 
 interface Format {
   title: string;
   hasNextStep?: boolean;
   description: string;
-  icon: any;
   size: string;
   features: string[];
-  extendedFeatures: string[];
-  technicalSpecs: Record<string, string>;
-  rawData: boolean;
-  interpretedData: boolean;
-  multimedia: boolean;
-  coordinates: boolean;
-  estimatedSize: string;
 }
 
 interface FormatSelectionProps {
-  qualityFilters: any;
   onFormatSelect: (format: Format, config: any) => void;
   onQuickDownload?: (format: Format, config: any) => void;
   onBack?: () => void;
@@ -44,127 +21,51 @@ interface FormatSelectionProps {
 const formatCards: Format[] = [
   {
     title: 'OCCURRENCE LIST',
-    description: 'Basic occurrence data with interpreted fields only',
-    icon: FaFileAlt,
+    description: 'A single CSV file with standardized, interpreted occurrence data.',
     size: '417 GB',
-    features: ['Interpreted data only', 'Single CSV file', 'Coordinates included'],
-    extendedFeatures: [
-      'Tab-delimited CSV format optimized for Excel',
-      'Pre-processed and cleaned occurrence records',
-      'Standardized coordinate reference system (WGS84)',
-      'Quality flags and data validation indicators',
-      'Optimized for statistical analysis workflows',
-      'Minimal storage footprint with maximum usability',
+    features: [
+      'Single CSV file',
+      'Interpreted data only',
+      'Coordinates (if available)',
+      'Individual occurrences',
     ],
-    technicalSpecs: {
-      'File Format': 'Tab-delimited CSV',
-      Compression: 'ZIP (83% reduction)',
-      Encoding: 'UTF-8',
-      'Coordinate System': 'WGS84',
-      'Processing Time': '< 30 minutes',
-      'Data Fields': '~50 core fields',
-    },
-    rawData: false,
-    interpretedData: true,
-    multimedia: false,
-    coordinates: true,
-    estimatedSize: '2 TB (417 GB zipped)',
   },
   {
     title: 'DARWIN CORE ARCHIVE',
     hasNextStep: true,
-    description: 'Complete biodiversity data package with all available information',
-    icon: FaArchive,
+    description:
+      'Multiple files (core, raw values, interpreted data, extensions) for detailed or specialized use. The download can be customized by selecting specific extensions.',
     size: '1 TB',
-    features: ['Raw + interpreted data', 'Multimedia links', 'Multiple csv files'],
-    extendedFeatures: [
-      'Full Darwin Core Archive format compliance',
-      'Customizable data extensions and vocabularies',
-      'Multimedia resource links and metadata',
-      'Complete provenance and attribution tracking',
-      'Suitable for data republishing and preservation',
-      'Machine-readable metadata and structure',
+    features: [
+      'Multiple csv files',
+      'Raw + interpreted data',
+      'Multimedia links',
+      'Coordinates (if available)',
+      'Individual occurrences',
     ],
-    technicalSpecs: {
-      'File Format': 'Darwin Core Archive',
-      Compression: 'ZIP with metadata',
-      Encoding: 'UTF-8',
-      Standards: 'Darwin Core, GBIF',
-      'Processing Time': '1-3 hours',
-      'Data Fields': '200+ possible fields',
-    },
-    rawData: true,
-    interpretedData: true,
-    multimedia: true,
-    coordinates: true,
-    estimatedSize: '6 TB (1 TB zipped)',
   },
   {
     title: 'SPECIES LIST',
-    description: 'Taxonomic checklist with occurrence counts',
-    icon: FaListUl,
+    description: 'A distinct list of species with occurrence counts.',
     size: '2 MB',
-    features: ['Species aggregation', 'Occurrence counts', 'Single CSV file'],
-    extendedFeatures: [
-      'Species-level taxonomic aggregation with full hierarchy',
-      'Occurrence count statistics by taxon',
-      'Geographic and temporal occurrence summaries',
-      'Taxonomic backbone integration with current names',
-      'Perfect for biodiversity assessments and checklists',
-      'Lightweight format for rapid analysis',
-    ],
-    technicalSpecs: {
-      'File Format': 'Tab-delimited CSV',
-      Compression: 'ZIP (95% reduction)',
-      Encoding: 'UTF-8',
-      'Taxonomic Levels': 'All ranks included',
-      'Processing Time': '< 15 minutes',
-      'Data Fields': '~20 taxonomic fields',
-    },
-    rawData: false,
-    interpretedData: true,
-    multimedia: false,
-    coordinates: false,
-    estimatedSize: 'Variable',
+    features: ['Single CSV file', 'Interpreted data only', 'Occurrence counts'],
   },
   {
     title: 'CUBE DATA',
     hasNextStep: true,
-    description: 'Gridded occurrence counts by taxonomic, spatial and temporal dimensions',
-    icon: FaThLarge,
+    description:
+      'Gridded occurrence counts by taxonomic, spatial and temporal dimensions. Dimensions and aggregations can be configured in the next step.',
     size: 'Compressed',
     features: [
-      'Grid aggregation',
-      'Multi-dimensional',
-      'Statistical summaries',
-      'Customizable resolution',
+      'Single CSV file',
+      'Interpreted data only',
+      'Coordinates (if selected)',
+      'Occurrence counts',
     ],
-    extendedFeatures: [
-      'Configurable spatial grid resolution (0.1° to 10°)',
-      'Temporal aggregation by year, month, or decade',
-      'Taxonomic dimension breakdown to species level',
-      'Statistical measures including uncertainty estimates',
-      'Optimized for large-scale ecological modeling',
-      'Integration with environmental data layers',
-    ],
-    technicalSpecs: {
-      'File Format': 'Tab-delimited CSV',
-      Compression: 'ZIP (99% reduction)',
-      Encoding: 'UTF-8',
-      'Grid Resolution': 'User configurable',
-      'Processing Time': '30 minutes - 2 hours',
-      Dimensions: 'Space × Time × Taxonomy',
-    },
-    rawData: false,
-    interpretedData: true,
-    multimedia: false,
-    coordinates: true,
-    estimatedSize: 'Variable (highly compressed)',
   },
 ];
 
 export default function FormatSelection({
-  qualityFilters,
   onFormatSelect,
   onQuickDownload,
   onBack,
@@ -219,7 +120,6 @@ export default function FormatSelection({
                               key={index}
                               className="g-inline-flex g-items-center g-gap-1 g-text-xs g-bg-gray-50 g-text-gray-700 g-px-2 g-py-1 g-rounded-full"
                             >
-                              <FaCheck size={12} className="g-text-green-600" />
                               {feature}
                             </span>
                           ))}
@@ -263,7 +163,17 @@ export default function FormatSelection({
         })}
       </Card>
       <div className="g-text-center g-mt-8">
-        <p className="g-text-gray-600 g-text-sm">We also support</p>
+        <p className="g-text-gray-600 g-text-sm">
+          We also support{' '}
+          <DynamicLink pageId="occurrenceDownloadSql" className="g-underline">
+            SQL downloads
+          </DynamicLink>
+        </p>
+        <p className="g-text-gray-600 g-text-sm g-mt-4">
+          Not sure which format to choose? Try this{' '}
+          <span className="g-underline">example archive</span> or{' '}
+          <span className="g-underline">read more</span>.
+        </p>
       </div>
     </div>
   );

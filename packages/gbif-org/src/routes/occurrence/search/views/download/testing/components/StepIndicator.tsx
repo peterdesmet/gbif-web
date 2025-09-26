@@ -18,7 +18,7 @@ export const downloadSteps: Step[] = [
 
 interface StepIndicatorProps {
   currentStep: number;
-  steps: Step[];
+  steps?: Step[];
 }
 
 export default function StepIndicator({ currentStep, steps = downloadSteps }: StepIndicatorProps) {
