@@ -56,7 +56,7 @@ function App() {
   };
 
   return (
-    <div className="g-min-h-screen g-py-8 g-px-4">
+    <div className="g-min-h-screen g-py-8">
       <div className="g-max-w-6xl g-mx-auto">
         {/* Step Indicator */}
         <StepIndicator currentStep={currentStep} />
@@ -68,6 +68,7 @@ function App() {
           <FormatSelection
             onFormatSelect={handleFormatSelect}
             onQuickDownload={handleQuickDownload}
+            totalRecords={3500000000}
             // onBack={handleBackToFilters}
           />
         )}

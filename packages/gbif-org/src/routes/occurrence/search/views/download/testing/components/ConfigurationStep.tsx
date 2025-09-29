@@ -1,10 +1,6 @@
 import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
-import {
-  FaChevronLeft,
-  FaCog,
-  FaExclamationTriangle,
-} from 'react-icons/fa';
+import { FaChevronLeft, FaCog, FaExclamationTriangle } from 'react-icons/fa';
 import TaxonomySelector from './TaxonomySelector';
 import ExtensionsSelector from './ExtensionsSelector';
 import CubeDimensionsSelector from './CubeDimensionsSelector';
@@ -42,9 +38,10 @@ export default function ConfigurationStep({
   onContinue,
 }: ConfigurationStepProps) {
   const formatTitle = selectedFormat?.title;
-  const isDarwinCoreArchive = formatTitle === 'DARWIN CORE ARCHIVE' || formatTitle?.includes('Darwin Core');
+  const isDarwinCoreArchive =
+    formatTitle === 'DARWIN CORE ARCHIVE' || formatTitle?.includes('Darwin Core');
   const isCubeData = formatTitle === 'CUBE DATA';
-  
+
   // Initialize configuration based on format
   const getInitialConfig = () => {
     const baseConfig = {
@@ -56,7 +53,7 @@ export default function ConfigurationStep({
     if (isDarwinCoreArchive) {
       return { ...baseConfig, extensions: [] } as DarwinCoreConfig;
     }
-    
+
     if (isCubeData) {
       return {
         ...baseConfig,
@@ -67,13 +64,13 @@ export default function ConfigurationStep({
         },
       } as CubeConfig;
     }
-    
+
     return baseConfig;
   };
 
   const [config, setConfig] = useState(getInitialConfig());
   const [isCubeValid, setIsCubeValid] = useState(false);
-  
+
   // Determine which section should be expanded initially
   const getInitialActiveSection = () => {
     if (isDarwinCoreArchive) {
@@ -84,7 +81,7 @@ export default function ConfigurationStep({
     }
     return 'taxonomy'; // Default to taxonomy if no other options
   };
-  
+
   const [activeSection, setActiveSection] = useState<string | null>(getInitialActiveSection());
 
   const handleTaxonomyChange = (taxonomy: string) => {
@@ -116,7 +113,7 @@ export default function ConfigurationStep({
     if (!isCubeData) {
       return true; // Not cube data, so no validation needed
     }
-    
+
     return isCubeValid;
   };
 
@@ -141,15 +138,15 @@ export default function ConfigurationStep({
       const dims = config.dimensions;
       summary.push({
         label: 'Spatial Res.',
-        value: dims.spatialResolution
+        value: dims.spatialResolution,
       });
       summary.push({
         label: 'Temporal Res.',
-        value: dims.temporalResolution
+        value: dims.temporalResolution,
       });
       summary.push({
         label: 'Taxonomic Level',
-        value: dims.taxonomicLevel
+        value: dims.taxonomicLevel,
       });
     }
 
@@ -164,7 +161,7 @@ export default function ConfigurationStep({
   return (
     <div className="g-max-w-4xl g-mx-auto">
       {/* Header */}
-      <div className="g-mb-8">
+      <div className="g-mb-4">
         <button
           onClick={onBack}
           className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-4 g-transition-colors"
@@ -235,7 +232,7 @@ export default function ConfigurationStep({
                   At least one dimension must be selected for cube data
                 </div>
               )}
-              
+
               <Button
                 onClick={handleContinue}
                 disabled={!canContinue}
