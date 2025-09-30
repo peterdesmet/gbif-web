@@ -267,12 +267,12 @@ export default function TermsStep({
                 <span className="g-text-gray-600">Est. Size:</span>
                 <span className="g-font-medium">{selectedFormat.size}</span>
               </div>
-              <div className="g-flex g-justify-between">
+              {/* <div className="g-flex g-justify-between">
                 <span className="g-text-gray-600">Processing:</span>
                 <span className="g-font-medium">
                   {selectedFormat.technicalSpecs['Processing Time']}
                 </span>
-              </div>
+              </div> */}
             </div>
 
             <div className="g-space-y-3 g-mb-6">
@@ -300,7 +300,7 @@ export default function TermsStep({
               className={`g-w-full g-flex g-items-center g-justify-center g-gap-2`}
             >
               <FaDownload size={16} />
-              {allTermsAccepted ? 'Start Download' : 'Accept All Terms'}
+              {allTermsAccepted ? 'Create archive' : 'Accept All Terms'}
             </Button>
 
             {!allTermsAccepted && (

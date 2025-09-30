@@ -4,19 +4,20 @@ import { FaChevronLeft, FaCog, FaExclamationTriangle } from 'react-icons/fa';
 import TaxonomySelector from './TaxonomySelector';
 import ExtensionsSelector from './ExtensionsSelector';
 import CubeDimensionsSelector from './CubeDimensionsSelector';
+import { useChecklistKey } from '@/hooks/useChecklistKey';
+import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
+import { FormattedMessage } from 'react-intl';
 
 interface ConfigurationStepProps {
-  qualityFilters: any;
   selectedFormat: any;
+  defaultChecklist: string;
   onBack: () => void;
   onContinue: (config: any) => void;
 }
 
 // Format-specific configuration interfaces
 interface BaseConfig {
-  taxonomy: string;
-  delimiter: string;
-  encoding: string;
+  checklistKey: string;
 }
 
 interface DarwinCoreConfig extends BaseConfig {
@@ -32,11 +33,13 @@ interface CubeConfig extends BaseConfig {
 }
 
 export default function ConfigurationStep({
-  qualityFilters,
+  defaultChecklist,
   selectedFormat,
   onBack,
   onContinue,
 }: ConfigurationStepProps) {
+  const { checklists, loading } = useSupportedChecklists();
+  const currentContextChecklistKey = useChecklistKey();
   const formatTitle = selectedFormat?.title;
   const isDarwinCoreArchive =
     formatTitle === 'DARWIN CORE ARCHIVE' || formatTitle?.includes('Darwin Core');
@@ -45,9 +48,7 @@ export default function ConfigurationStep({
   // Initialize configuration based on format
   const getInitialConfig = () => {
     const baseConfig = {
-      taxonomy: 'gbif',
-      delimiter: 'tab',
-      encoding: 'utf8',
+      checklistKey: currentContextChecklistKey ?? defaultChecklist,
     };
 
     if (isDarwinCoreArchive) {
@@ -84,8 +85,8 @@ export default function ConfigurationStep({
 
   const [activeSection, setActiveSection] = useState<string | null>(getInitialActiveSection());
 
-  const handleTaxonomyChange = (taxonomy: string) => {
-    setConfig((prev) => ({ ...prev, taxonomy }));
+  const handleTaxonomyChange = (checklistKey: string) => {
+    setConfig((prev) => ({ ...prev, checklistKey }));
   };
 
   const handleExtensionsChange = (extensions: string[]) => {
@@ -127,7 +128,10 @@ export default function ConfigurationStep({
   const getConfigSummary = () => {
     const summary = [
       { label: 'Format', value: selectedFormat.title },
-      { label: 'Taxonomy', value: config.taxonomy.toUpperCase() },
+      {
+        label: 'Taxonomy',
+        value: checklists.find((x) => x.key === config.checklistKey)?.alias ?? '',
+      },
     ];
 
     if (isDarwinCoreArchive && 'extensions' in config) {
@@ -150,10 +154,7 @@ export default function ConfigurationStep({
       });
     }
 
-    summary.push(
-      { label: 'Delimiter', value: config.delimiter.toUpperCase() },
-      { label: 'Encoding', value: config.encoding.toUpperCase() }
-    );
+    summary.push({ label: 'CSV delimiter', value: 'TAB' });
 
     return summary;
   };
@@ -176,7 +177,7 @@ export default function ConfigurationStep({
         <div className="lg:g-col-span-2 g-space-y-6">
           {/* Taxonomy Configuration - Always shown */}
           <TaxonomySelector
-            value={config.taxonomy}
+            value={config.checklistKey}
             onChange={handleTaxonomyChange}
             isExpanded={activeSection === 'taxonomy'}
             onToggle={() => toggleSection('taxonomy')}
@@ -219,13 +220,11 @@ export default function ConfigurationStep({
             </div>
 
             <div className="g-mt-6 g-pt-4 g-border-t g-border-gray-200">
-              <div className="g-flex g-items-center g-gap-2 g-text-sm g-text-amber-700 g-bg-amber-50 g-p-3 g-rounded g-mb-4">
-                <FaExclamationTriangle size={16} />
-                <span>
-                  Estimated processing time:{' '}
-                  {selectedFormat.technicalSpecs?.['Processing Time'] || '5-15 minutes'}
-                </span>
-              </div>
+              {canContinue && (
+                <div className="g-text-sm g-text-amber-700 g-bg-amber-50 g-p-3 g-rounded g-mb-4">
+                  <FormattedMessage id="downloadKey.downloadExpectTime" />
+                </div>
+              )}
 
               {!canContinue && (
                 <div className="g-text-red-600 g-text-sm g-font-medium g-mb-4">

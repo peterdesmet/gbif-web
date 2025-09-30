@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/largeCard';
 import { DynamicLink } from '@/reactRouterPlugins';
 import React from 'react';
-import { FaFileAlt, FaListUl, FaArchive, FaThLarge, FaChevronLeft } from 'react-icons/fa';
+import { FaChevronLeft } from 'react-icons/fa';
 
 interface Format {
   id: string;
@@ -47,8 +47,8 @@ const getEstimatedSize = (type: string, totalRecords: number): string => {
       sizeKb = EST_KB_DWCA * totalRecords * UNZIP_FACTOR;
       break;
     case 'SPECIES_LIST':
-      // Species list is much smaller as it's just unique species
-      sizeKb = Math.min(EST_KB_CSV * totalRecords * 0.01 * UNZIP_FACTOR, 10000); // Max ~10MB
+      // Species list is much smaller as it's just unique species. Below are based on a few random downloads. But it varies a lot depending on the filters. BBetter would be to use cardinality instead of occurrence counts.
+      sizeKb = Math.max(EST_KB_CSV * totalRecords * 0.0002 * UNZIP_FACTOR, 5000);
       break;
     default:
       sizeKb = 0;
@@ -60,7 +60,7 @@ const getEstimatedSize = (type: string, totalRecords: number): string => {
 const formatCards: Format[] = [
   {
     id: 'SIMPLE_CSV',
-    title: 'OCCURRENCE LIST',
+    title: 'Occurrence list',
     description: 'A single CSV file with standardized, interpreted occurrence data.',
     estimateSize: true,
     features: [
@@ -72,7 +72,7 @@ const formatCards: Format[] = [
   },
   {
     id: 'DWCA',
-    title: 'DARWIN CORE ARCHIVE',
+    title: 'Darwin Core Archive',
     hasNextStep: true,
     description:
       'Multiple files (core, raw values, interpreted data, extensions) for detailed or specialized use. The download can be customized by selecting specific extensions.',
@@ -87,14 +87,14 @@ const formatCards: Format[] = [
   },
   {
     id: 'SPECIES_LIST',
-    title: 'SPECIES LIST',
+    title: 'Species list',
     description: 'A distinct list of species with occurrence counts.',
     estimateSize: true,
     features: ['Single CSV file', 'Interpreted data only', 'Occurrence counts'],
   },
   {
     id: 'SQL_TSV_ZIP',
-    title: 'CUBE DATA',
+    title: 'Occurrence cube',
     hasNextStep: true,
     description:
       'Gridded occurrence counts by taxonomic, spatial and temporal dimensions. Dimensions and aggregations can be configured in the next step.',
@@ -115,10 +115,10 @@ export default function FormatSelection({
   totalRecords = 0,
 }: FormatSelectionProps) {
   const [configurations] = React.useState<Record<string, any>>({
-    SIMPLE_CSV: { taxonomy: 'gbif' },
-    SPECIES_LIST: { taxonomy: 'gbif' },
-    DWCA: { taxonomy: 'gbif', extensions: [] },
-    SQL_TSV_ZIP: { taxonomy: 'gbif' },
+    SIMPLE_CSV: { checklistKey: 'gbif' },
+    SPECIES_LIST: { checklistKey: 'gbif' },
+    DWCA: { checklistKey: 'gbif', extensions: [] },
+    SQL_TSV_ZIP: { checklistKey: 'gbif' },
   });
 
   return (
@@ -206,14 +206,14 @@ export default function FormatSelection({
           );
         })}
       </Card>
-      {/* <div className="g-text-center g-mt-8">
+      <div className="g-mt-8">
         <p className="g-text-gray-600 g-text-sm">
           We also support{' '}
           <DynamicLink pageId="occurrenceDownloadSql" className="g-underline">
             SQL downloads
           </DynamicLink>
         </p>
-        <p className="g-text-gray-600 g-text-sm g-mt-4">
+        {/* <p className="g-text-gray-600 g-text-sm g-mt-4">
           Not sure which format to choose? Try this{' '}
           <span className="g-underline">example archive</span> or{' '}
           <DynamicLink
@@ -224,8 +224,8 @@ export default function FormatSelection({
             read more
           </DynamicLink>
           .
-        </p>
-      </div> */}
+        </p> */}
+      </div>
     </div>
   );
 }

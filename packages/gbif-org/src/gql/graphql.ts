@@ -288,6 +288,7 @@ export type ClbBreakdownTaxon = {
 
 export type ClbDataset = {
   __typename?: 'ClbDataset';
+  alias?: Maybe<Scalars['String']['output']>;
   attempt?: Maybe<Scalars['Int']['output']>;
   created?: Maybe<Scalars['DateTime']['output']>;
   createdBy?: Maybe<Scalars['Int']['output']>;

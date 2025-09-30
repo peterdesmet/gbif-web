@@ -2,10 +2,11 @@
 Experimental endpoint to provide a human readable form for WKT polygons.
 The idea is to use our geocoding layers to provide results like: denmark, copenhagen area, gentofte and dragør.
 */
+import { Router } from 'express';
 import { getSql } from '#/helpers/generateSql';
 import searchAll from '#/helpers/omniSearch/omniSearch';
-import { Router } from 'express';
 import getNetworkCounts from './networkStats/networkCounts';
+import geSupportChecklists from './supportedChecklists/geSupportChecklists';
 
 const router = Router();
 
@@ -50,6 +51,15 @@ router.post('/generate-sql', async (req, res) => {
 router.get('/network-stats', async (req, res) => {
   try {
     const response = await getNetworkCounts();
+    res.json(response);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/supported-checklists', async (req, res) => {
+  try {
+    const response = await geSupportChecklists();
     res.json(response);
   } catch (err) {
     res.status(500).json({ error: err.message });

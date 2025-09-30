@@ -1,14 +1,27 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import StepIndicator from './components/StepIndicator';
 import FormatSelection from './components/FormatSelection';
 import ConfigurationStep from './components/ConfigurationStep';
 import TermsStep from './components/TermsStep';
 import DownloadProgress from './components/DownloadProgress';
 import QualityFilters from './components/QualityFilters';
+import { FilterContext } from '@/contexts/filter';
+import { useConfig } from '@/config/config';
 
 function App() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedFormat, setSelectedFormat] = useState(null);
+  const currentFilterContext = useContext(FilterContext);
+  const siteConfig = useConfig();
+  const selectedChecklist =
+    currentFilterContext.filter.checklistKey ?? siteConfig.defaultChecklistKey;
+  return <DownloadFlow defaultChecklist={selectedChecklist} />;
+}
+
+function DownloadFlow({ defaultChecklist }: { defaultChecklist: string }) {
+  const [currentStep, setCurrentStep] = useState(2);
+  const [selectedFormat, setSelectedFormat] = useState({
+    id: 'SIMPLE_CSV',
+    title: 'Occurrence sdkfjh ',
+  }); // just for testing. should be null initially
   const [configuration, setConfiguration] = useState(null);
 
   const handleFilterSelect = (format: any) => {
@@ -75,6 +88,7 @@ function App() {
 
         {currentStep === 2 && selectedFormat && (
           <ConfigurationStep
+            defaultChecklist={defaultChecklist}
             selectedFormat={selectedFormat}
             onBack={handleBackToFormat}
             onContinue={handleConfigurationComplete}
