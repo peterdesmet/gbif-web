@@ -1,15 +1,17 @@
-import { ArticleContainer } from '@/routes/resource/key/components/articleContainer';
-import { ArticleTextContainer } from '@/routes/resource/key/components/articleTextContainer';
 import { useEffect, useState } from 'react';
 import { CurrentFilterCard, JSONValidationError } from './components/currentFilterCard';
-import { DownloadOptionsCard } from './components/downloadOptionsCard';
 import { RestoredPredicateNotice } from './components/restoredPredicateNotice';
 import { usePredicate } from './usePredicate';
-import App from '@/routes/occurrence/search/views/download/testing/app';
+import { Button } from '@/components/ui/button';
+import { useNormalizedPredicate } from '@/routes/occurrence/search/views/download/testing/components/usePredicateInformation';
 
 export type Mode = 'editing' | 'viewing';
 
-export function OccurrenceDownloadRequestCreate() {
+export function OccurrenceDownloadRequestCreate({
+  onContinue,
+}: {
+  onContinue: (predicate?: string) => void;
+}) {
   const {
     loading,
     error: predicateError,
@@ -18,37 +20,46 @@ export function OccurrenceDownloadRequestCreate() {
     wasLoadedFromSession,
     discardSessionPredicate,
   } = usePredicate();
-
   const [validationError, setValidationError] = useState<JSONValidationError>();
   const [mode, setMode] = useState<Mode>('viewing');
+  const { error: normalizationError } = useNormalizedPredicate({
+    predicate: mode === 'viewing' ? predicate : undefined,
+  });
 
   useEffect(() => {
-    if (predicateError) {
+    if (normalizationError) {
+      setValidationError({ type: 'invalid-predicate', message: 'Invalid predicate' });
+    } else if (predicateError) {
       setValidationError({ type: 'faild-to-load-predicate', message: predicateError });
     }
-  }, [predicateError]);
+  }, [predicateError, normalizationError]);
 
   return (
-    <ArticleContainer className="g-bg-slate-100">
-      <ArticleTextContainer className="g-max-w-screen-xl g-flex g-flex-col g-gap-4">
-        <RestoredPredicateNotice
-          show={!loading && wasLoadedFromSession}
-          discard={discardSessionPredicate}
-        />
+    <>
+      <RestoredPredicateNotice
+        show={!loading && wasLoadedFromSession}
+        discard={discardSessionPredicate}
+      />
 
-        <CurrentFilterCard
-          loading={loading}
-          predicate={predicate}
-          setPredicate={setPredicate}
-          mode={mode}
-          setMode={setMode}
-          validationError={validationError}
-          setValidationError={setValidationError}
-        />
-
-        {/* {!validationError && !predicateError && mode === 'viewing' && <DownloadOptionsCard />} */}
-        <App />
-      </ArticleTextContainer>
-    </ArticleContainer>
+      <CurrentFilterCard
+        loading={loading}
+        predicate={predicate}
+        setPredicate={setPredicate}
+        mode={mode}
+        setMode={setMode}
+        validationError={validationError}
+        setValidationError={setValidationError}
+      />
+      <div>
+        <Button
+          disabled={
+            !!validationError || !predicate || (predicate?.length ?? 0) < 10 || mode === 'editing'
+          }
+          onClick={() => onContinue(predicate)}
+        >
+          Continue
+        </Button>
+      </div>
+    </>
   );
 }

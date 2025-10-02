@@ -14,8 +14,7 @@ interface Format {
 }
 
 interface FormatSelectionProps {
-  onFormatSelect: (format: Format, config: any) => void;
-  onQuickDownload?: (format: Format, config: any) => void;
+  onFormatSelect: (format: Format) => void;
   onBack?: () => void;
   totalRecords?: number;
 }
@@ -26,7 +25,8 @@ const EST_KB_CSV = 0.1161948717948718;
 const UNZIP_FACTOR = 4.52617;
 
 // Helper function to format file sizes
-const formatFileSize = (bytes: number): string => {
+export const formatFileSize = (bytes: number): string => {
+  if (bytes < 0) return 'Unknown';
   if (bytes === 0) return '0 B';
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -35,8 +35,8 @@ const formatFileSize = (bytes: number): string => {
 };
 
 // Calculate estimated sizes based on format and record count
-const getEstimatedSize = (type: string, totalRecords: number): string => {
-  if (totalRecords === 0) return 'Unknown';
+export const getEstimatedSizeInBytes = (type: string, totalRecords: number): number => {
+  if (totalRecords === 0) return -1;
 
   let sizeKb: number;
   switch (type) {
@@ -51,10 +51,10 @@ const getEstimatedSize = (type: string, totalRecords: number): string => {
       sizeKb = Math.max(EST_KB_CSV * totalRecords * 0.0002 * UNZIP_FACTOR, 5000);
       break;
     default:
-      sizeKb = 0;
+      sizeKb = -1;
   }
 
-  return formatFileSize(sizeKb * 1024);
+  return sizeKb * 1024; // Convert to bytes
 };
 
 const formatCards: Format[] = [
@@ -110,7 +110,6 @@ const formatCards: Format[] = [
 
 export default function FormatSelection({
   onFormatSelect,
-  onQuickDownload,
   onBack,
   totalRecords = 0,
 }: FormatSelectionProps) {
@@ -154,7 +153,8 @@ export default function FormatSelection({
                         </div>
                         {totalRecords > 0 && format.estimateSize && (
                           <div className="g-text-sm g-text-slate-500 g-mb-2">
-                            Estimated size: {getEstimatedSize(format.id, totalRecords)} unzipped
+                            Estimated size:{' '}
+                            {formatFileSize(getEstimatedSizeInBytes(format.id, totalRecords))} bytes
                           </div>
                         )}
                         <p className="g-text-gray-600 g-text-sm g-mb-3">{format.description}</p>
@@ -173,13 +173,12 @@ export default function FormatSelection({
                       </div>
 
                       <div className="g-flex g-flex-col g-items-stretch g-gap-3">
-                        {format.id === 'SIMPLE_CSV' || format.id === 'SPECIES_LIST' ? (
+                        {/* {format.id === 'SIMPLE_CSV' || format.id === 'SPECIES_LIST' ? (
                           <>
                             <Button
                               variant="ghost"
                               onClick={() => onFormatSelect(format, configurations[format.id])}
                             >
-                              {/* <FiSettings className="g-inline g-mr-1" size={14} /> */}
                               Configure
                             </Button>
                             <Button
@@ -190,13 +189,13 @@ export default function FormatSelection({
                             </Button>
                           </>
                         ) : (
-                          <Button
-                            size="default"
-                            onClick={() => onFormatSelect(format, configurations[format.id])}
-                          >
+                          <Button size="default" onClick={() => onFormatSelect(format)}>
                             Configure
                           </Button>
-                        )}
+                        )} */}
+                        <Button size="default" onClick={() => onFormatSelect(format)}>
+                          Configure
+                        </Button>
                       </div>
                     </div>
                   </div>

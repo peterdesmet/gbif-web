@@ -1,9 +1,8 @@
 import { useConfig } from '@/config/config';
 import { DownloadHostedPortal } from './DownloadHostedPortal';
-import DownloadGbifOrg from './DownloadGbifOrg';
-import DownloadGbifOrgVertical from './DownloadGbifOrg vertical';
-import DownloadGbifOrgHorizontal from './DownloadGbifOrg horisontal';
 import App from './testing/app';
+import PredicateEditor from '@/routes/occurrence/download/editor/predicateEditor';
+import SqlEditor from '@/routes/occurrence/download/editor/sqlEDitor';
 
 export function Download() {
   const { isGBIFOrg } = useConfig();
@@ -12,7 +11,9 @@ export function Download() {
   } else {
     return (
       <>
-        <App />
+        <PredicateEditor />
+        <SqlEditor />
+        {/* <App /> */}
         {/* <DownloadGbifOrgVertical />
         <DownloadGbifOrgHorizontal /> */}
       </>

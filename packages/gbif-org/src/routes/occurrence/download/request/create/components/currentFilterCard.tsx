@@ -72,9 +72,9 @@ export function CurrentFilterCard({
 
   return (
     <>
-      <DiscreteCardTitle>
+      {/* <DiscreteCardTitle>
         <FormattedMessage id="download.request.currentFilter" defaultMessage="Current filter" />
-      </DiscreteCardTitle>
+      </DiscreteCardTitle> */}
 
       <Card>
         <EditorHeader

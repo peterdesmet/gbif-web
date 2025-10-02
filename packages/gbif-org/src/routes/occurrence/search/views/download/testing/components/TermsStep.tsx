@@ -1,29 +1,29 @@
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
 import {
   FaChevronLeft,
   FaFileAlt,
   FaCheck,
   FaExclamationTriangle,
-  FaExternalLinkAlt,
   FaDownload,
-  FaClock,
 } from 'react-icons/fa';
 
 interface TermsStepProps {
-  qualityFilters: any;
+  predicate?: any;
+  sql?: string;
   selectedFormat: any;
   configuration: any;
   onBack: () => void;
-  onAccept: () => void;
 }
 
 export default function TermsStep({
-  qualityFilters,
+  predicate,
+  sql,
   selectedFormat,
   configuration,
   onBack,
-  onAccept,
 }: TermsStepProps) {
   // Hardcoded flag to show large download warning - replace with actual logic later
   const isLargeDownload = true;
@@ -65,6 +65,7 @@ export default function TermsStep({
             <p className="g-text-gray-600">Please review and accept the terms before downloading</p>
           </div>
         </div> */}
+        <pre>{JSON.stringify({ selectedFormat, configuration, predicate, sql }, null, 2)}</pre>
       </div>
 
       <div className="g-grid lg:g-grid-cols-3 g-gap-8">
@@ -75,12 +76,11 @@ export default function TermsStep({
             <div className="g-p-6">
               <div className="g-flex g-items-start g-gap-4">
                 <div className="g-flex-shrink-0 g-mt-1">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="dataUse"
                     checked={acceptedTerms.dataUse}
-                    onChange={() => handleTermChange('dataUse')}
-                    className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
+                    onCheckedChange={() => handleTermChange('dataUse')}
+                    className="g-h-5 g-w-5"
                   />
                 </div>
                 <div className="g-flex-1">
@@ -88,7 +88,6 @@ export default function TermsStep({
                     htmlFor="dataUse"
                     className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                   >
-                    <FaFileAlt size={18} className="g-text-primary-600" />
                     Data Use Agreement
                   </label>
                   <div className="g-text-sm g-text-gray-700 g-space-y-2">
@@ -116,12 +115,11 @@ export default function TermsStep({
               <div className="g-p-6">
                 <div className="g-flex g-items-start g-gap-4">
                   <div className="g-flex-shrink-0 g-mt-1">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       id="largeDownload"
                       checked={acceptedTerms.largeDownload || false}
-                      onChange={() => handleTermChange('largeDownload')}
-                      className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
+                      onCheckedChange={() => handleTermChange('largeDownload')}
+                      className="g-h-5 g-w-5"
                     />
                   </div>
                   <div className="g-flex-1">
@@ -129,7 +127,6 @@ export default function TermsStep({
                       htmlFor="largeDownload"
                       className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                     >
-                      <FaExclamationTriangle size={18} className="g-text-yellow-600" />
                       Large Download Warning
                     </label>
                     <div className="g-text-sm g-text-gray-700 g-space-y-3">
@@ -162,85 +159,6 @@ export default function TermsStep({
               </div>
             </div>
           )}
-
-          {/* Privacy and Data Protection */}
-          {/* <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
-            <div className="g-p-6">
-              <div className="g-flex g-items-start g-gap-4">
-                <div className="g-flex-shrink-0 g-mt-1">
-                  <input
-                    type="checkbox"
-                    id="privacy"
-                    checked={acceptedTerms.privacy}
-                    onChange={() => handleTermChange('privacy')}
-                    className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
-                  />
-                </div>
-                <div className="g-flex-1">
-                  <label
-                    htmlFor="privacy"
-                    className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
-                  >
-                    <FaExclamationTriangle size={18} className="g-text-amber-600" />
-                    Privacy and Sensitive Data
-                  </label>
-                  <div className="g-text-sm g-text-gray-700 g-space-y-2">
-                    <p>Please be aware that:</p>
-                    <ul className="g-list-disc g-list-inside g-space-y-1 g-ml-4">
-                      <li>
-                        Some records may contain precise locality information for sensitive species
-                      </li>
-                      <li>
-                        You are responsible for handling sensitive location data appropriately
-                      </li>
-                      <li>
-                        Do not publish precise coordinates for endangered or commercially valuable
-                        species
-                      </li>
-                      <li>
-                        Respect local regulations and indigenous rights regarding biodiversity data
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
-
-          {/* Processing Agreement */}
-          {/* <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
-            <div className="g-p-6">
-              <div className="g-flex g-items-start g-gap-4">
-                <div className="g-flex-shrink-0 g-mt-1">
-                  <input
-                    type="checkbox"
-                    id="processing"
-                    checked={acceptedTerms.processing}
-                    onChange={() => handleTermChange('processing')}
-                    className="g-h-5 g-w-5 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
-                  />
-                </div>
-                <div className="g-flex-1">
-                  <label
-                    htmlFor="processing"
-                    className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
-                  >
-                    <FaClock size={18} className="g-text-primary-600" />
-                    Processing and Delivery
-                  </label>
-                  <div className="g-text-sm g-text-gray-700 g-space-y-2">
-                    <p>I understand that:</p>
-                    <ul className="g-list-disc g-list-inside g-space-y-1 g-ml-4">
-                      <li>Large downloads may take several hours to process</li>
-                      <li>I will receive an email notification when the download is ready</li>
-                      <li>Download links will expire after 3 months</li>
-                      <li>Processing may fail for very large requests and require adjustment</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
         </div>
 
         {/* Summary Sidebar */}
@@ -267,12 +185,6 @@ export default function TermsStep({
                 <span className="g-text-gray-600">Est. Size:</span>
                 <span className="g-font-medium">{selectedFormat.size}</span>
               </div>
-              {/* <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Processing:</span>
-                <span className="g-font-medium">
-                  {selectedFormat.technicalSpecs['Processing Time']}
-                </span>
-              </div> */}
             </div>
 
             <div className="g-space-y-3 g-mb-6">
@@ -295,12 +207,11 @@ export default function TermsStep({
             </div>
 
             <Button
-              onClick={onAccept}
               disabled={!allTermsAccepted}
               className={`g-w-full g-flex g-items-center g-justify-center g-gap-2`}
             >
               <FaDownload size={16} />
-              {allTermsAccepted ? 'Create archive' : 'Accept All Terms'}
+              Create download
             </Button>
 
             {!allTermsAccepted && (

@@ -1,114 +1,233 @@
-import React, { useContext, useState } from 'react';
-import StepIndicator from './components/StepIndicator';
+import { useContext, useEffect, useState } from 'react';
+import StepIndicator, {
+  occurrenceDownloadSteps,
+  predicateDownloadSteps,
+  sqlDownloadSteps,
+} from './components/StepIndicator';
 import FormatSelection from './components/FormatSelection';
 import ConfigurationStep from './components/ConfigurationStep';
 import TermsStep from './components/TermsStep';
-import DownloadProgress from './components/DownloadProgress';
 import QualityFilters from './components/QualityFilters';
-import { FilterContext } from '@/contexts/filter';
+import { FilterContext, FilterType } from '@/contexts/filter';
 import { useConfig } from '@/config/config';
+import { OccurrenceDownloadRequestCreate } from '@/routes/occurrence/download/request/create';
+import { OccurrenceDownloadSqlCreate } from '@/routes/occurrence/download/sql/create';
+import { searchConfig } from '../../../searchConfig';
+import { useSearchContext } from '@/contexts/search';
+import { getAsQuery } from '@/components/filters/filterTools';
+import { Predicate } from '@/gql/graphql';
+import { usePredicateInformation } from './components/usePredicateInformation';
 
 function App() {
   const currentFilterContext = useContext(FilterContext);
   const siteConfig = useConfig();
+  const searchContext = useSearchContext();
   const selectedChecklist =
-    currentFilterContext.filter.checklistKey ?? siteConfig.defaultChecklistKey;
-  return <DownloadFlow defaultChecklist={selectedChecklist} />;
+    currentFilterContext.filter.checklistKey ??
+    siteConfig.defaultChecklistKey ??
+    import.meta.env.PUBLIC_DEFAULT_CHECKLIST_KEY;
+  const [predicate, setPredicate] = useState<Predicate | undefined>(undefined);
+
+  useEffect(() => {
+    const query = getAsQuery({ filter: currentFilterContext.filter, searchContext, searchConfig });
+    const predicate = query.predicate as Predicate;
+    setPredicate(predicate);
+    // We are tracking filter changes via a hash that is updated whenever the filter changes. This is so we do not have to deep compare the object everywhere
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFilterContext.filterHash, searchContext]);
+
+  return (
+    <>
+      <OccurrenceDownloadFlow
+        defaultChecklist={selectedChecklist}
+        filter={currentFilterContext.filter}
+        predicate={predicate}
+      />
+      <h1>predicate download</h1>
+      <PredicateDownloadFlow defaultChecklist={selectedChecklist} />
+      <h1>sql download</h1>
+      <SqlDownloadFlow defaultChecklist={selectedChecklist} />
+    </>
+  );
 }
 
-function DownloadFlow({ defaultChecklist }: { defaultChecklist: string }) {
-  const [currentStep, setCurrentStep] = useState(2);
-  const [selectedFormat, setSelectedFormat] = useState({
-    id: 'SIMPLE_CSV',
-    title: 'Occurrence sdkfjh ',
-  }); // just for testing. should be null initially
+function OccurrenceDownloadFlow({
+  defaultChecklist = import.meta.env.PUBLIC_DEFAULT_CHECKLIST_KEY,
+  filter,
+  predicate,
+}: {
+  defaultChecklist: string;
+  filter: FilterType;
+  predicate?: Predicate;
+}) {
+  const {
+    total,
+    loading,
+    error,
+    predicate: normalizedPredicate,
+  } = usePredicateInformation({ predicate });
+
+  const [currentStep, setCurrentStep] = useState<'QUALITY' | 'FORMAT' | 'CONFIGURE' | 'TERMS'>(
+    'FORMAT'
+  );
+  const [selectedFormat, setSelectedFormat] = useState(null);
   const [configuration, setConfiguration] = useState(null);
 
   const handleFilterSelect = (format: any) => {
-    // setSelectedFormat(format);
-    setCurrentStep(1);
+    setCurrentStep('FORMAT');
   };
 
-  const handleFormatSelect = (format: any, config: any) => {
+  const handleFormatSelect = (format: any) => {
     setSelectedFormat(format);
-    // setConfiguration(config);
-    setCurrentStep(2);
-  };
-
-  const handleQuickDownload = (format: any, config: any) => {
-    setSelectedFormat(format);
-    setConfiguration(config);
-    setCurrentStep(3); // Skip configuration step and go straight to terms
+    setCurrentStep('CONFIGURE');
   };
 
   const handleConfigurationComplete = (config: any) => {
     setConfiguration(config);
-    setCurrentStep(3);
-  };
-
-  const handleTermsAccept = () => {
-    setCurrentStep(4);
-  };
-
-  const handleStartOver = () => {
-    setCurrentStep(0);
-    setSelectedFormat(null);
-    setConfiguration(null);
-  };
-
-  const handleBackToFilters = () => {
-    setCurrentStep(0);
-  };
-
-  const handleBackToFormat = () => {
-    setCurrentStep(1);
-  };
-
-  const handleBackToConfiguration = () => {
-    setCurrentStep(2);
+    setCurrentStep('TERMS');
   };
 
   return (
     <div className="g-min-h-screen g-py-8">
       <div className="g-max-w-6xl g-mx-auto">
         {/* Step Indicator */}
-        <StepIndicator currentStep={currentStep} />
+        <StepIndicator currentStep={currentStep} steps={occurrenceDownloadSteps} />
 
         {/* Step Content */}
-        {currentStep === 0 && <QualityFilters onContinue={handleFilterSelect} />}
+        {currentStep === 'QUALITY' && <QualityFilters onContinue={handleFilterSelect} />}
 
-        {currentStep === 1 && (
+        {currentStep === 'FORMAT' && (
           <FormatSelection
             onFormatSelect={handleFormatSelect}
-            onQuickDownload={handleQuickDownload}
-            totalRecords={3500000000}
+            totalRecords={!loading ? total : undefined}
             // onBack={handleBackToFilters}
           />
         )}
 
-        {currentStep === 2 && selectedFormat && (
+        {currentStep === 'CONFIGURE' && selectedFormat && (
           <ConfigurationStep
             defaultChecklist={defaultChecklist}
             selectedFormat={selectedFormat}
-            onBack={handleBackToFormat}
+            onBack={() => setCurrentStep('FORMAT')}
+            onContinue={handleConfigurationComplete}
+            filter={filter}
+          />
+        )}
+
+        {currentStep === 'TERMS' && selectedFormat && configuration && (
+          <TermsStep
+            selectedFormat={selectedFormat}
+            configuration={configuration}
+            predicate={normalizedPredicate}
+            onBack={() => setCurrentStep('CONFIGURE')}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function PredicateDownloadFlow({
+  defaultChecklist = import.meta.env.PUBLIC_DEFAULT_CHECKLIST_KEY,
+}: {
+  defaultChecklist: string;
+}) {
+  const [currentStep, setCurrentStep] = useState<'PREDICATE' | 'FORMAT' | 'CONFIGURE' | 'TERMS'>(
+    'PREDICATE'
+  );
+  const [selectedFormat, setSelectedFormat] = useState(null);
+  const [configuration, setConfiguration] = useState(null);
+  const [predicate, setPredicate] = useState<string | undefined>(undefined);
+  const {
+    total,
+    loading,
+    error,
+    predicate: normalizedPredicate,
+  } = usePredicateInformation({ predicate });
+
+  const handleFilterSelect = (predicate: string) => {
+    setPredicate(predicate);
+    setCurrentStep('FORMAT');
+  };
+
+  const handleFormatSelect = (format: any) => {
+    setSelectedFormat(format);
+    setCurrentStep('CONFIGURE');
+  };
+
+  const handleConfigurationComplete = (config: any) => {
+    setConfiguration(config);
+    setCurrentStep('TERMS');
+  };
+
+  return (
+    <div className="g-min-h-screen g-py-8">
+      <div className="g-max-w-4xl g-mx-auto">
+        {/* Step Indicator */}
+        <StepIndicator currentStep={currentStep} steps={predicateDownloadSteps} />
+
+        {/* Step Content */}
+        {currentStep === 'PREDICATE' && (
+          <OccurrenceDownloadRequestCreate onContinue={handleFilterSelect} />
+        )}
+
+        {currentStep === 'FORMAT' && (
+          <FormatSelection
+            onFormatSelect={handleFormatSelect}
+            totalRecords={3500000000}
+            onBack={() => setCurrentStep('PREDICATE')}
+          />
+        )}
+
+        {currentStep === 'CONFIGURE' && selectedFormat && (
+          <ConfigurationStep
+            defaultChecklist={defaultChecklist}
+            selectedFormat={selectedFormat}
+            onBack={() => setCurrentStep('FORMAT')}
             onContinue={handleConfigurationComplete}
           />
         )}
 
-        {currentStep === 3 && selectedFormat && configuration && (
+        {currentStep === 'TERMS' && selectedFormat && configuration && (
           <TermsStep
             selectedFormat={selectedFormat}
             configuration={configuration}
-            onBack={handleBackToConfiguration}
-            onAccept={handleTermsAccept}
+            onBack={() => setCurrentStep('CONFIGURE')}
+            predicate={predicate}
           />
         )}
+      </div>
+    </div>
+  );
+}
 
-        {currentStep === 4 && selectedFormat && configuration && (
-          <DownloadProgress
+function SqlDownloadFlow({
+  defaultChecklist = import.meta.env.PUBLIC_DEFAULT_CHECKLIST_KEY,
+}: {
+  defaultChecklist: string;
+}) {
+  const [currentStep, setCurrentStep] = useState<'SQL' | 'TERMS'>('SQL');
+  const [selectedFormat, setSelectedFormat] = useState(null);
+  const [configuration, setConfiguration] = useState(null);
+
+  const handleSqlSelect = (sql: any) => {
+    setCurrentStep('TERMS');
+  };
+
+  return (
+    <div className="g-min-h-screen g-py-8">
+      <div className="g-max-w-6xl g-mx-auto">
+        {/* Step Indicator */}
+        <StepIndicator currentStep={currentStep} steps={sqlDownloadSteps} />
+
+        {/* Step Content */}
+        {currentStep === 'SQL' && <OccurrenceDownloadSqlCreate onContinue={handleSqlSelect} />}
+
+        {currentStep === 'TERMS' && selectedFormat && configuration && (
+          <TermsStep
             selectedFormat={selectedFormat}
             configuration={configuration}
-            onStartOver={handleStartOver}
+            onBack={() => setCurrentStep('CONFIGURE')}
           />
         )}
       </div>

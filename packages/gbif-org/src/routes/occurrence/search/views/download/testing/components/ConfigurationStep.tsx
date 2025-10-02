@@ -1,16 +1,19 @@
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FaChevronLeft, FaCog, FaExclamationTriangle } from 'react-icons/fa';
 import TaxonomySelector from './TaxonomySelector';
 import ExtensionsSelector from './ExtensionsSelector';
-import CubeDimensionsSelector from './CubeDimensionsSelector';
+import CubeDimensionsSelector, { CubeDimensions } from './CubeDimensionsSelector';
 import { useChecklistKey } from '@/hooks/useChecklistKey';
 import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
 import { FormattedMessage } from 'react-intl';
+import { FilterType } from '@/contexts/filter';
+import { generateCubeSql, hasAllFilters, hasFilter, hasFilters } from './cubeService';
 
 interface ConfigurationStepProps {
   selectedFormat: any;
-  defaultChecklist: string;
+  defaultChecklist?: string;
+  filter?: FilterType;
   onBack: () => void;
   onContinue: (config: any) => void;
 }
@@ -25,28 +28,25 @@ interface DarwinCoreConfig extends BaseConfig {
 }
 
 interface CubeConfig extends BaseConfig {
-  dimensions: {
-    spatialResolution: string;
-    temporalResolution: string;
-    taxonomicLevel: string;
-  };
+  cube: CubeDimensions;
+  sql?: string;
+  machineDescription?: string;
 }
 
 export default function ConfigurationStep({
   defaultChecklist,
   selectedFormat,
   onBack,
+  filter,
   onContinue,
 }: ConfigurationStepProps) {
   const { checklists, loading } = useSupportedChecklists();
   const currentContextChecklistKey = useChecklistKey();
-  const formatTitle = selectedFormat?.title;
-  const isDarwinCoreArchive =
-    formatTitle === 'DARWIN CORE ARCHIVE' || formatTitle?.includes('Darwin Core');
-  const isCubeData = formatTitle === 'CUBE DATA';
+  const isDarwinCoreArchive = selectedFormat?.id === 'DWCA';
+  const isCubeData = selectedFormat?.id === 'SQL_TSV_ZIP';
 
   // Initialize configuration based on format
-  const getInitialConfig = () => {
+  const getInitialConfig = (): BaseConfig | DarwinCoreConfig | CubeConfig => {
     const baseConfig = {
       checklistKey: currentContextChecklistKey ?? defaultChecklist,
     };
@@ -58,10 +58,17 @@ export default function ConfigurationStep({
     if (isCubeData) {
       return {
         ...baseConfig,
-        dimensions: {
-          spatialResolution: '0.1deg',
-          temporalResolution: 'year',
-          taxonomicLevel: 'species',
+        cube: {
+          taxonomicLevel: 'SPECIES',
+          selectedHigherTaxonomyGroups: ['KINGDOM', 'PHYLUM', 'CLASS', 'ORDER', 'FAMILY', 'GENUS'],
+          includeSpatialUncertainty: 'YES',
+          includeTemporalUncertainty: 'YES',
+          removeRecordsWithGeospatialIssues: !hasFilter(filter, 'hasGeospatialIssue'),
+          removeRecordsTaxonIssues: !hasFilter(filter, 'taxonomicIssue'),
+          removeRecordsAtCentroids: !hasFilter(filter, 'distanceFromCentroidInMeters'),
+          removeFossilsAndLiving: !hasFilter(filter, 'basisOfRecord'),
+          removeAbsenceRecords: !hasFilter(filter, 'occurrenceStatus'),
+          temporalResolution: 'YEAR',
         },
       } as CubeConfig;
     }
@@ -78,7 +85,7 @@ export default function ConfigurationStep({
       return 'extensions'; // Expand extensions for Darwin Core Archive
     }
     if (isCubeData) {
-      return 'dimensions'; // Expand dimensions for Cube Data
+      return 'cube'; // Expand cube for Cube Data
     }
     return 'taxonomy'; // Default to taxonomy if no other options
   };
@@ -95,9 +102,9 @@ export default function ConfigurationStep({
     }
   };
 
-  const handleDimensionsChange = (dimensions: any) => {
+  const handleDimensionsChange = (cube: CubeDimensions) => {
     if (isCubeData) {
-      setConfig((prev) => ({ ...prev, dimensions }));
+      setConfig((prev) => ({ ...prev, cube }));
     }
   };
 
@@ -105,7 +112,17 @@ export default function ConfigurationStep({
     setIsCubeValid(isValid);
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+    if (isCubeData && 'cube' in config) {
+      // Ensure SQL is generated for cube data before continuing
+      const result = await generateCubeSql(config.cube, undefined);
+      if (!result.sql) {
+        alert('Error generating SQL'); // TODO inform the user and do not proceed. instead allow the user to try again.
+        return;
+      }
+      config.sql = result.sql;
+      config.machineDescription = result.machineDescription;
+    }
     onContinue(config);
   };
 
@@ -138,8 +155,8 @@ export default function ConfigurationStep({
       summary.push({ label: 'Extensions', value: config.extensions.length.toString() });
     }
 
-    if (isCubeData && 'dimensions' in config) {
-      const dims = config.dimensions;
+    if (isCubeData && 'cube' in config) {
+      const dims = config.cube;
       summary.push({
         label: 'Spatial Res.',
         value: dims.spatialResolution,
@@ -194,13 +211,14 @@ export default function ConfigurationStep({
           )}
 
           {/* Cube Dimensions - Only for Cube Data */}
-          {isCubeData && 'dimensions' in config && (
+          {isCubeData && 'cube' in config && (
             <CubeDimensionsSelector
-              dimensions={config.dimensions}
+              cube={config.cube}
               onChange={handleDimensionsChange}
-              isExpanded={activeSection === 'dimensions'}
-              onToggle={() => toggleSection('dimensions')}
+              isExpanded={activeSection === 'cube'}
+              onToggle={() => toggleSection('cube')}
               onValidationChange={handleCubeValidationChange}
+              filter={filter}
             />
           )}
         </div>

@@ -4,6 +4,7 @@ import { OccurrenceDownloadAbout, occurrenceDownloadAboutLoader } from './about'
 import { OccurrenceDownloadRequestCreate } from './create';
 import { OccurrenceDownloadRequestCreateSkleton } from './create/skeleton';
 import { OccurrenceDownloadPage } from './layout';
+import { PredicateDownloadFlow } from '../../search/views/download/testing/app';
 
 export const occurrenceDownloadRequestRoute: RouteObjectWithPlugins = {
   path: 'occurrence/download/request',
@@ -14,7 +15,10 @@ export const occurrenceDownloadRequestRoute: RouteObjectWithPlugins = {
       // The page uses session storage and can therefore not be server side rendered
       element: (
         <StaticRenderSuspence fallback={<OccurrenceDownloadRequestCreateSkleton />}>
-          <OccurrenceDownloadRequestCreate />
+          {/* <OccurrenceDownloadRequestCreate /> */}
+          <div className="g-bg-slate-100">
+            <PredicateDownloadFlow />
+          </div>
         </StaticRenderSuspence>
       ),
     },

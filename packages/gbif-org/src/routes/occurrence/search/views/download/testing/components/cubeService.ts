@@ -1,3 +1,4 @@
+import { FilterType } from '@/contexts/filter';
 import { CubeDimensions } from '@/routes/occurrence/search/views/download/testing/components/CubeDimensionsSelector';
 
 export interface CubeSqlGenerationOptions {
@@ -26,29 +27,29 @@ export interface CubeSqlResponse {
  * Converts CubeDimensions to the format expected by the SQL generation API
  */
 export function convertCubeDimensionsToSqlOptions(
-  dimensions: CubeDimensions,
+  cube: CubeDimensions,
   predicate?: any,
   query?: any
 ): CubeSqlGenerationOptions {
   const options: CubeSqlGenerationOptions = {
-    taxonomy: dimensions.taxonomicLevel,
-    temporal: dimensions.temporalResolution,
-    spatial: dimensions.spatial,
-    resolution: dimensions.resolution,
-    randomize: dimensions.randomize,
-    higherGroups: dimensions.selectedHigherTaxonomyGroups,
-    includeTemporalUncertainty: dimensions.includeTemporalUncertainty,
-    includeSpatialUncertainty: dimensions.includeSpatialUncertainty,
+    taxonomy: cube.taxonomicLevel,
+    temporal: cube.temporalResolution,
+    spatial: cube.spatial,
+    resolution: cube.resolution,
+    randomize: cube.randomize,
+    higherGroups: cube.selectedHigherTaxonomyGroups,
+    includeTemporalUncertainty: cube.includeTemporalUncertainty,
+    includeSpatialUncertainty: cube.includeSpatialUncertainty,
     predicate,
   };
 
   // Apply data quality filters
   const hasQualityFilter =
-    dimensions.removeRecordsWithGeospatialIssues ||
-    dimensions.removeRecordsTaxonIssues ||
-    dimensions.removeRecordsAtCentroids ||
-    dimensions.removeFossilsAndLiving ||
-    dimensions.removeAbsenceRecords;
+    cube.removeRecordsWithGeospatialIssues ||
+    cube.removeRecordsTaxonIssues ||
+    cube.removeRecordsAtCentroids ||
+    cube.removeFossilsAndLiving ||
+    cube.removeAbsenceRecords;
 
   if (hasQualityFilter) {
     const qualityPredicates: any[] = [];
@@ -56,7 +57,7 @@ export function convertCubeDimensionsToSqlOptions(
       qualityPredicates.push(predicate);
     }
 
-    if (dimensions.removeRecordsWithGeospatialIssues && !query?.has_geospatial_issue) {
+    if (cube.removeRecordsWithGeospatialIssues && !query?.has_geospatial_issue) {
       qualityPredicates.push({
         type: 'equals',
         key: 'HAS_GEOSPATIAL_ISSUE',
@@ -64,7 +65,7 @@ export function convertCubeDimensionsToSqlOptions(
       });
     }
 
-    if (dimensions.removeRecordsTaxonIssues) {
+    if (cube.removeRecordsTaxonIssues) {
       qualityPredicates.push({
         type: 'not',
         predicate: {
@@ -75,7 +76,7 @@ export function convertCubeDimensionsToSqlOptions(
       });
     }
 
-    if (dimensions.removeRecordsAtCentroids && !query?.distance_from_centroid_in_meters) {
+    if (cube.removeRecordsAtCentroids && !query?.distance_from_centroid_in_meters) {
       qualityPredicates.push({
         type: 'equals',
         key: 'DISTANCE_FROM_CENTROID_IN_METERS',
@@ -83,7 +84,7 @@ export function convertCubeDimensionsToSqlOptions(
       });
     }
 
-    if (dimensions.removeFossilsAndLiving && !query?.basis_of_record) {
+    if (cube.removeFossilsAndLiving && !query?.basis_of_record) {
       qualityPredicates.push({
         type: 'not',
         predicate: {
@@ -94,7 +95,7 @@ export function convertCubeDimensionsToSqlOptions(
       });
     }
 
-    if (dimensions.removeAbsenceRecords && !query?.occurrence_status) {
+    if (cube.removeAbsenceRecords && !query?.occurrence_status) {
       qualityPredicates.push({
         type: 'equals',
         key: 'OCCURRENCE_STATUS',
@@ -134,4 +135,17 @@ export async function generateCubeSql(
   }
 
   return response.json();
+}
+
+export function hasFilter(filter?: FilterType, field?: string): boolean {
+  if (!filter || !field) return false;
+  return Boolean(
+    typeof filter.must?.[field]?.length !== 'undefined' ||
+      typeof filter.mustNot?.[field]?.length !== 'undefined'
+  );
+}
+
+export function hasAllFilters(filter?: FilterType, fields?: string[]): boolean {
+  if (!filter || !fields) return false;
+  return fields.every((field) => hasFilter(filter, field));
 }

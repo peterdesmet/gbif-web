@@ -2,33 +2,83 @@ import { FaCheck, FaCog, FaFileAlt, FaDownload, FaFilter } from 'react-icons/fa'
 import { ComponentType } from 'react';
 
 export interface Step {
-  id: number;
+  ordering: number;
+  id: string;
   name: string;
   icon: ComponentType<{ className?: string }>;
   description: string;
 }
 
-export const downloadSteps: Step[] = [
-  // { id: 0, name: 'Filters', icon: FaFilter, description: 'Apply quality filters' },
-  { id: 1, name: 'Format', icon: FaCog, description: 'Choose download format' }, // FaFileAlt
-  { id: 2, name: 'Configure', icon: FaCog, description: 'Set options and fields' },
-  // { id: 3, name: 'Terms', icon: FaFileAlt, description: 'Accept terms and conditions' },
-  { id: 3, name: 'Download', icon: FaDownload, description: 'Processing and delivery' },
+const stepOptions = {
+  QUALITY: {
+    ordering: 0,
+    id: 'QUALITY',
+    name: 'Quality',
+    icon: FaFilter,
+    description: 'Apply quality filters',
+  },
+  PREDICATE: {
+    ordering: 1,
+    id: 'PREDICATE',
+    name: 'Filter',
+    icon: FaFilter,
+    description: 'Compose a filter predicate',
+  },
+  SQL: { ordering: 2, id: 'SQL', name: 'SQL', icon: FaFilter, description: 'Write SQL query' },
+  FORMAT: {
+    ordering: 3,
+    id: 'FORMAT',
+    name: 'Format',
+    icon: FaFileAlt,
+    description: 'Choose download format',
+  },
+  CONFIGURE: {
+    ordering: 4,
+    id: 'CONFIGURE',
+    name: 'Configure',
+    icon: FaCog,
+    description: 'Set options and fields',
+  },
+  TERMS: {
+    ordering: 5,
+    id: 'TERMS',
+    name: 'Download',
+    icon: FaDownload,
+    description: 'Accept terms and download',
+  },
+};
+
+export const occurrenceDownloadSteps: Step[] = [
+  stepOptions.FORMAT,
+  stepOptions.CONFIGURE,
+  stepOptions.TERMS,
+];
+
+export const sqlDownloadSteps: Step[] = [stepOptions.SQL, stepOptions.TERMS];
+
+export const predicateDownloadSteps: Step[] = [
+  stepOptions.PREDICATE,
+  stepOptions.FORMAT,
+  stepOptions.CONFIGURE,
+  stepOptions.TERMS,
 ];
 
 interface StepIndicatorProps {
-  currentStep: number;
+  currentStep: string;
   steps?: Step[];
 }
 
-export default function StepIndicator({ currentStep, steps = downloadSteps }: StepIndicatorProps) {
+export default function StepIndicator({
+  currentStep,
+  steps = occurrenceDownloadSteps,
+}: StepIndicatorProps) {
   return (
     <div className="g-mb-12">
       <nav aria-label="Progress">
         <ol className="g-flex g-items-center g-justify-center">
           {steps.map((step, stepIdx) => {
-            const isCompleted = currentStep > step.id;
-            const isCurrent = currentStep === step.id;
+            const isCompleted = stepOptions[currentStep]?.ordering > step.ordering;
+            const isCurrent = stepOptions[currentStep]?.ordering === step.ordering;
             const IconComponent = step.icon;
 
             return (

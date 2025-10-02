@@ -1,14 +1,15 @@
 import { FaThLarge, FaInfoCircle } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
-import { DynamicLink } from '@/components';
-import { generateCubeSql } from './cubeService';
+import { generateCubeSql, hasAllFilters, hasFilter } from './cubeService';
+import { Checkbox } from '@/components/ui/checkbox';
+import { FilterType } from '@/contexts/filter';
 
 interface CubeDimensionsSelectorProps {
-  dimensions: CubeDimensions;
+  cube: CubeDimensions;
   onChange: (dimensions: CubeDimensions) => void;
   isExpanded: boolean;
   onToggle: () => void;
-  query?: any; // Current search query to determine which filters to show
+  filter?: FilterType; // Current search filter to determine which filters to show
   onValidationChange?: (isValid: boolean) => void;
 }
 
@@ -77,18 +78,24 @@ const RESOLUTION_DEFAULTS: Record<string, number> = {
 };
 
 export default function CubeDimensionsSelector({
-  dimensions,
+  cube,
   onChange,
   isExpanded,
   onToggle,
-  query = {},
+  filter,
   onValidationChange,
 }: CubeDimensionsSelectorProps) {
   const [isGeneratingSql, setIsGeneratingSql] = useState(false);
   const [sqlError, setSqlError] = useState<string | null>(null);
-
+  const hideDataQuality = hasAllFilters(filter, [
+    'hasGeospatialIssue',
+    'taxonomicIssue',
+    'distanceFromCentroidInMeters',
+    'basisOfRecord',
+    'occurrenceStatus',
+  ]);
   const updateDimensions = (updates: Partial<CubeDimensions>) => {
-    onChange({ ...dimensions, ...updates });
+    onChange({ ...cube, ...updates });
   };
 
   // Notify parent component of validation changes
@@ -96,10 +103,9 @@ export default function CubeDimensionsSelector({
     if (onValidationChange) {
       onValidationChange(isFormValid());
     }
-  }, [dimensions, onValidationChange]);
+  }, [cube, onValidationChange]);
 
   const handleEditSql = async (event: React.MouseEvent) => {
-    debugger;
     event.preventDefault();
     event.stopPropagation();
 
@@ -107,7 +113,7 @@ export default function CubeDimensionsSelector({
     setSqlError(null);
 
     try {
-      const result = await generateCubeSql(dimensions, undefined, query);
+      const result = await generateCubeSql(cube, undefined);
       if (!result.sql) {
         // If no SQL generated, navigate to empty SQL editor
         window.location.href = '/occurrence/download/sql';
@@ -127,8 +133,8 @@ export default function CubeDimensionsSelector({
   };
 
   const getHigherTaxonomicGroups = () => {
-    const index = TAXONOMIC_GROUPS.indexOf(dimensions.taxonomicLevel);
-    if (!dimensions.taxonomicLevel || index === -1) {
+    const index = TAXONOMIC_GROUPS.indexOf(cube.taxonomicLevel);
+    if (!cube.taxonomicLevel || index === -1) {
       return [];
     }
     return HIGHER_TAXONOMIC_OPTIONS.slice(0, index);
@@ -147,7 +153,7 @@ export default function CubeDimensionsSelector({
   };
 
   const toggleHigherTaxonomyGroup = (group: string) => {
-    const current = dimensions.selectedHigherTaxonomyGroups || [];
+    const current = cube.selectedHigherTaxonomyGroups || [];
     const updated = current.includes(group)
       ? current.filter((g) => g !== group)
       : [...current, group];
@@ -155,11 +161,13 @@ export default function CubeDimensionsSelector({
   };
 
   const isFormValid = () => {
-    const hasTaxonomic = dimensions.taxonomicLevel && dimensions.taxonomicLevel !== '';
-    const hasTemporal = dimensions.temporalResolution && dimensions.temporalResolution !== '';
-    const hasSpatial = dimensions.spatial && dimensions.spatial !== '' &&
-                     (dimensions.spatial === 'COUNTRY' || (dimensions.resolution && dimensions.resolution !== ''));
-    
+    const hasTaxonomic = cube.taxonomicLevel && cube.taxonomicLevel !== '';
+    const hasTemporal = cube.temporalResolution && cube.temporalResolution !== '';
+    const hasSpatial =
+      cube.spatial &&
+      cube.spatial !== '' &&
+      (cube.spatial === 'COUNTRY' || (cube.resolution && cube.resolution !== ''));
+
     return hasTaxonomic || hasTemporal || hasSpatial;
   };
 
@@ -182,8 +190,11 @@ export default function CubeDimensionsSelector({
           </div>
         </div>
         <div className="g-text-sm g-text-gray-500">
-          {(dimensions.spatial && dimensions.spatial !== '') ? dimensions.spatial : 'None'} × {(dimensions.temporalResolution && dimensions.temporalResolution !== '') ? dimensions.temporalResolution : 'None'} ×{' '}
-          {(dimensions.taxonomicLevel && dimensions.taxonomicLevel !== '') ? dimensions.taxonomicLevel : 'None'}
+          {cube.spatial && cube.spatial !== '' ? cube.spatial : 'None'} ×{' '}
+          {cube.temporalResolution && cube.temporalResolution !== ''
+            ? cube.temporalResolution
+            : 'None'}{' '}
+          × {cube.taxonomicLevel && cube.taxonomicLevel !== '' ? cube.taxonomicLevel : 'None'}
         </div>
       </button>
 
@@ -193,8 +204,8 @@ export default function CubeDimensionsSelector({
             <div className="g-flex g-items-start g-gap-3">
               <FaInfoCircle size={16} className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0" />
               <p className="g-text-sm g-text-blue-800">
-                Cube data aggregates occurrence records across three dimensions. At least one
-                dimension must be selected.
+                Cube data aggregates occurrence records across three cube. At least one dimension
+                must be selected.
               </p>
             </div>
           </div>
@@ -212,7 +223,7 @@ export default function CubeDimensionsSelector({
                 Group occurrences by taxonomic level
               </p>
               <select
-                value={dimensions.taxonomicLevel || ''}
+                value={cube.taxonomicLevel || ''}
                 onChange={(e) => handleTaxonomicLevelChange(e.target.value)}
                 className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
               >
@@ -232,7 +243,7 @@ export default function CubeDimensionsSelector({
               </label>
               <p className="g-text-sm g-text-gray-600 g-mb-3">Group occurrences by time period</p>
               <select
-                value={dimensions.temporalResolution || ''}
+                value={cube.temporalResolution || ''}
                 onChange={(e) => updateDimensions({ temporalResolution: e.target.value })}
                 className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
               >
@@ -252,7 +263,7 @@ export default function CubeDimensionsSelector({
                 Spatial grid system for aggregation
               </p>
               <select
-                value={dimensions.spatial || ''}
+                value={cube.spatial || ''}
                 onChange={(e) => handleSpatialChange(e.target.value)}
                 className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
               >
@@ -265,7 +276,7 @@ export default function CubeDimensionsSelector({
               </select>
 
               {/* Spatial Resolution */}
-              {dimensions.spatial && dimensions.spatial !== 'COUNTRY' && (
+              {cube.spatial && cube.spatial !== 'COUNTRY' && (
                 <div className="g-mt-4">
                   <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
                     Spatial resolution
@@ -274,14 +285,14 @@ export default function CubeDimensionsSelector({
                     Grid cell size or resolution level
                   </p>
                   <select
-                    value={dimensions.resolution || ''}
+                    value={cube.resolution || ''}
                     onChange={(e) => updateDimensions({ resolution: parseInt(e.target.value) })}
                     className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
                   >
                     <option value="" disabled>
                       None selected
                     </option>
-                    {(RESOLUTION_OPTIONS[dimensions.spatial] || []).map((res) => (
+                    {(RESOLUTION_OPTIONS[cube.spatial] || []).map((res) => (
                       <option key={res} value={res}>
                         {res}
                       </option>
@@ -291,7 +302,7 @@ export default function CubeDimensionsSelector({
               )}
 
               {/* Randomize Points */}
-              {dimensions.spatial && (
+              {cube.spatial && (
                 <div className="g-mt-4">
                   <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
                     Randomize Points within Uncertainty Circle
@@ -305,7 +316,7 @@ export default function CubeDimensionsSelector({
                         type="radio"
                         name="randomize"
                         value="YES"
-                        checked={dimensions.randomize === 'YES'}
+                        checked={cube.randomize === 'YES'}
                         onChange={(e) =>
                           updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })
                         }
@@ -318,7 +329,7 @@ export default function CubeDimensionsSelector({
                         type="radio"
                         name="randomize"
                         value="NO"
-                        checked={dimensions.randomize === 'NO'}
+                        checked={cube.randomize === 'NO'}
                         onChange={(e) =>
                           updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })
                         }
@@ -338,7 +349,7 @@ export default function CubeDimensionsSelector({
 
             <div>
               <label className="g-flex g-items-start g-gap-3">
-                <input type="checkbox" checked disabled className="g-mt-1 g-h-4 g-w-4" />
+                <Checkbox checked disabled className="g-mt-1 g-h-4 g-w-4" />
                 <div>
                   <span className="g-font-medium">Occurrence count (always included)</span>
                   <p className="g-text-sm g-text-gray-600">
@@ -360,10 +371,9 @@ export default function CubeDimensionsSelector({
                 <div className="g-space-y-2">
                   {higherTaxonomicGroups.map((group) => (
                     <label key={group} className="g-flex g-items-center g-gap-3">
-                      <input
-                        type="checkbox"
-                        checked={(dimensions.selectedHigherTaxonomyGroups || []).includes(group)}
-                        onChange={() => toggleHigherTaxonomyGroup(group)}
+                      <Checkbox
+                        checked={(cube.selectedHigherTaxonomyGroups || []).includes(group)}
+                        onCheckedChange={() => toggleHigherTaxonomyGroup(group)}
                         className="g-h-4 g-w-4 g-text-primary-600"
                       />
                       <span className="g-text-sm">{group}</span>
@@ -387,7 +397,7 @@ export default function CubeDimensionsSelector({
                     type="radio"
                     name="includeSpatialUncertainty"
                     value="YES"
-                    checked={dimensions.includeSpatialUncertainty === 'YES'}
+                    checked={cube.includeSpatialUncertainty === 'YES'}
                     onChange={(e) =>
                       updateDimensions({
                         includeSpatialUncertainty: e.target.value as 'YES' | 'NO',
@@ -402,7 +412,7 @@ export default function CubeDimensionsSelector({
                     type="radio"
                     name="includeSpatialUncertainty"
                     value="NO"
-                    checked={dimensions.includeSpatialUncertainty === 'NO'}
+                    checked={cube.includeSpatialUncertainty === 'NO'}
                     onChange={(e) =>
                       updateDimensions({
                         includeSpatialUncertainty: e.target.value as 'YES' | 'NO',
@@ -429,7 +439,7 @@ export default function CubeDimensionsSelector({
                     type="radio"
                     name="includeTemporalUncertainty"
                     value="YES"
-                    checked={dimensions.includeTemporalUncertainty === 'YES'}
+                    checked={cube.includeTemporalUncertainty === 'YES'}
                     onChange={(e) =>
                       updateDimensions({
                         includeTemporalUncertainty: e.target.value as 'YES' | 'NO',
@@ -444,7 +454,7 @@ export default function CubeDimensionsSelector({
                     type="radio"
                     name="includeTemporalUncertainty"
                     value="NO"
-                    checked={dimensions.includeTemporalUncertainty === 'NO'}
+                    checked={cube.includeTemporalUncertainty === 'NO'}
                     onChange={(e) =>
                       updateDimensions({
                         includeTemporalUncertainty: e.target.value as 'YES' | 'NO',
@@ -459,78 +469,85 @@ export default function CubeDimensionsSelector({
           </fieldset>
 
           {/* Data Quality */}
-          <fieldset className="g-space-y-4">
-            <legend className="g-text-lg g-font-medium g-text-gray-900 g-mb-4">Data quality</legend>
-            <p className="g-text-sm g-text-gray-600 g-mb-4">
-              Apply quality filters to exclude problematic records
-            </p>
+          {!hideDataQuality && (
+            <fieldset className="g-space-y-4">
+              <legend className="g-text-lg g-font-medium g-text-gray-900 g-mb-4">
+                Data quality
+              </legend>
+              <p className="g-text-sm g-text-gray-600 g-mb-4">
+                Apply quality filters to exclude problematic records
+              </p>
 
-            <div className="g-space-y-3">
-              {!query.has_geospatial_issue && (
-                <label className="g-flex g-items-start g-gap-3">
-                  <input
-                    type="checkbox"
-                    checked={dimensions.removeRecordsWithGeospatialIssues}
-                    onChange={(e) =>
-                      updateDimensions({ removeRecordsWithGeospatialIssues: e.target.checked })
-                    }
-                    className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                  />
-                  <span className="g-text-sm">Remove records with known geospatial issues</span>
-                </label>
-              )}
+              <div className="g-space-y-3">
+                {!hasFilter(filter, 'hasGeospatialIssue') && (
+                  <label className="g-flex g-items-start g-gap-3">
+                    <Checkbox
+                      checked={cube.removeRecordsWithGeospatialIssues}
+                      onCheckedChange={(checked) =>
+                        updateDimensions({ removeRecordsWithGeospatialIssues: checked as boolean })
+                      }
+                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                    />
+                    <span className="g-text-sm">Remove records with known geospatial issues</span>
+                  </label>
+                )}
+                {!hasFilter(filter, 'taxonomicIssue') && (
+                  <label className="g-flex g-items-start g-gap-3">
+                    <Checkbox
+                      checked={cube.removeRecordsTaxonIssues}
+                      onCheckedChange={(checked) =>
+                        updateDimensions({ removeRecordsTaxonIssues: checked as boolean })
+                      }
+                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                    />
+                    <span className="g-text-sm">Remove records matched to a higher taxon</span>
+                  </label>
+                )}
 
-              <label className="g-flex g-items-start g-gap-3">
-                <input
-                  type="checkbox"
-                  checked={dimensions.removeRecordsTaxonIssues}
-                  onChange={(e) => updateDimensions({ removeRecordsTaxonIssues: e.target.checked })}
-                  className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                />
-                <span className="g-text-sm">Remove records matched to a higher taxon</span>
-              </label>
+                {!hasFilter(filter, 'distanceFromCentroidInMeters') && (
+                  <label className="g-flex g-items-start g-gap-3">
+                    <Checkbox
+                      checked={cube.removeRecordsAtCentroids}
+                      onCheckedChange={(checked) =>
+                        updateDimensions({ removeRecordsAtCentroids: checked as boolean })
+                      }
+                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                    />
+                    <span className="g-text-sm">Remove records located at country centroids</span>
+                  </label>
+                )}
 
-              {!query.distance_from_centroid_in_meters && (
-                <label className="g-flex g-items-start g-gap-3">
-                  <input
-                    type="checkbox"
-                    checked={dimensions.removeRecordsAtCentroids}
-                    onChange={(e) =>
-                      updateDimensions({ removeRecordsAtCentroids: e.target.checked })
-                    }
-                    className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                  />
-                  <span className="g-text-sm">Remove records located at country centroids</span>
-                </label>
-              )}
+                {!hasFilter(filter, 'basisOfRecord') && (
+                  <label className="g-flex g-items-start g-gap-3">
+                    <Checkbox
+                      checked={cube.removeFossilsAndLiving}
+                      onCheckedChange={(checked) =>
+                        updateDimensions({ removeFossilsAndLiving: checked as boolean })
+                      }
+                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                    />
+                    <span className="g-text-sm">
+                      Remove records of fossils and living specimens, e.g. those from botanical and
+                      zoological gardens
+                    </span>
+                  </label>
+                )}
 
-              {!query.basis_of_record && (
-                <label className="g-flex g-items-start g-gap-3">
-                  <input
-                    type="checkbox"
-                    checked={dimensions.removeFossilsAndLiving}
-                    onChange={(e) => updateDimensions({ removeFossilsAndLiving: e.target.checked })}
-                    className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                  />
-                  <span className="g-text-sm">
-                    Remove records that are fossils or living specimens
-                  </span>
-                </label>
-              )}
-
-              {!query.occurrence_status && (
-                <label className="g-flex g-items-start g-gap-3">
-                  <input
-                    type="checkbox"
-                    checked={dimensions.removeAbsenceRecords}
-                    onChange={(e) => updateDimensions({ removeAbsenceRecords: e.target.checked })}
-                    className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                  />
-                  <span className="g-text-sm">Remove absence records</span>
-                </label>
-              )}
-            </div>
-          </fieldset>
+                {!hasFilter(filter, 'occurrenceStatus') && (
+                  <label className="g-flex g-items-start g-gap-3">
+                    <Checkbox
+                      checked={cube.removeAbsenceRecords}
+                      onCheckedChange={(checked) =>
+                        updateDimensions({ removeAbsenceRecords: checked as boolean })
+                      }
+                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                    />
+                    <span className="g-text-sm">Remove absence records</span>
+                  </label>
+                )}
+              </div>
+            </fieldset>
+          )}
 
           {/* Validation Message */}
           {!isFormValid() && (

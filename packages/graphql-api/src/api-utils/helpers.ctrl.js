@@ -56,12 +56,3 @@ router.get('/network-stats', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-router.get('/supported-checklists', async (req, res) => {
-  try {
-    const response = await geSupportChecklists();
-    res.json(response);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
