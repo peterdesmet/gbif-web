@@ -18,11 +18,13 @@ export default function Editor({
   title,
   initialText,
   PrettyDisplay,
+  onContinue,
 }: {
   title: string;
   initialText?: string;
   documentationUrl?: string;
   PrettyDisplay: React.FC<{ content: string; onError: (error: Error) => void }>;
+  onContinue: (predicate?: string) => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(initialText);
@@ -141,7 +143,9 @@ export default function Editor({
           )}
 
           <div className="g-flex g-flex-col g-items-end g-gap-2">
-            <Button disabled={!!isEditing || !!errorMessage}>Next</Button>
+            <Button disabled={!!isEditing || !!errorMessage} onClick={() => onContinue(text)}>
+              Next
+            </Button>
             {isEditing && (
               <span className="g-text-sm dark:g-text-amber-400 g-text-amber-600 g-flex g-items-center g-gap-1.5">
                 <AlertCircle className="g-w-4 g-h-4" />

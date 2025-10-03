@@ -13,7 +13,7 @@ export function Download() {
       <>
         <PredicateEditor />
         <SqlEditor />
-        {/* <App /> */}
+        <App />
         {/* <DownloadGbifOrgVertical />
         <DownloadGbifOrgHorizontal /> */}
       </>

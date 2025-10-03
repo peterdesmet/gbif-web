@@ -168,7 +168,7 @@ export function PredicateDownloadFlow({
 
         {/* Step Content */}
         {currentStep === 'PREDICATE' && (
-          <OccurrenceDownloadRequestCreate onContinue={handleFilterSelect} />
+          <OccurrenceDownloadRequestCreate onContinue={handleFilterSelect} content={predicate} />
         )}
 
         {currentStep === 'FORMAT' && (

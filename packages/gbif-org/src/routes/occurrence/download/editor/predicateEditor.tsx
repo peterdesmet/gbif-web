@@ -3,7 +3,13 @@ import { RestoredPredicateNotice } from '../request/create/components/restoredPr
 import { usePredicate } from '../request/create/usePredicate';
 import Editor, { EditorSkeleton } from './editor';
 
-export default function PredicateEditor() {
+export default function PredicateEditor({
+  onContinue,
+  content,
+}: {
+  onContinue: (predicate?: string) => void;
+  content?: string;
+}) {
   const {
     loading,
     error: predicateError,
@@ -23,9 +29,10 @@ export default function PredicateEditor() {
           />
           <Editor
             title="Predicate Editor"
-            initialText={predicate}
+            initialText={predicate ?? content}
             documentationUrl="https://techdocs.gbif.org/en/data-use/api-sql-downloads"
             PrettyDisplay={PredicateVisual}
+            onContinue={onContinue}
           />
         </>
       )}

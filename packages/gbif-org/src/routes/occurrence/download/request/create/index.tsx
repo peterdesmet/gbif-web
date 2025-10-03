@@ -4,39 +4,20 @@ import { RestoredPredicateNotice } from './components/restoredPredicateNotice';
 import { usePredicate } from './usePredicate';
 import { Button } from '@/components/ui/button';
 import { useNormalizedPredicate } from '@/routes/occurrence/search/views/download/testing/components/usePredicateInformation';
+import PredicateEditor from '../../editor/predicateEditor';
 
 export type Mode = 'editing' | 'viewing';
 
 export function OccurrenceDownloadRequestCreate({
   onContinue,
+  text,
 }: {
   onContinue: (predicate?: string) => void;
+  text?: string | JSON;
 }) {
-  const {
-    loading,
-    error: predicateError,
-    predicate,
-    setPredicate,
-    wasLoadedFromSession,
-    discardSessionPredicate,
-  } = usePredicate();
-  const [validationError, setValidationError] = useState<JSONValidationError>();
-  const [mode, setMode] = useState<Mode>('viewing');
-  const { error: normalizationError } = useNormalizedPredicate({
-    predicate: mode === 'viewing' ? predicate : undefined,
-  });
-
-  useEffect(() => {
-    if (normalizationError) {
-      setValidationError({ type: 'invalid-predicate', message: 'Invalid predicate' });
-    } else if (predicateError) {
-      setValidationError({ type: 'faild-to-load-predicate', message: predicateError });
-    }
-  }, [predicateError, normalizationError]);
-
   return (
     <>
-      <RestoredPredicateNotice
+      {/* <RestoredPredicateNotice
         show={!loading && wasLoadedFromSession}
         discard={discardSessionPredicate}
       />
@@ -59,7 +40,11 @@ export function OccurrenceDownloadRequestCreate({
         >
           Continue
         </Button>
-      </div>
+      </div> */}
+      <PredicateEditor
+        onContinue={onContinue}
+        content={typeof text === 'string' ? text : JSON.stringify(text)}
+      />
     </>
   );
 }
