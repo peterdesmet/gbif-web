@@ -16,18 +16,20 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function Editor({
   documentationUrl,
   title,
-  initialText,
   PrettyDisplay,
   onContinue,
+  text,
+  setText,
 }: {
   title: string;
   initialText?: string;
   documentationUrl?: string;
   PrettyDisplay: React.FC<{ content: string; onError: (error: Error) => void }>;
   onContinue: (predicate?: string) => void;
+  text: string;
+  setText: (text: string) => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [text, setText] = useState(initialText);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const handleFormat = () => {
     console.log('Format SQL - functionality to be implemented');

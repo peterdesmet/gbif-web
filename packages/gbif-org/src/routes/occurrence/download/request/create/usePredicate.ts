@@ -123,7 +123,7 @@ function normalizeJSON(json: string): string | null {
   }
 }
 
-async function getPredicateFromGraphQL(
+export async function getPredicateFromGraphQL(
   variablesId: string,
   queryId: string,
   signal: AbortSignal
@@ -150,7 +150,7 @@ async function getPredicateFromGraphQL(
   return JSON.stringify(predicate);
 }
 
-async function getOriginalPredicate(
+export async function getOriginalPredicate(
   searchParams: URLSearchParams,
   signal: AbortSignal
 ): Promise<string | undefined> {

@@ -4,14 +4,19 @@ import { RestoredPredicateNotice } from '../request/create/components/restoredPr
 import { usePredicate } from '../request/create/usePredicate';
 import Editor, { EditorSkeleton } from './editor';
 import { highlight } from 'sql-highlight';
+import { useStringParam } from '@/hooks/useParam';
 
 export default function SqlEditor() {
+  const [sql, setSql] = useStringParam({ key: 'sql', replace: true });
+
   return (
     <Editor
       title="SQL Editor"
       initialText={''}
       documentationUrl="https://techdocs.gbif.org/en/data-use/api-sql-downloads"
       PrettyDisplay={SqlVisual}
+      text={sql ?? ''}
+      setText={setSql}
     />
   );
 }
