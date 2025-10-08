@@ -227,7 +227,7 @@ export const gbifConfig: Config = {
     //   'coordinates',
     //   'media',
     // ],
-    tabs: ['table', 'gallery', 'map', 'clusters', 'datasets', 'dashboard', 'download'],
+    tabs: ['table', 'gallery', 'map', 'clusters', 'dashboard', 'download'],
     defaultTab: 'table',
     // scope: {
     //   type: 'and',

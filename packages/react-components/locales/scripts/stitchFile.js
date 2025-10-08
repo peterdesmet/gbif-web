@@ -64,6 +64,8 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
         locale,
         `../${folder}/${locale}/components/hostedPortalApplication`,
       ),
+      mdt: getFile(locale, `../${folder}/${locale}/components/mdt`),
+      suggestDataset: getFile(locale, `../${folder}/${locale}/components/suggestDataset`),
 
       enums: {
         basisOfRecord: getFile(locale, `../${folder}/${locale}/enums/basisOfRecord`),
@@ -76,6 +78,8 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
         typeStatus: getFile(locale, `../${folder}/${locale}/enums/typeStatus`),
         taxonRank: getFile(locale, `../${folder}/${locale}/enums/taxonRank`),
         taxonomicStatus: getFile(locale, `../${folder}/${locale}/enums/taxonomicStatus`),
+        clbTaxonomicStatus: getFile(locale, `../${folder}/${locale}/enums/clbTaxonomicStatus`)
+          .clbTaxonomicStatus,
         taxonIssue: getFile(locale, `../${folder}/${locale}/enums/taxonIssue`),
         license: getFile(locale, `../${folder}/${locale}/enums/license`),
         issueHelp: getFile(locale, `../${folder}/${locale}/enums/issueHelp`),
