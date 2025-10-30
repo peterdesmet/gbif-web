@@ -73,7 +73,7 @@ export default function AboutBackbone() {
               <Card className="g-mb-4">
                 <CardHeader>
                   <CardTitle>
-                    <FormattedMessage id="taxon.occurenceImages" />
+                    <FormattedMessage id="taxon.occurrenceImages" />
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -127,7 +127,11 @@ export default function AboutBackbone() {
                 type="BLOCK"
                 errorMessage={<FormattedMessage id="taxon.errors.typeMaterial" />}
               >
-                <TypeMaterial taxonKey={taxon.key} />
+                <TypeMaterial
+                  taxonKey={taxon.key}
+                  rank={taxon.rank}
+                  acceptedTaxonKey={taxon?.acceptedTaxon?.key}
+                />
               </ErrorBoundary>
             )}
 
@@ -173,10 +177,15 @@ export default function AboutBackbone() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <WikiDataIdentifiers
-                    source={slowTaxon?.taxon?.wikiData?.source}
-                    identifiers={slowTaxon?.taxon?.wikiData?.identifiers}
-                  />
+                  <ErrorBoundary
+                    type="BLOCK"
+                    errorMessage={<FormattedMessage id="taxon.errors.wikidata" />}
+                  >
+                    <WikiDataIdentifiers
+                      source={slowTaxon?.taxon?.wikiData?.source}
+                      identifiers={slowTaxon?.taxon?.wikiData?.identifiers}
+                    />
+                  </ErrorBoundary>
                 </CardContent>
               </Card>
             )}

@@ -1,5 +1,6 @@
 import config from '#/config';
 import { excerpt, getHtml } from '#/helpers/utils';
+import dataset from '.';
 import { getFacet } from '../getQueryMetrics';
 import { getDatasetEventCount, getDatasetEvents } from './event';
 import { getContributors } from './helpers/contributors';
@@ -17,6 +18,14 @@ const getSourceSearch = (dataSources) => (args) =>
 export const Query = {
   datasetSearch: (parent, { query = {}, ...args } = {}, { dataSources }) =>
     dataSources.datasetAPI.searchDatasets({ query: { ...args, ...query } }),
+  datasetSearchByPredicate: (
+    parent,
+    { query = {}, ...args } = {},
+    { dataSources },
+  ) =>
+    dataSources.datasetByPredicateAPI.searchDatasetsByPredicate({
+      query: { ...args, ...query },
+    }),
   datasetList: (parent, args, { dataSources }) =>
     dataSources.datasetAPI.listDatasets({ query: args }),
   dataset: (parent, { key }, { dataSources }) =>
@@ -185,6 +194,13 @@ export const Dataset = {
   },
   events: getDatasetEvents,
   eventCount: getDatasetEventCount,
+  localContext: ({ machineTags }, args, { dataSources }) => {
+    return dataSources.localContextAPI
+      .getDatasetLocalContext({ machineTags })
+      .then((lc) => {
+        return lc;
+      });
+  },
 };
 
 export const ClbDataset = {

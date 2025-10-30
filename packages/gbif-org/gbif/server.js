@@ -8,8 +8,10 @@ import { merge } from 'ts-deepmerge';
 import { loadEnv } from 'vite';
 import logger from './config/logger.mjs';
 import { helmetConfig } from './helmetConfig.js';
+import { register as registerRobots } from './routes/robots/index.mjs';
+import { register as registerSitemaps } from './routes/sitemaps/endpoints.mjs';
 import { register as registerUser } from './routes/user/endpoints.mjs';
-
+import handleRedirects from './middleware/redirects.mjs';
 // Load environment variables from .env files and merge them with process.env.
 const envFile = loadEnv('', process.cwd(), ['PUBLIC_']);
 const env = merge(envFile, process.env);
@@ -29,6 +31,9 @@ async function main() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(compress());
+
+  // Handle list of redirects
+  app.use(handleRedirects);
 
   // Middleware to set default Cache-Control header
   app.use((req, res, next) => {
@@ -68,6 +73,7 @@ async function main() {
       env.PUBLIC_GRAPHQL_ENDPOINT,
       env.PUBLIC_GRAPHQL_ENDPOINT_CLIENT,
       env.PUBLIC_FORMS_ENDPOINT,
+      env.PUBLIC_FEEDBACK_ENDPOINT,
       env.PUBLIC_FORMS_ENDPOINT_CLIENT,
     ].filter((endpoint) => typeof endpoint === 'string');
 
@@ -81,6 +87,7 @@ async function main() {
 
   if (!IS_PRODUCTION) {
     const vite = await import('vite');
+
     viteDevServer = await vite.createServer({
       root: process.cwd(),
       server: { middlewareMode: true },
@@ -95,6 +102,8 @@ async function main() {
   }
 
   registerUser(app);
+  registerSitemaps(app);
+  registerRobots(app);
 
   // Handle server-side rendering.
   app.use('*', async (req, res) => {
@@ -103,18 +112,33 @@ async function main() {
     try {
       let template;
       let render;
+      let fallbackHtmlFile;
 
       if (!IS_PRODUCTION) {
         template = await fsp.readFile('gbif/index.html', 'utf8');
         template = await viteDevServer.transformIndexHtml(url, template);
         render = (await viteDevServer.ssrLoadModule('src/gbif/entry.server.tsx')).render;
+
+        // Load fallback html file
+        fallbackHtmlFile = await fsp.readFile('gbif/fallback.html', 'utf8');
+        fallbackHtmlFile = await viteDevServer.transformIndexHtml(url, fallbackHtmlFile);
       } else {
         template = await fsp.readFile('dist/gbif/client/gbif/index.html', 'utf8');
         render = (await import('../dist/gbif/server/entry.server.js')).render;
+
+        // Load fallback html file
+        fallbackHtmlFile = await fsp.readFile('dist/gbif/client/gbif/fallback.html', 'utf8');
       }
 
       try {
-        const { appHtml, headHtml, htmlAttributes, bodyAttributes } = await render(req);
+        const { appHtml, headHtml, htmlAttributes, bodyAttributes, statusCode, cacheControl } =
+          await render(req);
+        if (cacheControl) {
+          res.set('Cache-Control', cacheControl);
+        }
+        if (req?.query?.preview === 'true') {
+          res.set('Cache-Control', 'public, max-age=0, must-revalidate, no-cache, no-store');
+        }
 
         const html = template
           .replace('<html class="g-m-0 g-p-0">', `<html ${htmlAttributes} class="g-m-0 g-p-0">`)
@@ -127,16 +151,36 @@ async function main() {
 
         res.setHeader('Content-Type', 'text/html');
 
-        return res.status(200).end(html);
+        return res.status(statusCode).end(html);
       } catch (e) {
         // Handle possible redirections thrown by the render function.
         if (e instanceof Response && e.status >= 300 && e.status <= 399) {
           return res.redirect(e.status, e.headers.get('Location'));
         }
 
-        throw e;
+        // Try to extract a status property from the error. If no status is provided just fall back to status 500.
+        let status = 500;
+        if (
+          typeof e === 'object' &&
+          'status' in e &&
+          typeof e.status === 'number' &&
+          Number.isInteger(e.status)
+        ) {
+          status = e.status;
+        }
+
+        res
+          .setHeader('Content-Type', 'text/html')
+          .setHeader('Cache-Control', 'no-cache')
+          .status(status)
+          .send(fallbackHtmlFile);
+
+        return;
       }
     } catch (error) {
+      // This catch block could be reached and is not a pretty view for the end user, but is i very unlikely as it will only happen if the build files can't be found.
+      // This will never happen in real life once our end to end tests are in use as the entire site wouldn't work.
+
       if (!IS_PRODUCTION) {
         viteDevServer.ssrFixStacktrace(error);
       }

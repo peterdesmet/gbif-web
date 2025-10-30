@@ -23,9 +23,15 @@ import { useFilterParams } from './useFilterParams';
 
 const MapWidgetInner = lazy(() => import('../inner'));
 
+const defaultPixelMapParams = {
+  hasCoordinate: [true],
+  hasGeospatialIssue: [false],
+  occurrenceStatus: ['PRESENT'],
+};
+
 type Props = {
   className?: string;
-  capabilitiesParams?: Record<string, string>;
+  capabilitiesParams?: Record<string, any>;
   mapStyle?: string;
 };
 
@@ -54,6 +60,7 @@ export function MapWidgetOuter({ className, capabilitiesParams = {}, mapStyle }:
 
   // The bounding box of the area that is currently visible on the map
   const [boundingBox, setBoundingBox] = useState<BoundingBox>();
+  const [view, setView] = useState<{ center: [number, number]; zoom: number }>();
 
   const [clickToSearchAreaEnabled, setClickToSearchAreaEnabled] = useState(false);
   // Disable the click to explore funciton if clicking outside the map
@@ -66,10 +73,7 @@ export function MapWidgetOuter({ className, capabilitiesParams = {}, mapStyle }:
     isYearFilterActive,
     startYear,
     endYear,
-    capabilitiesParams?.taxonKey,
-    capabilitiesParams?.country,
-    capabilitiesParams?.networkKey,
-    capabilitiesParams?.publishingOrg
+    capabilitiesParams
   );
 
   const dynamicNavigate = useDynamicNavigate();
@@ -147,11 +151,17 @@ export function MapWidgetOuter({ className, capabilitiesParams = {}, mapStyle }:
                   selectedProjection={selectedProjection}
                   rasterStyles={rasterStyles}
                   setBoundingBox={setBoundingBox}
+                  setView={setView}
                   enabledSearchAreaClick={clickToSearchAreaEnabled}
                   onSearchAreaClick={(geometryFilter) => {
                     dynamicNavigate({
                       pageId: 'occurrenceSearch',
-                      searchParams: { ...filterParams, geometry: geometryFilter },
+                      searchParams: {
+                        ...filterParams,
+                        geometry: geometryFilter,
+                        ...defaultPixelMapParams,
+                        view: 'map',
+                      },
                     });
                   }}
                 />
@@ -165,8 +175,9 @@ export function MapWidgetOuter({ className, capabilitiesParams = {}, mapStyle }:
             <ExploreLink
               className="g-pr-2"
               boundingBox={boundingBox}
+              view={view}
               projection={selectedProjection}
-              filterParams={filterParams}
+              filterParams={{ ...filterParams, ...defaultPixelMapParams, view: 'map' }}
             />
             <BasisOfRecordFilter
               selected={basisOfRecord}

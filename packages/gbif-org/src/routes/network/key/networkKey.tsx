@@ -1,4 +1,5 @@
 import { DataHeader } from '@/components/dataHeader';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import {
   defaultDateFormatProps,
   DeletedMessage,
@@ -14,6 +15,7 @@ import {
 } from '@/components/highlights';
 import PageMetaData from '@/components/PageMetaData';
 import { Tabs } from '@/components/tabs';
+import { NotFoundError } from '@/errors';
 import { NetworkQuery, NetworkQueryVariables, PredicateType } from '@/gql/graphql';
 import { DynamicLink, LoaderArgs } from '@/reactRouterPlugins';
 import { ArticlePreTitle } from '@/routes/resource/key/components/articlePreTitle';
@@ -21,9 +23,11 @@ import { ArticleSkeleton } from '@/routes/resource/key/components/articleSkeleto
 import { ArticleTextContainer } from '@/routes/resource/key/components/articleTextContainer';
 import { ArticleTitle } from '@/routes/resource/key/components/articleTitle';
 import { PageContainer } from '@/routes/resource/key/components/pageContainer';
+import { throwCriticalErrors, usePartialDataNotification } from '@/routes/rootErrorPage';
 import { required } from '@/utils/required';
+import { useEffect } from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
-import { Outlet, useLoaderData } from 'react-router-dom';
+import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
 import { AboutContent, ApiContent } from './help';
 
 const NETWORK_QUERY = /* GraphQL */ `
@@ -31,6 +35,7 @@ const NETWORK_QUERY = /* GraphQL */ `
     network(key: $key) {
       key
       title
+      description
       deleted
       created
       homepage
@@ -55,16 +60,32 @@ const NETWORK_QUERY = /* GraphQL */ `
 export async function networkLoader({ params, graphql }: LoaderArgs) {
   const key = required(params.key, 'No key was provided in the URL');
 
-  return graphql.query<NetworkQuery, NetworkQueryVariables>(NETWORK_QUERY, {
+  const response = await graphql.query<NetworkQuery, NetworkQueryVariables>(NETWORK_QUERY, {
     key,
     predicate: { type: PredicateType.Equals, key: 'networkKey', value: key },
   });
+
+  const { errors, data } = await response.json();
+  throwCriticalErrors({
+    path404: ['network'],
+    errors,
+    requiredObjects: [data?.network],
+  });
+
+  return { errors, data };
 }
 
 export function NetworkPage() {
-  const { data } = useLoaderData() as { data: NetworkQuery };
+  const location = useLocation();
+  const { data, errors } = useLoaderData() as { data: NetworkQuery };
+  const notifyOfPartialData = usePartialDataNotification();
+  useEffect(() => {
+    if (errors) {
+      notifyOfPartialData();
+    }
+  }, [errors, notifyOfPartialData]);
 
-  if (data.network == null) throw new Error('404');
+  if (data.network == null) throw new NotFoundError();
   const { network, occurrenceSearch, literatureSearch } = data;
 
   const deletedAt = network.deleted;
@@ -162,7 +183,9 @@ export function NetworkPage() {
           </ArticleTextContainer>
         </PageContainer>
 
-        <Outlet />
+        <ErrorBoundary invalidateOn={location.pathname + location.search}>
+          <Outlet />
+        </ErrorBoundary>
       </article>
     </>
   );

@@ -1,6 +1,7 @@
 import { FormattedMessage } from 'react-intl';
 // import monthEnum from '../../../enums/basic/month.json';
 import { ChartWrapper, EnumChartGenerator } from './EnumChartGenerator';
+import { useConfig } from '@/config/config';
 
 function StandardEnumChart({
   predicate,
@@ -183,6 +184,7 @@ export function Protocol(props) {
 }
 
 export function IucnCounts(props) {
+  const { theme } = useConfig();
   const GQL_QUERY = `
     query summary($q: String, $hasPredicate: Predicate, $size: Int, $from: Int, $checklistKey: ID) {
       search: occurrenceSearch(q: $q, predicate: $hasPredicate) {
@@ -201,6 +203,7 @@ export function IucnCounts(props) {
       }
     }
   `;
+
   return (
     <ChartWrapper
       {...{
@@ -208,6 +211,7 @@ export function IucnCounts(props) {
         options: ['PIE', 'TABLE', 'COLUMN'],
         enableUnknown: false,
         showUnknownInChart: false,
+        value2colorMap: theme?.iucnColors,
         enableOther: false,
         facetSize: 10,
         disableUnknown: true,
@@ -215,6 +219,7 @@ export function IucnCounts(props) {
         subtitleKey: 'dashboard.numberOfOccurrences',
         gqlQuery: GQL_QUERY,
         predicateKey: 'iucnRedListCategory',
+        applyChecklistKey: true,
         translationTemplate: 'enums.iucnRedListCategory.{key}',
         title: (
           <FormattedMessage

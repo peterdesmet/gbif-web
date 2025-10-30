@@ -44,8 +44,8 @@
   "keep": "",
   "addressUnknown": "",
   "emptyValueProvided": "",
-  "otherIdentifiers": "{num, plural, one {# 在分群中} other {# 在分群中}}",
-  "gbifIdentifier": "{num, plural, one {# 在分群中} other {# 在分群中}}",
+  "otherIdentifiers": "",
+  "gbifIdentifier": "",
   "copyToClipboard": "",
   "copy": "複製",
   "fromCountry": "",
@@ -61,5 +61,12 @@
   "lastCrawled": "上次檢索",
   "goToRecord": "",
   "commonNameAccordingTo": "",
-  "noResults": ""
+  "supportedChecklists": "",
+  "noResults": "",
+  "stepperFormProgress": "",
+  "next": "下一步",
+  "back": "返回",
+  "submit": "送出",
+  "pleaseTryAgainLater": "",
+  "weWillBeInTouchSoon": ""
 }

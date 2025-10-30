@@ -1,3 +1,6 @@
 {
-  "InteractiveResource": "Интерактивный ресурс"
+  "StillImage": "Неподвижное изображение",
+  "MovingImage": "Движущееся изображение",
+  "InteractiveResource": "Интерактивный ресурс",
+  "Sound": "Аудио"
 }

@@ -10,7 +10,9 @@ import { IoMdGlobe } from 'react-icons/io';
 import { MdArrowRight, MdLock, MdMail, MdPerson } from 'react-icons/md';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+
 import { ErrorMessage, FormButton, FormInput, FormSelect } from '../shared/FormComponents';
+import { readLoginFlashInfo } from '../shared/flashCookieUtils';
 import { PageTitle } from '../shared/PageHeader';
 import { UserPageLayout } from '../shared/UserPageLayout';
 import {
@@ -25,6 +27,7 @@ import {
   solveProofOfWork,
   type ProofOfWorkResult,
 } from './proofOfWork';
+import { commonClasses } from '../shared/utils';
 
 export const LoginSkeleton = ArticleSkeleton;
 
@@ -46,8 +49,9 @@ export function LoginPage() {
   useEffect(() => {
     // Check if user is already logged in
     if (!isLoading && isLoggedIn) {
-      // User is already logged in, redirect to profile. We can use the localizeLink to ensure the URL is correct for the current locale
-      navigate(localizeLink(`/user/profile`));
+      // user is already logged in. redirect to search param or profile page
+      const returnUrl = new URLSearchParams(location.search).get('returnUrl');
+      navigate(returnUrl ?? localizeLink(`/user/profile`));
     }
   }, [navigate, isLoggedIn, isLoading, localizeLink]);
 
@@ -66,8 +70,9 @@ export function RegistrationPage() {
   useEffect(() => {
     // Check if user is already logged in
     if (!isLoading && isLoggedIn) {
-      // User is already logged in, redirect to profile. We can use the localizeLink to ensure the URL is correct for the current locale
-      navigate(localizeLink(`/user/profile`));
+      // get returnUrl search param if any
+      const returnUrl = new URLSearchParams(location.search).get('returnUrl');
+      navigate(returnUrl ?? localizeLink(`/user/profile`));
     }
   }, [navigate, isLoggedIn, isLoading, localizeLink]);
 
@@ -79,6 +84,7 @@ export function RegistrationPage() {
 }
 
 export function LoginForm() {
+  const { localizeLink } = useI18n();
   const navigate = useNavigate();
   const { formatMessage } = useIntl();
   const location = useLocation();
@@ -103,11 +109,22 @@ export function LoginForm() {
   const [error, setError] = useState('');
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [oauthError, setOauthError] = useState<{ authProvider?: string; error?: string } | null>(
+    null
+  );
 
   const errors = {
     email: !values.email && formatMessage({ id: 'profile.emailRequired' }),
     password: !values.password && formatMessage({ id: 'profile.passwordRequired' }),
   };
+
+  // Check for OAuth login flash messages on component mount
+  useEffect(() => {
+    const flashInfo = readLoginFlashInfo();
+    if (flashInfo) {
+      setOauthError(flashInfo);
+    }
+  }, []);
 
   const handleBlur = (field: keyof typeof touched) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -125,9 +142,9 @@ export function LoginForm() {
 
     try {
       await login(values);
-      const state = location.state as LocationState | null;
-      const returnTo = state?.from || '/user/profile';
-      navigate(returnTo);
+      // get returnUrl search param if any
+      const returnUrl = new URLSearchParams(location.search).get('returnUrl');
+      navigate(returnUrl ?? localizeLink(`/user/profile`));
     } catch (err) {
       if (err instanceof UserError && err.type === 'INVALID_REQUEST') {
         setError('INVALID_LOGIN');
@@ -215,6 +232,19 @@ export function LoginForm() {
       />
 
       {error && <ErrorMessage errorMessageId={getLoginErrorMessage(error)} />}
+
+      {oauthError?.error && (
+        <div className={cn(commonClasses.messageBox.error)}>
+          <div className="">
+            <div className="g-mb-2 g-font-semibold">
+              <FormattedMessage id={`profile.connect.failed.${oauthError.authProvider}`} />
+            </div>
+            <p className="g-text-sm">
+              <FormattedMessage id={`profile.error.${oauthError.error}`} />
+            </p>
+          </div>
+        </div>
+      )}
 
       <form className="g-space-y-4" onSubmit={handleSubmit}>
         <FormInput
@@ -628,7 +658,3 @@ function RegisterForm() {
     </>
   );
 }
-
-type LocationState = {
-  from?: string;
-};

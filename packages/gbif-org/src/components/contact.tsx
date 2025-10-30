@@ -25,17 +25,19 @@ export function ContactAvatar({
   if (!firstName && !lastName && organization) content = <FaBuilding />;
   if (initials) content = <span className="g-font-bold">{initials}</span>;
   return (
-    <div className="g-flex-none g-me-4">
-      <IconAvatar>{content}</IconAvatar>
+    <div className="g-flex-none g-hidden md:g-block">
+      <IconAvatar className="g-me-4">{content}</IconAvatar>
     </div>
   );
 }
 
 export function ContactTitle({
+  title,
   firstName,
   lastName,
   children,
 }: {
+  title?: string | null;
   firstName?: string | null;
   lastName?: string | null;
   children?: React.ReactNode;
@@ -47,10 +49,12 @@ export function ContactTitle({
       </h4>
     );
   }
+
+  const name = [title, firstName, lastName].filter(Boolean).join(' ');
   return (
     <h4 className="g-text-base">
       {children}
-      {firstName} {lastName}
+      {name}
     </h4>
   );
 }
@@ -70,8 +74,14 @@ export function ContactContent({
   return <div className={cn('g-text-slate-500', className)}>{children}</div>;
 }
 
-export function ContactActions({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
+export function ContactActions({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <div className={className}>{children}</div>;
 }
 
 export function ContactAction({ children }: { children: React.ReactNode }) {
@@ -102,9 +112,20 @@ export function ContactEmail({ email }: { email?: string | null }) {
   );
 }
 
-export function IconAvatar({ children }: { children: React.ReactNode }) {
+export function IconAvatar({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="g-rounded-full g-w-[3rem] g-h-[3rem] g-bg-slate-300 g-flex g-items-center g-justify-center">
+    <div
+      className={cn(
+        'g-rounded-full g-w-[3rem] g-h-[3rem] g-bg-slate-300 g-flex g-items-center g-justify-center',
+        className
+      )}
+    >
       {children}
     </div>
   );

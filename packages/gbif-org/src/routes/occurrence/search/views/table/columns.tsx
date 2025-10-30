@@ -32,7 +32,7 @@ export function useOccurrenceColumns({
     const columns: ColumnDef<SingleOccurrenceSearchResult>[] = [
       {
         id: 'scientificName',
-        sort: { localStorageKey: 'occurrenceSort', sortBy: 'taxonKey' },
+        // sort: { localStorageKey: 'occurrenceSort', sortBy: 'taxonKey' },
         header: 'filters.taxonKey.name',
         filterKey: 'taxonKey', // default is same as id
         disableHiding: true,
@@ -308,7 +308,6 @@ export function useOccurrenceColumns({
       },
       {
         id: 'specimenTriplet',
-        sort: { localStorageKey: 'occurrenceSort', sortBy: 'institutionCode' },
         header: 'tableHeaders.specimenTriplet',
         minWidth: 200,
         cell: ({ institutionCode, collectionCode, catalogNumber }) => {
@@ -529,7 +528,7 @@ export function useOccurrenceColumns({
       },
       {
         id: 'iucnRedListCategory',
-        sort: { localStorageKey: 'occurrenceSort', sortBy: 'iucnRedListCategoryCode' },
+        // sort: { localStorageKey: 'occurrenceSort', sortBy: 'iucnRedListCategoryCode' },
         header: 'occurrenceFieldNames.iucnRedListCategory',
         cell: ({ iucnRedListCategory }) => {
           if (!iucnRedListCategory) return null;

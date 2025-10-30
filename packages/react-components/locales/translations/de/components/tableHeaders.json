@@ -1,13 +1,13 @@
 {
   "features": "Eigenschaften",
   "options": {
-    "includeAuthorship": "{num, plural, one { ist im Cluster } other {# sind in Clustern}}"
+    "includeAuthorship": ""
   },
   "citations": "Zitierungen",
   "occurrences": "Occurrences",
   "numberSpecimens": "Anzahl der Sammlungsobjekte",
   "gbifNumberSpecimens": "Belege in GBIF",
-  "specimenTriplet": "{num, plural, one { ist im Cluster } other {# sind in Clustern}}",
+  "specimenTriplet": "",
   "title": "Titel",
   "titleAndAbstract": "Titel und Abstract",
   "altmetric": "Altmetrisch",
@@ -23,5 +23,8 @@
   "collectionCount": "Sammlungen",
   "active": "Ist aktiv",
   "activeInstitution": "Ist aktiv",
+  "author": "",
+  "source": "",
+  "dataReferenced": "",
   "activeCollection": "Ist aktiv"
 }

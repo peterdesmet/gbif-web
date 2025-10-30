@@ -2,6 +2,7 @@
   "foundingDate": "Data założenia",
   "geographicDescription": "Opis geograficzny",
   "taxonomicDescription": "Opis taksonomiczny",
+  "TaxonomicExpertice": "",
   "temporalDescription": "Opis czasowy",
   "additionalNames": "Dodatkowe nazwy",
   "description": "Opis",
@@ -53,7 +54,7 @@
     "explore": "Przeglądaj katalog"
   },
   "citesPermitNumber": "Numer pozwolenia CITES",
-  "collectionDescriptorsHeadline": "",
+  "collectionDescriptorsHeadline": "Deskryptory kolekcji",
   "collectionDescriptorsIntroduction": "",
   "collectionSearchNoResultsMessage": "",
   "searchForSpecimens": ""

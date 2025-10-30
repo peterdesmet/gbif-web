@@ -14,15 +14,17 @@ export default function NodeSteeringGroup({
   return (
     <table className="g-w-full">
       <thead>
-        <th className="g-text-left">
-          <FormattedMessage id="gbifNetwork.role" />
-        </th>
-        <th className="g-text-left">
-          <FormattedMessage id="gbifNetwork.name" />
-        </th>
-        <th className="g-text-left">
-          <FormattedMessage id="gbifNetwork.participant" />
-        </th>
+        <tr>
+          <th className="g-text-left">
+            <FormattedMessage id="gbifNetwork.role" />
+          </th>
+          <th className="g-text-left">
+            <FormattedMessage id="gbifNetwork.name" />
+          </th>
+          <th className="g-text-left">
+            <FormattedMessage id="gbifNetwork.participant" />
+          </th>
+        </tr>
       </thead>
       <tbody>
         {committeeMembers.map((member, i) => (
@@ -40,7 +42,7 @@ export default function NodeSteeringGroup({
               </div>
             </td>
             <td>
-              <div>{member.contact?.participants[0]?.name ?? member.institutionName}</div>
+              <div>{member.contact?.participants?.[0]?.name ?? member.institutionName}</div>
             </td>
           </tr>
         ))}

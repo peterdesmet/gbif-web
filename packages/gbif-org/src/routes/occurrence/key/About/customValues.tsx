@@ -8,8 +8,11 @@ import {
 import useQuery from '@/hooks/useQuery';
 import { DynamicLink } from '@/reactRouterPlugins';
 import equal from 'fast-deep-equal/react';
+import { MdLink } from 'react-icons/md';
 import { FormattedDate, FormattedMessage } from 'react-intl';
 import { BasicField } from '../properties';
+import { useConfig } from '@/config/config';
+import { BulletList } from '@/components/bulletList';
 
 export function InstitutionKey({
   occurrence,
@@ -108,7 +111,13 @@ function Agents({ label, value }: { label: string; value: { type: string; value:
   );
 }
 
-export function DynamicProperties({ termMap }) {
+export function DynamicProperties({
+  termMap,
+  slowOccurrence,
+}: {
+  termMap: any;
+  slowOccurrence?: any;
+}) {
   const value = termMap?.dynamicProperties?.value;
   if (!value) return null;
 
@@ -133,6 +142,73 @@ export function DynamicProperties({ termMap }) {
         />
       </T>
       <V style={{ overflow: 'hidden' }}>{content}</V>
+      {slowOccurrence?.localContext?.[0]?.name && slowOccurrence?.localContext?.[0]?.img_url && (
+        <>
+          <T>
+            <img
+              style={{ width: 32, height: 32, marginRight: 8 }}
+              src={slowOccurrence.localContext[0].img_url}
+              alt={slowOccurrence.localContext[0].name}
+              title={slowOccurrence.localContext[0].name}
+            />
+          </T>
+          <V>
+            <h5 className="g-font-bold">
+              {slowOccurrence.localContext[0].name}{' '}
+              <a href={slowOccurrence.localContext[0].notice_page} target="_blank" rel="noreferrer">
+                <MdLink />
+              </a>
+            </h5>
+            {slowOccurrence.localContext[0]?.default_text}
+          </V>
+        </>
+      )}
+    </>
+  );
+}
+
+export function LocalContext({ localContext }: { localContext?: any }) {
+  const config = useConfig();
+  const showLocalContext = config.experimentalFeatures.localContextEnabled;
+  if (!localContext?.notice || !showLocalContext) return null;
+
+  const { project_page, title, description } = localContext;
+  const items = (localContext?.notice ?? [])?.filter(
+    (c) => c && c.name && c.img_url && c.default_text
+  );
+  if (items.length === 0) return null;
+
+  return (
+    <>
+      <T>
+        <FormattedMessage id={`dataset.localContext`} defaultMessage={'Local context'} />
+      </T>
+
+      <V>
+        <h5 className="g-flex g-items-center g-gap-1">
+          <a
+            href={project_page}
+            target="_blank"
+            rel="noreferrer"
+            className="g-flex g-items-center g-underline"
+          >
+            {title}
+          </a>
+        </h5>
+        <div className="g-text-sm g-text-slate-600 g-mt-1 g-mb-2">{description}</div>
+        <ul>
+          {items.map((localContext) => (
+            <li className="g-inline-block">
+              <img
+                className="g-me-2 g-w-6 g-h-6"
+                src={localContext.img_url}
+                alt={localContext.name}
+                title={localContext.name}
+              />
+            </li>
+          ))}
+        </ul>
+      </V>
     </>
   );
 }
@@ -153,6 +229,7 @@ export function AgentSummary({ agent }: { agent: { type: string; value: string }
     throwAllErrors: false,
     variables: { type: agent.type, value: agent.value },
   });
+  // ignore errors and just fallback to the raw value - no need to notify anyone
   if (!data?.person || loading || error) return agent.value;
   const { person } = data;
 

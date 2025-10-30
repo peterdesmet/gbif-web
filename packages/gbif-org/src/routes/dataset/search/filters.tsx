@@ -11,7 +11,7 @@ import {
   filterConfigTypes,
   filterEnumConfig,
   filterFreeTextConfig,
-  FilterSetting,
+  Filters,
   filterSuggestConfig,
   generateFilters,
 } from '@/components/filters/filterTools';
@@ -19,12 +19,11 @@ import { SuggestFnProps, SuggestResponseType } from '@/components/filters/sugges
 import { Message } from '@/components/message';
 import { FilterConfigType } from '@/dataManagement/filterAdapter/filter2predicate';
 import datasetTypeOptions from '@/enums/basic/datasetType.json';
-import dwcaExtensionOptions from '@/enums/basic/dwcaExtension.json';
 import licenseOptions from '@/enums/basic/license.json';
 import { useCountrySuggest } from '@/hooks/useCountrySuggest';
 import { fetchWithCancel } from '@/utils/fetchWithCancel';
 import { networkKeySuggest } from '@/utils/suggestEndpoints';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 
 // shared vairables for the various components
@@ -211,7 +210,7 @@ export const dwcaExtensionConfig: filterEnumConfig = {
   filterType: filterConfigTypes.ENUM,
   filterHandle: 'dwcaExtension',
   displayName: DwcaExtensionLabel,
-  options: dwcaExtensionOptions,
+  // options: dwcaExtensionOptions,
   allowNegations: false,
   allowExistence: false,
   filterTranslation: 'filters.dwcaExtension.name',
@@ -219,7 +218,7 @@ export const dwcaExtensionConfig: filterEnumConfig = {
     query DatasetDwcaExtensionFacet($query: DatasetSearchInput) {
       search: datasetSearch(query: $query) {
         facet {
-          field: dwcaExtension {
+          field: dwcaExtension(limit: 100) {
             name
             count
           }
@@ -230,14 +229,13 @@ export const dwcaExtensionConfig: filterEnumConfig = {
 };
 
 export function useFilters({ searchConfig }: { searchConfig: FilterConfigType }): {
-  filters: Record<string, FilterSetting>;
+  filters: Filters;
 } {
   const { formatMessage } = useIntl();
-  const [filters, setFilters] = useState<Record<string, FilterSetting>>({});
   const countrySuggest = useCountrySuggest();
 
-  useEffect(() => {
-    const nextFilters = {
+  const filters: Filters = useMemo(() => {
+    return {
       publishingOrg: generateFilters({ config: publisherConfig, searchConfig, formatMessage }),
       hostingOrg: generateFilters({ config: hostingOrgConfig, searchConfig, formatMessage }),
       projectId: generateFilters({ config: projectIdConfig, searchConfig, formatMessage }),
@@ -252,7 +250,6 @@ export function useFilters({ searchConfig }: { searchConfig: FilterConfigType })
       dwcaExtension: generateFilters({ config: dwcaExtensionConfig, searchConfig, formatMessage }),
       q: generateFilters({ config: freeTextConfig, searchConfig, formatMessage }),
     };
-    setFilters(nextFilters);
   }, [searchConfig, countrySuggest, formatMessage]);
 
   return {

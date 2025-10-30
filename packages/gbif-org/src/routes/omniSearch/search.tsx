@@ -1,3 +1,4 @@
+import { ErrorMessage } from '@/components/errorMessage';
 import { NoRecords } from '@/components/noDataMessages';
 import { CardListSkeleton } from '@/components/skeletonLoaders';
 import { OmniSearchQuery, OmniSearchQueryVariables, PredicateType } from '@/gql/graphql';
@@ -62,7 +63,10 @@ export function SearchPage() {
     load,
     loading: dataLoading,
     error,
-  } = useQuery<OmniSearchQuery, OmniSearchQueryVariables>(OMNI_SEARCH, { lazyLoad: true });
+  } = useQuery<OmniSearchQuery, OmniSearchQueryVariables>(OMNI_SEARCH, {
+    lazyLoad: true,
+    notifyOnErrors: true,
+  });
   const [searchQuery] = useStringParam({
     key: 'q',
     defaultValue: '',
@@ -135,12 +139,8 @@ export function SearchPage() {
                   'tool',
                   'document',
                   'network',
+                  'help',
                 ],
-              },
-              {
-                type: PredicateType.Fuzzy,
-                key: 'q',
-                value: q,
               },
             ],
           },
@@ -161,12 +161,8 @@ export function SearchPage() {
                   'tool',
                   'document',
                   'network',
+                  'help',
                 ],
-              },
-              {
-                type: PredicateType.Equals,
-                key: 'keywords',
-                value: q,
               },
             ],
           },
@@ -305,6 +301,12 @@ export function SearchPage() {
                   <div className="g-w-full">
                     {noResults && <NoRecords />}
 
+                    {!data && error && (
+                      <ErrorMessage>
+                        <FormattedMessage id="error.genericDescription" />
+                      </ErrorMessage>
+                    )}
+
                     {serverResults?.country && (
                       <>
                         <CountryResult country={serverResults.country} />
@@ -323,7 +325,7 @@ export function SearchPage() {
                       <ResourceSearchResult
                         key={resource.id}
                         resource={resource}
-                        className="g-bg-white"
+                        className="g-bg-white g-mb-4"
                       />
                     ))}
                     {serverResults?.taxa &&
@@ -331,7 +333,7 @@ export function SearchPage() {
                         <TaxonResult
                           key={taxon.taxon.key}
                           taxon={taxon.taxon}
-                          className="g-bg-white"
+                          className="g-bg-white g-mb-4"
                         />
                       ))}
 
@@ -399,7 +401,7 @@ export function SearchPage() {
                       <ResourceSearchResult
                         key={resource.id}
                         resource={resource}
-                        className="g-bg-white"
+                        className="g-bg-white g-mb-4"
                       />
                     ))}
                   </div>

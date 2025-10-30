@@ -25,6 +25,7 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
       tableHeaders: getFile(locale, `../${folder}/${locale}/components/tableHeaders`),
       intervals: getFile(locale, `../${folder}/${locale}/components/intervals`),
       filters: getFile(locale, `../${folder}/${locale}/components/filters`),
+      feedback: getFile(locale, `../${folder}/${locale}/components/feedback`).feedback,
       filterSupport: getFile(locale, `../${folder}/${locale}/components/filterSupport`),
       counts: getFile(locale, `../${folder}/${locale}/components/counts`),
       contact: getFile(locale, `../${folder}/${locale}/components/contact`),
@@ -42,7 +43,9 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
       customSqlDownload: getFile(locale, `../${folder}/${locale}/components/downloads`)
         .customSqlDownload,
       homepage: getFile(locale, `../${folder}/${locale}/components/homepage`).homepage,
-
+      trends: getFile(locale, `../${folder}/${locale}/components/trends`).trends,
+      country: getFile(locale, `../${folder}/${locale}/components/country`).country,
+      directory: getFile(locale, `../${folder}/${locale}/components/directory`),
       occurrenceFieldNames: getFile(
         locale,
         `../${folder}/${locale}/components/occurrenceFieldNames`,
@@ -56,6 +59,13 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
       dashboard: getFile(locale, `../${folder}/${locale}/components/dashboard`),
       cms: getFile(locale, `../${folder}/${locale}/components/cms`),
       eoi: getFile(locale, `../${folder}/${locale}/components/eoi`),
+      validation: getFile(locale, `../${folder}/${locale}/components/validation`),
+      hostedPortalApplication: getFile(
+        locale,
+        `../${folder}/${locale}/components/hostedPortalApplication`,
+      ),
+      mdt: getFile(locale, `../${folder}/${locale}/components/mdt`),
+      suggestDataset: getFile(locale, `../${folder}/${locale}/components/suggestDataset`),
 
       enums: {
         basisOfRecord: getFile(locale, `../${folder}/${locale}/enums/basisOfRecord`),
@@ -68,6 +78,8 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
         typeStatus: getFile(locale, `../${folder}/${locale}/enums/typeStatus`),
         taxonRank: getFile(locale, `../${folder}/${locale}/enums/taxonRank`),
         taxonomicStatus: getFile(locale, `../${folder}/${locale}/enums/taxonomicStatus`),
+        clbTaxonomicStatus: getFile(locale, `../${folder}/${locale}/enums/clbTaxonomicStatus`)
+          .clbTaxonomicStatus,
         taxonIssue: getFile(locale, `../${folder}/${locale}/enums/taxonIssue`),
         license: getFile(locale, `../${folder}/${locale}/enums/license`),
         issueHelp: getFile(locale, `../${folder}/${locale}/enums/issueHelp`),
@@ -107,6 +119,9 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
         ),
         preservationType: getFile(locale, `../${folder}/${locale}/enums/preservationType`),
         cms: getFile(locale, `../${folder}/${locale}/enums/cms`),
+        participationStatus: getFile(locale, `../${folder}/${locale}/enums/participationStatus`)
+          .participationStatus,
+        kingdomKey: getFile(locale, `../${folder}/${locale}/enums/kingdomKey`).kingdomKey,
         // -- Add enums above this line (required by plopfile.js) --
       },
     },

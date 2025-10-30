@@ -28,6 +28,7 @@ export function StandaloneOccurrenceKeyPage({ url }: Props) {
       ],
     };
     set(conf, 'datasetKey.disableInPageOccurrenceSearch', true);
+    set(conf, 'feedback.showFeedbackInDataHeader', true);
     return conf;
   }, [rootConfig]);
 

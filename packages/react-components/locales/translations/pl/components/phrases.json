@@ -44,8 +44,8 @@
   "keep": "",
   "addressUnknown": "",
   "emptyValueProvided": "Podana pusta wartość",
-  "otherIdentifiers": "{num, plural, one { jest w grupie } few {# są w grupie} many {# jest w grupie} other {# są w grupie}}",
-  "gbifIdentifier": "{num, plural, one { jest w grupie } few {# są w grupie} many {# jest w grupie} other {# są w grupie}}",
+  "otherIdentifiers": "",
+  "gbifIdentifier": "",
   "copyToClipboard": "",
   "copy": "Kopiuj",
   "fromCountry": "Z {country}",
@@ -61,5 +61,12 @@
   "lastCrawled": "Ostatnio przeszukane",
   "goToRecord": "Przejdź do zapisu",
   "commonNameAccordingTo": "Nazwa zwyczajowa według: {source}",
-  "noResults": ""
+  "supportedChecklists": "",
+  "noResults": "",
+  "stepperFormProgress": "",
+  "next": "Następne",
+  "back": "Powrót",
+  "submit": "Wyślij",
+  "pleaseTryAgainLater": "",
+  "weWillBeInTouchSoon": ""
 }

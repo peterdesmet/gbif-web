@@ -89,6 +89,7 @@ const typeDef = gql`
     waterBody
     year
     iucnRedListCategoryCode
+    stateProvince
   }
 
   type OccurrenceSearchResult {
@@ -100,6 +101,7 @@ const typeDef = gql`
       from: Int
       sortBy: OccurrenceSortBy
       sortOrder: SortOrder
+      checklistKey: ID
     ): OccurrenceDocuments!
     """
     Get number of occurrences per distinct values in a field. E.g. how many occurrences per year.
@@ -543,8 +545,8 @@ const typeDef = gql`
   type OccurrenceFacetResult_dataset {
     key: String!
     count: Long!
-    dataset: Dataset!
-    occurrences(size: Int, from: Int): OccurrenceSearchResult!
+    dataset: Dataset
+    occurrences(size: Int, from: Int): OccurrenceSearchResult
     _predicate: JSON
   }
 

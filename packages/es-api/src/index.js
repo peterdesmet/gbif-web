@@ -232,6 +232,7 @@ function searchResource(resource, metaOnly = false) {
         randomize,
         includeMeta,
         sortBy,
+        checklistKey,
         sortOrder,
       } = parseQuery(req, res, next, { get2predicate, get2metric });
 
@@ -256,6 +257,7 @@ function searchResource(resource, metaOnly = false) {
         randomize,
         sortBy,
         sortOrder,
+        checklistKey,
         req,
       });
       const meta = {
@@ -304,6 +306,7 @@ function parseQuery(req, res, next, { get2predicate, get2metric }) {
       includeMeta = false,
       sortBy,
       sortOrder,
+      checklistKey,
       q,
       ...otherParams
     } = query;
@@ -337,6 +340,7 @@ function parseQuery(req, res, next, { get2predicate, get2metric }) {
       includeMeta,
       sortBy,
       sortOrder,
+      checklistKey,
       q,
     };
     return result;

@@ -1,7 +1,9 @@
-import { urlSizeLimit } from '#/helpers/utils-ts';
-import { getOccurrenceAgent } from '#/requestAgents';
 import { RESTDataSource } from 'apollo-datasource-rest';
 import { stringify } from 'qs';
+import { urlSizeLimit } from '#/helpers/utils-ts';
+import { getOccurrenceAgent } from '#/requestAgents';
+
+const MAX_RESULTS = 3000;
 
 class OccurrenceAPI extends RESTDataSource {
   constructor(config) {
@@ -24,7 +26,16 @@ class OccurrenceAPI extends RESTDataSource {
   }
 
   async searchOccurrences({ query }) {
-    const body = { ...query, includeMeta: true };
+    const body = {
+      ...query,
+      includeMeta: true,
+      checklistKey: query?.checklistKey ?? this.config.defaultChecklist,
+    };
+    if ((query?.from ?? 0) + (query?.size ?? 100) > MAX_RESULTS) {
+      throw new Error(
+        `Query exceeds maximum allowed size of ${MAX_RESULTS}. Please use our API https://techdocs.gbif.org/en/ or do a download.`,
+      );
+    }
     let response;
     if (JSON.stringify(body).length < urlSizeLimit) {
       response = await this.get(
@@ -92,21 +103,11 @@ class OccurrenceAPI extends RESTDataSource {
   }
 
   async registerPredicate({ predicate }) {
-    try {
-      return await this.post(
-        `${this.config.apiv2}/map/occurrence/adhoc/predicate/`,
-        predicate,
-        { signal: this.context.abortController.signal },
-      );
-    } catch (err) {
-      console.log(err);
-      return {
-        err: {
-          error: 'FAILED_TO_REGISTER_PREDICATE',
-        },
-        predicate: null,
-      };
-    }
+    return this.post(
+      `${this.config.apiv2}/map/occurrence/adhoc/predicate/`,
+      predicate,
+      { signal: this.context.abortController.signal },
+    );
   }
 
   async getMapCapabilities(query) {

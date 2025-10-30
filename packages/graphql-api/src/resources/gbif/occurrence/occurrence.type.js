@@ -226,6 +226,9 @@ const typeDef = gql`
     sampleSizeValue: Float
     samplingEffort: String
     samplingProtocol: [String]
+    """
+    Deprecated - to get interpretations use the classifications and select a checklistKey
+    """
     scientificName: String
     scientificNameAuthorship: String
     scientificNameID: String
@@ -318,6 +321,11 @@ const typeDef = gql`
     Volatile: these values are tightly coupled to the webview and are likely to change frequently
     """
     bionomia: BionomiaOccurrence
+    """
+    Volatile: these values are tightly coupled to the webview and are likely to change frequently
+    """
+    localContext: LocalContext
+    originalUsageMatch: SpeciesMatchResult
   }
 
   type BionomiaOccurrence {
@@ -641,7 +649,7 @@ const typeDef = gql`
     maxLng: Int!
     minYear: Int
     maxYear: Int
-    total: Int!
+    total: Long!
     generated: DateTime!
   }
 `;

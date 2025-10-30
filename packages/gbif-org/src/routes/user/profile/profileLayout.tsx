@@ -47,22 +47,22 @@ export function UserProfileLayout() {
         </>
       ),
     },
-    // {
-    //   to: 'derived-datasets',
-    //   children: (
-    //     <>
-    //       <span>{formatMessage({ id: 'profile.derivedDatasets' })}</span>
-    //     </>
-    //   ),
-    // },
-    // {
-    //   to: 'validations',
-    //   children: (
-    //     <>
-    //       <span>{formatMessage({ id: 'profile.validations' })}</span>
-    //     </>
-    //   ),
-    // },
+    {
+      to: 'derived-datasets',
+      children: (
+        <>
+          <span>{formatMessage({ id: 'profile.derivedDatasets' })}</span>
+        </>
+      ),
+    },
+    {
+      to: 'validations',
+      children: (
+        <>
+          <span>{formatMessage({ id: 'profile.validations' })}</span>
+        </>
+      ),
+    },
   ];
 
   const logoutHandler = async () => {

@@ -71,8 +71,8 @@ function OrganizationPreview({ id, className }: { id: string; className?: string
   );
 
   const organization = data?.organization;
-  const contact = organization?.contacts?.[0];
   const contacts = organization?.contacts || [];
+
   return (
     <div className={cn('g-bg-gray-100 g-p-4', className)}>
       <p className="g-text-sm g-text-gray-800">
@@ -94,7 +94,10 @@ function OrganizationPreview({ id, className }: { id: string; className?: string
           <div className="g-p-2">
             {organization.created && (
               <span className="g-text-xs g-block g-text-primary-600">
-                Joined <TimeAgo date={new Date(organization.created)} />
+                <FormattedMessage
+                  id="publisher.joinedDate"
+                  values={{ date: <TimeAgo date={new Date(organization.created)} /> }}
+                />
               </span>
             )}
             <span className="g-text-xs g-block g-text-gray-500">
@@ -142,7 +145,10 @@ function OrganizationPreview({ id, className }: { id: string; className?: string
             )} */}
 
             {organization.description && (
-              <p className="g-text-xs g-mt-1">{organization.description}</p>
+              <div
+                className="g-text-xs g-mt-1"
+                dangerouslySetInnerHTML={{ __html: organization.description }}
+              />
             )}
           </div>
         </div>

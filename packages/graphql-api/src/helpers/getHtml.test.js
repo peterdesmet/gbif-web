@@ -23,7 +23,7 @@ const a = 1;
     );
     assert.strictEqual(
       result,
-      '<p>code to follow</p><pre><code>const a = 1;</code></pre>',
+      '<p>code to follow</p><pre><code>const a = 1;\n</code></pre>',
     );
   });
 

@@ -90,6 +90,15 @@ export const gbifConfig: Config = {
   //     id: 'speciesKey',
   //   },
   // ],
+  notFoundPageImageUrl: '/img/404.jpg',
+  feedback: {
+    enabled: true,
+    gbifFeedback: true,
+    showFeedbackInDataHeader: false,
+  },
+  experimentalFeatures: {
+    localContextEnabled: true,
+  },
   defaultTitle: 'GBIF',
   // The languages should be synced with supportedLocales in graphql-api/src/helpers/sanitize-html.ts
   languages: languagesOptions,
@@ -97,10 +106,38 @@ export const gbifConfig: Config = {
   availableChecklistKeys: import.meta.env.PUBLIC_SUPPORTED_CHECKLISTS?.split(',') || [],
   theme: {
     dense: true,
-    primary: '#69AA69', // green '#69AA69', purple #4f46e5
+    primary: '#4C9C2E', // green '#69AA69', purple #4f46e5
     stickyOffset: '0px',
     borderRadius: 3,
     linkColor: '#69AA69',
+    chartColors: [
+      '#4C9C2E',
+      '#231F20',
+      '#E37C72',
+      '#D1628E',
+      '#ECAC7C',
+      '#00B7EE',
+      '#6885C0',
+      '#664192',
+      '#F2BF48',
+      '#0078B4',
+    ],
+    iucnColors: {
+      NA: '#B8A896',
+      NE: '#E8E8E8',
+      DD: '#C4C4B8',
+      CD: '#D1628E',
+      LR: '#D1628E',
+      LC: '#4C9C2E',
+      NT: '#ECAC7C',
+      VU: '#F2BF48',
+      EN: '#E37C72',
+      CR: '#C84248',
+      RE: '#664192',
+      EW: '#442D59',
+      EX: '#231F20',
+    },
+    // mapDensityColors: ['#31a354', '#006d2c', '#006d2c', '#006d2c', '#006d2c'], // all dark green
   },
   dataHeader: {
     enableApiPopup: true,
@@ -113,24 +150,11 @@ export const gbifConfig: Config = {
     maptiler: import.meta.env.PUBLIC_API_KEY_MAPTILER,
   },
   openDrawerOnTableRowClick: false,
-  availableCatalogues: [
-    'OCCURRENCE',
-    'INSTITUTION',
-    'COLLECTION',
-    'DATASET',
-    'PUBLISHER',
-    'TAXON',
-    'LITERATURE',
-    'RESOURCE',
-  ],
+  availableCatalogues: ['OCCURRENCE', 'PUBLISHER', 'DATASET', 'TAXON', 'RESOURCE', 'LITERATURE'],
   // vernacularNames: {
   //   sourceTitle: 'The IUCN Red List of Threatened Species',
   //   datasetKey: '66dd0960-2d7d-46ee-a491-87b9adcfe7b1',
   // },
-  hardcodedKeys: {
-    OBISKey: 'ba0670b9-4186-41e6-8e70-f9cb3065551a',
-    taiwanNodeidentifier: '239',
-  },
   linkToGbifOrg: true,
   publisherSearch: {
     enableUserCountryInfo: true,
@@ -202,7 +226,7 @@ export const gbifConfig: Config = {
   },
   literatureSearch: {
     queryType: 'PREDICATE',
-    highlightedFilters: ['q', 'year'],
+    // highlightedFilters: ['q', 'year'],
   },
   occurrenceSearch: {
     mapSettings: {
@@ -230,21 +254,16 @@ export const gbifConfig: Config = {
     //   'coordinates',
     //   'media',
     // ],
-    tabs: ['table', 'gallery', 'map', 'clusters', 'datasets', 'dashboard', 'download'],
+    tabs: ['table', 'gallery', 'map', 'clusters', 'dashboard', 'download'],
     defaultTab: 'table',
     // scope: {
     //   type: 'and',
     //   predicates: [
-    //     {
-    //       type: 'equals',
-    //       key: 'networkKey',
-    //       value: '99d66b6c-9087-452f-a9d4-f15f2c2d0e7e',
-    //     },
-    //     {
-    //       type: 'equals',
-    //       key: 'taxonKey',
-    //       value: '44',
-    //     },
+    //     // {
+    //     //   type: 'equals',
+    //     //   key: 'taxonKey',
+    //     //   value: '44',
+    //     // },
     //   ],
     // },
   },

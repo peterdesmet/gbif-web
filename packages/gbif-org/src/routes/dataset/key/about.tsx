@@ -3,6 +3,7 @@ import { ContactList } from '@/components/contactList';
 import * as charts from '@/components/dashboard';
 import DashBoardLayout from '@/components/dashboard/DashboardLayout';
 import EmptyValue from '@/components/emptyValue';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { HyperText } from '@/components/hyperText';
 import { MapThumbnail, MapTypes, useHasMap } from '@/components/maps/mapThumbnail';
 import { Message } from '@/components/message';
@@ -13,7 +14,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/largeCard';
 import { Progress } from '@/components/ui/progress';
 import { CardContent as CardContentSmall } from '@/components/ui/smallCard';
-import { useToast } from '@/components/ui/use-toast';
 import { useConfig } from '@/config/config';
 import {
   DatasetInsightsQuery,
@@ -34,6 +34,7 @@ import {
   MdFormatQuote,
   MdGridOn,
   MdInfoOutline,
+  MdLink,
   MdPlaylistAddCheck,
   MdPinDrop as OccurrenceIcon,
 } from 'react-icons/md';
@@ -48,9 +49,10 @@ import { Registration } from './about/Registration';
 import { SamplingDescription } from './about/SamplingDescription';
 import { TaxonomicCoverages } from './about/TaxonomicCoverages';
 import { TemporalCoverages } from './about/TemporalCoverages';
+import { ExternalLinkIcon } from '@radix-ui/react-icons';
 
 export function DatasetKeyAbout() {
-  const { toast } = useToast();
+  const config = useConfig();
   const { data } = useDatasetKeyLoaderData();
   const { dataset, totalTaxa, accepted, synonyms } = data;
   const defaultToc = getToc(data);
@@ -58,10 +60,14 @@ export function DatasetKeyAbout() {
     type: MapTypes.DatasetKey,
     identifier: data?.dataset?.key ?? '',
   });
+  const hasLocalContext =
+    (dataset?.localContext?.notice?.length ?? 0) > 0 &&
+    config.experimentalFeatures.localContextEnabled;
+
   const [toc, setToc] = useState(defaultToc);
   const removeSidebar = useBelow(1100);
   const { formatMessage } = useIntl();
-  const config = useConfig();
+
   const sitePredicate = config?.occurrenceSearch?.scope;
   const disableInPageOccurrenceSearch = config.datasetKey?.disableInPageOccurrenceSearch;
   const occDynamicLinkProps = disableInPageOccurrenceSearch
@@ -72,15 +78,14 @@ export function DatasetKeyAbout() {
     ? { pageId: 'occurrenceSearch', searchParams: { datasetKey: dataset?.key, view: 'map' } }
     : { to: './occurrences?view=map' };
 
-  const {
-    data: insights,
-    error,
-    load,
-    loading,
-  } = useQuery<DatasetInsightsQuery, DatasetInsightsQueryVariables>(DATASET_SLOW, {
-    throwAllErrors: false,
-    lazyLoad: true,
-  });
+  const { data: insights, load } = useQuery<DatasetInsightsQuery, DatasetInsightsQueryVariables>(
+    DATASET_SLOW,
+    {
+      throwAllErrors: false,
+      lazyLoad: true,
+      notifyOnErrors: true,
+    }
+  );
 
   useEffect(() => {
     if (!dataset?.key) return;
@@ -133,17 +138,6 @@ export function DatasetKeyAbout() {
       },
     });
   }, [dataset?.key, sitePredicate, load]);
-
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: 'Unable to load all content',
-        description: error.message,
-        variant: 'destructive',
-      });
-      console.error(error);
-    }
-  }, [error, toast]);
 
   // when dataset or insights change, then recalculate which items go into the table of contents
   useEffect(() => {
@@ -250,8 +244,8 @@ export function DatasetKeyAbout() {
   const withYearPercentage = formatAsPercentage(withYear / total);
   const withTaxonMatchPercentage = formatAsPercentage(withTaxonMatch / total);
 
-  const synonymsPercentage = formatAsPercentage(synonyms.count / totalTaxa.count);
-  const acceptedPercentage = formatAsPercentage(accepted.count / totalTaxa.count);
+  const synonymsPercentage = formatAsPercentage(synonyms?.count / totalTaxa?.count);
+  const acceptedPercentage = formatAsPercentage(accepted?.count / totalTaxa?.count);
   const gbifOverlap = dataset.metrics?.nubCoveragePct;
   const colOverlap = dataset.metrics?.colCoveragePct;
 
@@ -518,7 +512,9 @@ export function DatasetKeyAbout() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Registration dataset={dataset} />
+                <ErrorBoundary type="BLOCK" showReportButton={false}>
+                  <Registration dataset={dataset} />
+                </ErrorBoundary>
               </CardContent>
             </Card>
             <Card className="g-mb-4 gbif-word-break" id="citation">
@@ -709,6 +705,43 @@ export function DatasetKeyAbout() {
                     </div>
                   </CardContentSmall>
                 </Card>
+              )}
+
+              {hasLocalContext && (
+                <a
+                  href={dataset?.localContext?.project_page}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="g-flex g-items-center"
+                >
+                  <Card className="g-mb-4 gbif-word-break">
+                    <CardContentSmall className="g-flex g-me-2 g-pt-2 md:g-pt-4 g-text-sm">
+                      <div className="g-flex-none g-me-2">
+                        <div className="g-leading-6 g-bg-primary-500 g-text-white g-rounded-full g-w-6 g-h-6 g-flex g-justify-center g-items-center">
+                          <ExternalLinkIcon />
+                        </div>
+                      </div>
+                      <div className="g-flex-auto g-mt-0.5">
+                        <h5 className="g-font-bold">{dataset?.localContext?.title}</h5>
+                        <div className="g-text-slate-500 [&_a]:g-underline">
+                          {dataset?.localContext?.description}
+                        </div>
+                        <ul className="g-mt-2">
+                          {dataset?.localContext?.notice.map((localContext) => (
+                            <li className="g-inline-block">
+                              <img
+                                className="g-me-2 g-w-8 g-h-8"
+                                src={localContext.img_url}
+                                alt={localContext.name}
+                                title={localContext.name}
+                              />
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </CardContentSmall>
+                  </Card>
+                </a>
               )}
 
               {isGridded && (

@@ -1,5 +1,5 @@
 {
-  "datasetSearchTitle": "",
+  "datasetSearchTitle": "Поиск набора данных",
   "longType": {
     "OCCURRENCE": "Набор данных о находках",
     "CHECKLIST": "Таксономический список",
@@ -21,15 +21,17 @@
     "project": "Проект",
     "taxonomy": "Таксономия",
     "download": "Загрузить",
-    "phylogeny": "Филогения"
+    "phylogeny": "Филогения",
+    "events": "Мероприятия"
   },
-  "noStatsForMetadata": "",
+  "noStatsForMetadata": "Нет статистики для наборов данных, содержащих только  метаданные",
   "siteScopeSmallerThanDataset": "Не все записи из набора данных представлены на этом сайте. Посетите [GBIF.org]({datasetUrl}) для просмотра полного набора данных.",
   "viewArticle": "Просмотр статьи",
   "registeredDate": "Зарегистрирован {DATE}",
   "constituentOf": "Базовые наборы данных",
   "dataset": "Набор данных",
   "taxonomy": "Таксономия",
+  "localContext": "",
   "project": "Проект",
   "metrics": "Показатели",
   "metricsOccurrenceHelpText": "Показатели основаны на интерпретированных данных",
@@ -47,7 +49,7 @@
   "projectId": "ID проекта",
   "studyArea": "Район исследований",
   "publishedBy": "Опубликован",
-  "mediatedBy": "",
+  "mediatedBy": "При посредничестве",
   "description": "Описание",
   "metadataLanguage": "Язык метаданных",
   "dataLanguage": "Язык данных",
@@ -86,7 +88,7 @@
   "license": "Лицензия",
   "recommended": "рекомендуется",
   "processedOccurrences": "Архив, аннотированный GBIF",
-  "processedOccurrencesDescription": "",
+  "processedOccurrencesDescription": "Загрузите записи о событиях после обработки GBIF. В ходе обработки имена, даты и прочие данные нормализуются. Данные также дополняются информацией из других источников.",
   "noDescriptionProvided": "Описание недоступно",
   "pNetwork": "{NUMBER, plural,\n0 {записей}\none {запись}\nfew {записи}\nmany {записей}\nother {записей}\n}",
   "parentEvent": "Родительское описание, учет или сбор",
@@ -145,6 +147,11 @@
     "lastIngestionFailed": "Последняя индексация была неудачной",
     "outOfSync": "Не синхронизирован",
     "becauseTrustedContact": "Так как вы являетесь доверенным лицом",
-    "registrationDetails": ""
-  }
+    "registrationDetails": "Регистрационные данные GBIF"
+  },
+  "errors": {
+    "evenList": "",
+    "occurrenceInfo": ""
+  },
+  "eventTaxonomy": "Таксономическое распределение находок"
 }

@@ -61,5 +61,12 @@
   "lastCrawled": "آخر تقدم بطيء",
   "goToRecord": "",
   "commonNameAccordingTo": "",
-  "noResults": ""
+  "supportedChecklists": "",
+  "noResults": "",
+  "stepperFormProgress": "",
+  "next": "التالي",
+  "back": "رجوع",
+  "submit": "تسليم",
+  "pleaseTryAgainLater": "",
+  "weWillBeInTouchSoon": ""
 }

@@ -1,11 +1,16 @@
+import { RESTDataSource } from 'apollo-datasource-rest';
 import { translateContentfulResponse } from '#/helpers/utils';
 import { urlSizeLimit } from '#/helpers/utils-ts';
 import { getDefaultAgent } from '#/requestAgents';
-import { RESTDataSource } from 'apollo-datasource-rest';
+import ThrottledRESTDataSource from '#/ThrottledRESTDataSource';
 
-export class ResourceAPI extends RESTDataSource {
+export class ResourceAPI extends ThrottledRESTDataSource {
   constructor(config) {
-    super();
+    super({
+      // notice that this only is used if the throttle option is set to true in the request
+      maxConcurrent: 3, // Maximum concurrent requests
+      minTime: 200, // Minimum amount in ms between requests
+    });
     this.baseURL = config.apiv1;
   }
 
@@ -15,11 +20,20 @@ export class ResourceAPI extends RESTDataSource {
     request.agent = getDefaultAgent(this.baseURL, request.path);
   }
 
-  async getEntryById({ id, preview, locale }) {
+  async getEntryById({ id, preview, locale, info }) {
     let path = `/content/${id}`;
     if (preview) path += `/preview?cacheBust=${Date.now()}`;
 
-    const result = await this.get(path);
+    const result = await this.get(
+      path,
+      {},
+      { throttle: preview, signal: this.context.abortController.signal },
+    );
+    if (preview && info) {
+      info.cacheControl.setCacheHint({
+        maxAge: 1, // seconds
+      });
+    }
     return translateContentfulResponse(result, locale);
   }
 }
@@ -60,6 +74,7 @@ export class ResourceSearchAPI extends RESTDataSource {
     response.documents.limit = response.documents.size;
     response.documents.offset = response.documents.from;
     response._predicate = body.predicate;
+    response._q = query.q;
     response.documents.results = translateContentfulResponse(
       response.documents.results,
       locale,

@@ -6,12 +6,14 @@ import { DynamicLink, useI18n } from '@/reactRouterPlugins';
 import { FiActivity } from 'react-icons/fi';
 import { MdOutlineFeedback, MdSearch, MdTranslate } from 'react-icons/md';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { FeedbackPopover } from './feedback';
 import { LanguageSelector } from './languageSelector';
 import MainNavigation from './mainNav';
 import MobileMenu from './mobileMenu';
+import { FeedbackPopover } from './feedback/feedback';
+import { useConfig } from '@/config/config';
 
 export function Header({ menu }: { menu: HeaderQuery }) {
+  const config = useConfig();
   const { locale } = useI18n();
   const location = useLocation();
   const { user, isLoggedIn } = useUser();
@@ -27,12 +29,18 @@ export function Header({ menu }: { menu: HeaderQuery }) {
     ? 'g-absolute g-w-full g-text-white hover:g-bg-[#00000048]'
     : '';
   return (
-    <div className={`g-flex g-flex-none g-items-center g-p-2 g-px-4 g-z-30 ${transparentClass}`}>
+    <div
+      className={`g-flex g-flex-none g-items-center g-p-2 g-px-4 g-z-30 ${transparentClass} ${
+        config.testSite ? 'transparent-test-stripes' : ''
+      }`}
+    >
       <div className="g-flex-none ">
         <DynamicLink
           as={NavLink}
           to="/"
-          className={`g-py-2 ${isTransparent ? 'g-text-white' : 'g-text-primary-500'}`}
+          className={`g-py-2 g-relative ${isTransparent ? 'g-text-white' : 'g-text-primary-500'} ${
+            config.testSite ? 'test-box' : ''
+          }`}
         >
           <GbifLogoIcon style={{ fontSize: 25 }} />
         </DynamicLink>
@@ -78,7 +86,11 @@ export function Header({ menu }: { menu: HeaderQuery }) {
           </Button>
         ) : (
           <Button asChild className="g-text-sm lg:g-inline-block g-hidden" variant="outline">
-            <Link to="/user/login">Login</Link>
+            <Link
+              to={`/user/login?returnUrl=${encodeURIComponent(`${pathname}${location.search}`)}`}
+            >
+              Login
+            </Link>
           </Button>
         )}
       </div>

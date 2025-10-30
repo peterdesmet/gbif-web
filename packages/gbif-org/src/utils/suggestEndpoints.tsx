@@ -53,13 +53,16 @@ export const collectionKeySuggest = {
   },
 };
 
-export const datasetKeySuggest = {
+export const datasetKeySuggest: SuggestConfig = {
   getSuggestions: ({ q, siteConfig }: SuggestFnProps): SuggestResponseType => {
     const { cancel, promise } = fetchWithCancel(
       `${siteConfig.v1Endpoint}/dataset/suggest?limit=20&q=${q}`
     );
     const result = promise.then((res) => res.json());
     return { cancel, promise: result };
+  },
+  render: (item: SuggestionItem) => {
+    return <div className="g-line-clamp-3">{item.title}</div>;
   },
 };
 
@@ -243,12 +246,21 @@ export type TaxonSuggestType = SuggestFnProps & { checklistKey?: string | number
 export const taxonKeyClbSuggest = {
   render: (item: SuggestionItem) => {
     const isSynonym = ['ambiguous synonym', 'synonym'].includes(item.status);
+    const notAccepted = item?.status !== 'accepted';
     return (
       <div>
         {item.match}
         <div style={{ maxWidth: '100%', fontSize: '0.85em' }}>
           {isSynonym && <div className="g-text-orange-500">Synonym for {item.acceptedName}</div>}
-          {!isSynonym && (
+          {notAccepted && !isSynonym && (
+            <div className="g-text-orange-500">
+              <FormattedMessage
+                id={`enums.clbTaxonomicStatus.${(item?.status ?? '').replace(' ', '_')}`}
+                defaultMessage={item?.status}
+              />
+            </div>
+          )}
+          {!isSynonym && item.context && (
             <div style={{ color: '#aaa' }}>
               <FormattedMessage
                 id="search.rankInGroup"
@@ -524,6 +536,8 @@ export const establishmentMeansSuggest = vocabularySuggest('EstablishmentMeans')
 export const institutionDisciplineSuggest = vocabularySuggest('Discipline');
 export const institutionTypeSuggest = vocabularySuggest('InstitutionType');
 export const preservationTypeSuggest = vocabularySuggest('PreservationType');
+export const biomeTypeSuggest = vocabularySuggest('BiomeType');
+export const objectClassificationSuggest = vocabularySuggest('ObjectClassificationName');
 export const pathwaySuggest = vocabularySuggest('Pathway');
 export const degreeOfEstablishmentSuggest = vocabularySuggest('DegreeOfEstablishment');
 export const collectionContentTypeSuggest = vocabularySuggest('CollectionContentType');

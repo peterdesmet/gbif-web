@@ -23,9 +23,8 @@ const client = new Client({
 
 const allowedSortBy = {
   basisOfRecord: 'basisOfRecord',
-  catalogNumber: 'catalogNumber.keyword',
-  collectionCode: 'collectionCode.keyword',
-  collectionCode: 'collectionCode.keyword',
+  catalogNumber: 'catalogNumber',
+  collectionCode: 'collectionCode',
   collectionKey: 'collectionKey',
   continent: 'continent',
   coordinatePrecision: 'coordinatePrecision',
@@ -40,37 +39,48 @@ const allowedSortBy = {
   elevation: 'elevation',
   establishmentMeans: 'establishmentMeans.concept',
   eventDate: 'eventDateSingle',
-  eventId: 'eventId.keyword',
+  eventId: 'eventId',
   fieldNumber: 'fieldNumber',
-  taxonKey: 'classifications.{CHECKLIST_KEY}.usage.name',
+  // taxonKey: 'classifications.{CHECKLIST_KEY}.usage.name',
   gbifId: 'gbifId',
   gbifRegion: 'gbifRegion',
   bed: 'geologicalContext.bed',
   biostratigraphy: 'geologicalContext.biostratigraphy.keyword',
   identifiedBy: 'identifiedByJoined',
   individualCount: 'individualCount',
-  institutionCode: 'institutionCode.keyword',
+  institutionCode: 'institutionCode',
   institutionKey: 'institutionKey',
   isClustered: 'isClustered',
   isSequenced: 'isSequenced',
   island: 'island',
   license: 'license',
   lifeStage: 'lifeStage.concept',
-  locality: 'locality.keyword',
+  locality: 'locality',
   month: 'month',
-  occurrenceId: 'occurrenceId.keyword',
+  occurrenceId: 'occurrenceId',
   occurrenceStatus: 'occurrenceStatus',
-  organismId: 'organismId.keyword',
+  organismId: 'organismId',
   preparations: 'preparationsJoined',
-  recordNumber: 'recordNumber.keyword',
+  recordNumber: 'recordNumber',
   recordedBy: 'recordedByJoined',
   sex: 'sex.concept',
-  waterBody: 'waterBody.keyword',
+  waterBody: 'waterBody',
+  stateProvince: 'stateProvince',
   year: 'year',
   iucnRedListCategoryCode: 'classifications.{CHECKLIST_KEY}.iucnRedListCategoryCode',
 };
 
-async function query({ query, aggs, size = 20, from = 0, metrics, sortBy, sortOrder, req }) {
+async function query({
+  query,
+  aggs,
+  size = 20,
+  from = 0,
+  metrics,
+  sortBy,
+  sortOrder,
+  checklistKey = env.defaultChecklist,
+  req,
+}) {
   if (parseInt(from) + parseInt(size) > env.occurrence.maxResultWindow) {
     throw new ResponseError(
       400,
@@ -97,14 +107,12 @@ async function query({ query, aggs, size = 20, from = 0, metrics, sortBy, sortOr
   ];
 
   if (sortBy) {
-    sort = [{ [allowedSortBy[sortBy]]: { order: sortOrder } }, { gbifId: 'asc' }];
+    const sortByField = allowedSortBy[sortBy].replace('{CHECKLIST_KEY}', checklistKey);
+    sort = [{ [sortByField]: { order: sortOrder } }, { gbifId: 'asc' }];
   } else {
     sort = [
       '_score', // if there is any score (but will this be slow even when there is no free text query?)
-      { year: { order: 'desc' } },
-      { month: { order: 'desc' } },
-      { day: { order: 'desc' } },
-      { gbifId: 'asc' },
+      { yearMonthGbifIdSort: { order: 'asc' } },
     ];
   }
 

@@ -16,13 +16,14 @@ const PARTICIPANT_SELECT_QUERY = /* GraphQL */ `
       results {
         id
         name
+        country
       }
     }
   }
 `;
 
 type Props = {
-  filters: {
+  filters?: {
     type?: NodeType;
     participationStatus?: ParticipationStatus;
   };
@@ -37,7 +38,7 @@ export function ParticipantSelect({ filters, selected, onChange }: Props) {
     {
       variables: {
         ...(filters ?? {}),
-        limit: 100,
+        limit: 500,
       },
     }
   );
@@ -68,8 +69,8 @@ export function ParticipantSelect({ filters, selected, onChange }: Props) {
       <SelectTrigger>
         <SelectValue
           placeholder={intl.formatMessage({
-            id: 'eoi.selectParticipant',
-            defaultMessage: 'Select a participant',
+            id: 'phrases.clickToSelect',
+            defaultMessage: 'Click to select',
           })}
         />
       </SelectTrigger>
@@ -85,7 +86,7 @@ export function ParticipantSelect({ filters, selected, onChange }: Props) {
 }
 
 type Participant = NonNullable<ParticipantSelectQuery['participantSearch']>['results'][number];
-export type ValidParticipant = { name: string; id: string };
+export type ValidParticipant = { name: string; id: string; country?: string | null | undefined };
 
 function isValidParticipant(participant: Participant): participant is ValidParticipant {
   return participant != null && participant.name !== null;

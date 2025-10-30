@@ -15,7 +15,7 @@ type QueryResult<T> = Promise<
   Omit<Response, 'json'> & {
     json(): Promise<{
       data: T;
-      errors?: Array<{ message: string }>;
+      errors?: Array<{ message: string; path?: [string] }>;
     }>;
   }
 >;
@@ -83,6 +83,8 @@ export class GraphQLService {
         headers: {
           'Content-Type': 'application/json',
           locale: this.locale,
+          preview: this.preview.toString(),
+          ...(this.authorization ? { authorization: this.authorization } : {}),
         },
         signal: this.abortSignal,
         body: JSON.stringify(postBody),

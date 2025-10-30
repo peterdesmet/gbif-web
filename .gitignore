@@ -19,6 +19,10 @@ tmp/
 **/.env.*
 /packages/mcp/elasticsearch/
 
+# temporary folders
+**/mcp/venv
+**/mcp/elasticsearch
+
 **/npm-debug.log*
 **/lerna-debug.log
 

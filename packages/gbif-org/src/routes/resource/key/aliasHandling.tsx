@@ -1,3 +1,4 @@
+import { NotFoundError, NotFoundLoaderResponse, UnexpectedLoaderError } from '@/errors';
 import {
   AliasHandlingQuery,
   AliasHandlingQueryVariables,
@@ -5,6 +6,7 @@ import {
   CompositionPageFragment,
 } from '@/gql/graphql';
 import { LoaderArgs } from '@/reactRouterPlugins';
+import { throwCriticalErrors } from '@/routes/rootErrorPage';
 import { useLoaderData } from 'react-router-dom';
 import { ArticlePage, articlePageLoader } from './article/article';
 import { ArticleSkeleton } from './components/articleSkeleton';
@@ -30,10 +32,15 @@ export async function aliasHandlingLoader(args: LoaderArgs) {
     { alias: `/${alias}` }
   );
 
-  const { data } = await response.json();
+  const { errors, data } = await response.json();
+  throwCriticalErrors({
+    path404: ['resource'],
+    errors,
+    requiredObjects: [data?.resource],
+  });
 
-  if (data.resource == null) {
-    throw new Error('404');
+  if (!data.resource) {
+    throw new UnexpectedLoaderError();
   }
 
   if ('urlAlias' in data.resource) {
@@ -50,13 +57,13 @@ export async function aliasHandlingLoader(args: LoaderArgs) {
 
     if (typeof loader !== 'function') {
       console.error(`No loader found for resource type ${resource.__typename}`);
-      throw new Error('404');
+      throw new NotFoundLoaderResponse();
     }
 
     return loader({ ...args, params: { key: resource.id } });
   }
 
-  throw new Error('404');
+  throw new NotFoundLoaderResponse();
 }
 
 export function AliasHandling() {
@@ -71,5 +78,5 @@ export function AliasHandling() {
       return <CompositionPage />;
   }
 
-  throw new Error('404');
+  throw new NotFoundError();
 }

@@ -14,7 +14,7 @@ import {
   MdOutlineRemoveCircleOutline,
 } from 'react-icons/md';
 import { PiEmptyBold } from 'react-icons/pi';
-import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
+import { FormattedMessage, FormattedNumber } from 'react-intl';
 import StripeLoader from '../stripeLoader';
 import { AboutButton } from './aboutButton';
 import { DatasetLabel } from './displayNames';
@@ -59,7 +59,6 @@ export const TaxonFilter = React.forwardRef<HTMLInputElement, TaxonSuggestProps>
   ) => {
     const siteConfig = useConfig();
     const searchContext = useSearchContext();
-    const { formatMessage } = useIntl();
     const currentFilterContext = useContext(FilterContext);
     const { filter, toggle, add, setFullField, setFilter, filterHash, negateField } =
       currentFilterContext;
@@ -273,8 +272,9 @@ export const TaxonFilter = React.forwardRef<HTMLInputElement, TaxonSuggestProps>
         <div className="g-flex g-flex-none">
           <div className="g-p-2 g-w-full">
             {availableChecklistKeys.length > 1 && (
-              <div className="g-text-xs g-text-slate-600 g-mb-0.5">
+              <div className="g-text-xs g-text-slate-500 g-mb-0.5 g-gap-1 gbif__taxonomy-filter__checklist-selector">
                 <select
+                  className="g-flex-auto g-max-w-full"
                   value={filter.checklistKey}
                   onChange={(event) => {
                     const selectedValue = event.target.value;
@@ -332,7 +332,7 @@ export const TaxonFilter = React.forwardRef<HTMLInputElement, TaxonSuggestProps>
           )}
           {options}
         </div>
-        <div className="g-flex-auto g-overflow-auto g-max-h-96 gbif-small-scrollbar">
+        <div className="g-flex-auto sm:g-overflow-auto sm:g-max-h-96 gbif-small-scrollbar">
           {selected.length > 0 && (
             <div className={cn('g-text-base g-mt-2 g-px-4')}>
               <div role="group" className="g-text-sm">

@@ -1,14 +1,14 @@
 {
   "tabs": {
     "table": "Tabulka",
-    "tree": "",
+    "tree": "Strom",
     "gallery": "Galerie",
     "media": "Rovná se {from}",
     "map": "Mapa",
     "datasets": "Datové sady",
     "events": "Události",
     "download": "Stáhnout",
-    "clusters": "",
+    "clusters": "Související",
     "dashboard": "Ovládací panel",
     "sites": "Rovná se {from}",
     "list": "Seznam"
@@ -25,7 +25,7 @@
     "range": "Rozsah nebo samostatná hodnota",
     "rangeExample": "",
     "wildcard": "Hledejte s pomocí * a ? jako zástupnými znaky",
-    "dateTemplate": "",
+    "dateTemplate": "yyyy-mm-dd",
     "locationID": ""
   },
   "ternary": {
@@ -36,10 +36,12 @@
   "loadMore": "Více",
   "loading": "Načítání",
   "noResults": "Žádné výsledky",
+  "startTyping": "",
+  "rankInGroup": "",
   "occurrenceClustersView": {
     "about": "O",
-    "clusters": "",
-    "legend": "",
+    "clusters": "Související",
+    "legend": "Legenda",
     "differentPublishers": "",
     "samePublishers": "",
     "entryPoint": "",
@@ -60,15 +62,15 @@
   },
   "crossContentSearch": {
     "title": "Hledat",
-    "description": "{num, plural, one { je ve shluku } few {# jsou ve shlucích} many {# je ve shlucích} other {# je ve shlucích}}",
+    "description": "",
     "noSearchTermsEntered": "Nebyly zadány žádné hledané výrazy",
-    "placeholder": "{num, plural, one { je ve shluku } few {# jsou ve shlucích} many {# je ve shlucích} other {# je ve shlucích}}",
+    "placeholder": "",
     "categories": {
       "speciesSearch": "Druhy",
       "datasetSearch": "Datové sady",
       "publisherSearch": "Vydavatelé",
       "occurrenceSearch": "Výskyty",
-      "resourceSearch": "{num, plural, one { je ve shluku } few {# jsou ve shlucích} many {# je ve shlucích} other {# je ve shlucích}}"
+      "resourceSearch": ""
     },
     "seeAll": "Zobrazit vše"
   }

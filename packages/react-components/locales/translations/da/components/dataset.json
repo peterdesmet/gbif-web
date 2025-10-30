@@ -21,7 +21,8 @@
     "project": "Projekt",
     "taxonomy": "Taksonomi",
     "download": "Download",
-    "phylogeny": ""
+    "phylogeny": "",
+    "events": "Arrangementer"
   },
   "noStatsForMetadata": "",
   "siteScopeSmallerThanDataset": "",
@@ -30,6 +31,7 @@
   "constituentOf": "Bestanddel af",
   "dataset": "Datasæt",
   "taxonomy": "Taksonomi",
+  "localContext": "",
   "project": "Projekt",
   "metrics": "Grafer",
   "metricsOccurrenceHelpText": "",
@@ -146,5 +148,10 @@
     "outOfSync": "",
     "becauseTrustedContact": "",
     "registrationDetails": ""
-  }
+  },
+  "errors": {
+    "evenList": "",
+    "occurrenceInfo": ""
+  },
+  "eventTaxonomy": "Taksonomisk distribution af observationer"
 }

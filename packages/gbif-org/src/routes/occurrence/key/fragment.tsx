@@ -1,3 +1,4 @@
+import { NotFoundLoaderResponse } from '@/errors';
 import { OccurrenceExistsQuery, OccurrenceExistsQueryVariables } from '@/gql/graphql';
 import { DynamicLink, LoaderArgs } from '@/reactRouterPlugins';
 import { ArticleIntro } from '@/routes/resource/key/components/articleIntro';
@@ -6,6 +7,7 @@ import { ArticleTextContainer } from '@/routes/resource/key/components/articleTe
 import { ArticleTitle } from '@/routes/resource/key/components/articleTitle';
 import { PageContainer } from '@/routes/resource/key/components/pageContainer';
 import { required } from '@/utils/required';
+import { FormattedMessage } from 'react-intl';
 import { redirect, useLoaderData, useParams } from 'react-router-dom';
 import formatXml from 'xml-formatter';
 
@@ -39,7 +41,7 @@ export async function occurrenceFragmentLoader({
   const response = await fetch(`${config.v1Endpoint}/occurrence/${key}/fragment`);
 
   // If there is no fragment, return a 404
-  if (!response.ok) throw new Error('404');
+  if (!response.ok) throw new NotFoundLoaderResponse();
 
   // The response could either be of type JSON or XML, but the Content-Type header does not differentiate
   const text = await response.text();
@@ -58,23 +60,32 @@ export function OccurrenceFragment() {
       <PageContainer topPadded bottomPadded className="g-bg-white">
         <ArticleTextContainer>
           <ArticlePreTitle>
-            <DynamicLink pageId="occurrenceSearch">Occurrence</DynamicLink>
+            <DynamicLink pageId="occurrenceSearch">
+              <FormattedMessage id="occurrenceDetails.occurrence" defaultMessage="Occurrence" />
+            </DynamicLink>
           </ArticlePreTitle>
-          <ArticleTitle>Occurrence {key}</ArticleTitle>
+          <ArticleTitle>
+            <FormattedMessage id="occurrenceDetails.occurrence" defaultMessage="Occurrence" /> {key}
+          </ArticleTitle>
           <ArticleIntro>
             <p className="g-text-red-500 g-text-base g-font-medium g-pb-2">
-              The data publisher has removed this record from the GBIF index, but the last version
-              is shown below.
+              <FormattedMessage
+                id="occurrenceDetails.deletedMessage"
+                defaultMessage="This record has been deleted."
+              />
             </p>
             <p className="g-text-base">
-              Records no longer in a published dataset are removed from the GBIF index. Publishers
-              may sometimes have reasons to remove individual records or an entire dataset or assign
-              new local identifiers.
+              <FormattedMessage
+                id="occurrenceDetails.deletedDescription"
+                defaultMessage="This record has been deleted."
+              />
             </p>
           </ArticleIntro>
         </ArticleTextContainer>
         <div className="g-py-8">
-          <pre className="g-bg-slate-100 g-p-8 g-w-full g-max-w-7xl g-m-auto">{fragment}</pre>
+          <pre className="g-bg-slate-100 g-p-4 md:g-p-8 g-w-full g-max-w-7xl g-m-auto g-overflow-auto">
+            {fragment}
+          </pre>
         </div>
       </PageContainer>
     </article>

@@ -1,6 +1,7 @@
-import { useWindowSize } from '@/hooks/useWindowSize';
 import { cn } from '@/utils/shadcn';
+import { useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
+import { FormattedMessage, FormattedNumber } from 'react-intl';
 import { Button } from '../ui/button';
 import { Form } from '../ui/form';
 import { SideNavigation } from './sideNavigation';
@@ -9,7 +10,7 @@ import { useStepper } from './useStepper';
 
 export type Step = {
   idx: number;
-  title: string;
+  title: React.ReactNode;
   component: () => JSX.Element;
   fieldset?: boolean;
   validationPath?: string | string[];
@@ -23,27 +24,27 @@ type StepperFormProps = {
 };
 
 export function StepperForm({ form, onSubmit, steps }: StepperFormProps) {
-  const { currentStep, prevStep, nextStep, goToStep } = useStepper(steps, form);
-  const { width } = useWindowSize();
-
-  // The side navigation is positioned absolutely, os we need to set a min-height on the container to make sure it doesn't overflow
-  const minHeight =
-    width > 1226
-      ? `${
-          // Side navigation height
-          steps.length * 2.75 +
-          // Form padding
-          4
-        }rem`
-      : 'unset';
+  const { currentStep, prevStep, nextStep, goToStep } = useStepper(steps, form.trigger);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="g-max-w-3xl g-m-auto g-relative" style={{ minHeight }}>
-      {width > 1226 ? (
-        <SideNavigation currentStep={currentStep} goToStep={goToStep} steps={steps} />
-      ) : (
-        <TopNavigation currentStep={currentStep} goToStep={goToStep} steps={steps} />
-      )}
+    <div
+      ref={containerRef}
+      // This runtime calculated class, that normally wouldn't work, has been added to the safelist in tailwind.config.js
+      className={`g-max-w-3xl g-m-auto g-relative 2xl:g-min-h-[${steps.length * 2.75}rem]`}
+    >
+      <SideNavigation
+        className="g-hidden 2xl:g-block"
+        currentStep={currentStep}
+        goToStep={goToStep}
+        steps={steps}
+      />
+      <TopNavigation
+        className="g-block 2xl:g-hidden"
+        currentStep={currentStep}
+        goToStep={goToStep}
+        steps={steps}
+      />
       <Form {...form}>
         <form onSubmit={onSubmit} className="g-flex-1">
           {steps.map((step) => {
@@ -57,7 +58,13 @@ export function StepperForm({ form, onSubmit, steps }: StepperFormProps) {
               >
                 <SectionHeading className="g-font-semibold">
                   <span className="g-text-gray-500 g-pr-1">
-                    Step {step.idx + 1}/{steps.length}:
+                    <FormattedMessage
+                      id="phrases.stepperFormProgress"
+                      values={{
+                        currentStep: <FormattedNumber value={step.idx + 1} />,
+                        totalSteps: <FormattedNumber value={steps.length} />,
+                      }}
+                    />
                   </span>
                   {step.heading ?? step.title}
                 </SectionHeading>
@@ -68,18 +75,33 @@ export function StepperForm({ form, onSubmit, steps }: StepperFormProps) {
 
                 <div className="g-flex g-w-full g-pt-8">
                   {step.idx > 0 && (
-                    <Button className="mr-auto" variant="outline" type="button" onClick={prevStep}>
-                      Back
+                    <Button
+                      className="mr-auto"
+                      variant="outline"
+                      type="button"
+                      onClick={() => {
+                        prevStep();
+                        containerRef.current?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
+                      <FormattedMessage id="phrases.back" />
                     </Button>
                   )}
                   {step.idx < steps.length - 1 && (
-                    <Button className="g-ml-auto" type="button" onClick={nextStep}>
-                      Next
+                    <Button
+                      className="g-ml-auto"
+                      type="button"
+                      onClick={() => {
+                        nextStep();
+                        containerRef.current?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
+                      <FormattedMessage id="phrases.next" />
                     </Button>
                   )}
                   {step.idx === steps.length - 1 && (
                     <Button className="g-ml-auto" type="submit">
-                      Submit
+                      <FormattedMessage id="phrases.submit" />
                     </Button>
                   )}
                 </div>

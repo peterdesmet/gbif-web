@@ -1,14 +1,11 @@
-import dotenv from 'dotenv';
 import _ from 'lodash';
 import queryString from 'query-string';
 import logger from '../../config/logger.mjs';
 import { authenticatedRequest } from '../auth/gbifAuthRequest.mjs';
 import { fetchWithRetry } from '../auth/utils.mjs';
+import { secretEnv } from '../../envConfig.mjs';
 
-dotenv.config({ path: '.env.local' });
-dotenv.config({ path: '.env' });
-
-const identityBaseUrl = process.env.REGISTRY_API_V1;
+const identityBaseUrl = secretEnv.REGISTRY_API_V1;
 
 const apiConfig = {
   user: {
@@ -385,6 +382,11 @@ export function getClientUser(user) {
 }
 
 export function sanitizeUpdatedUser(user) {
+  ensureString(user.email, 'email');
+  ensureString(user.country, 'country');
+  ensureString(user.locale, 'locale');
+  ensureString(user.has_read_gdpr_terms, 'has_read_gdpr_terms');
+
   const firstName = user?.firstName?.trim();
   const lastName = user?.lastName?.trim();
   return {

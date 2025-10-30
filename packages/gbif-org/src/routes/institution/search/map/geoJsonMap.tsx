@@ -2,6 +2,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ErrorMessage } from '@/components/errorMessage';
 import { useConfig } from '@/config/config';
 import { isWebglSupported } from '@/utils/isWebglSupported';
+import { pixelRatio } from '@/utils/pixelRatio';
 import { cn } from '@/utils/shadcn';
 import uniqBy from 'lodash/uniqBy';
 import maplibre, { Map } from 'maplibre-gl';
@@ -145,15 +146,19 @@ function GeoJsonMapContent({
 
       map.on('zoomend', function () {
         const center = map.getCenter();
-        sessionStorage.setItem('institutionMapZoom', (map.getZoom() + 1).toString());
-        sessionStorage.setItem('institutionMapLng', center.lng.toString());
-        sessionStorage.setItem('institutionMapLat', center.lat.toString());
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem('institutionMapZoom', (map.getZoom() + 1).toString());
+          sessionStorage.setItem('institutionMapLng', center.lng.toString());
+          sessionStorage.setItem('institutionMapLat', center.lat.toString());
+        }
       });
       map.on('moveend', function () {
         const center = map.getCenter();
-        sessionStorage.setItem('institutionMapZoom', (map.getZoom() + 1).toString());
-        sessionStorage.setItem('institutionMapLng', center.lng.toString());
-        sessionStorage.setItem('institutionMapLat', center.lat.toString());
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem('institutionMapZoom', (map.getZoom() + 1).toString());
+          sessionStorage.setItem('institutionMapLng', center.lng.toString());
+          sessionStorage.setItem('institutionMapLat', center.lat.toString());
+        }
       });
 
       // inspect a cluster on click https://maplibre.org/maplibre-gl-js/docs/examples/cluster/
@@ -246,7 +251,7 @@ function GeoJsonMapContent({
         container: mapRef.current,
         style: `${
           import.meta.env.PUBLIC_WEB_UTILS
-        }/map-styles/3857/gbif-raster?styleName=osm&background=%23f3f3f1&language=en&pixelRatio=2`,
+        }/map-styles/3857/gbif-raster?styleName=osm&background=%23f3f3f1&language=en&pixelRatio=${pixelRatio}`,
         center: [lng, lat],
         zoom,
       });

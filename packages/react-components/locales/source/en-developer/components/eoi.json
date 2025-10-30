@@ -27,7 +27,6 @@
   "marineDataPublishers": "Marine data publishers: request endorsement for OBIS (Ocean Biogeographic Information System) related data",
   "suggested": "Suggested",
   "orSelectAnotherAssOrg": "Or select another associated organisation:",
-  "clickToSelect": "Click to select",
   "none": "None",
   "whatAndHow": "What and how",
   "helpUsUnderstand": "Help us understand what kind of data you plan to publish, and what support you may need.",
@@ -63,7 +62,6 @@
   "invalidUrl": "Invalid url",
   "brieflyDescribeScope": "Briefly describe the scope of your institution/organization in relation to GBIF's mission (e.g. collection holdings, research focus, biodiversity information management, etc.). This description will appear on your publisher page.",
   "clear": "Clear",
-  "selectParticipant": "Please select a GBIF Participant node",
   "clickMapToAddOrg": "Click on the map to add your organization",
   "description": "Description",
   "gbifProjects": "GBIF projects",
@@ -81,11 +79,22 @@
   "youWillRecieveConfEmail": "You will receive a confirmation email once your endorsement has been approved.",
   "yourOrgDetailsAreHere": "Your organization details are here.",
   "outage": "We are experiencing a partial outage and do not accept registrations at the moment",
-  "loginRequired": "You need an account to register a new organization. Please create an account first and then revisit this page.",
   "eoiDescription": "To prepare for publishing data through GBIF, we ask prospective new publishers to complete this online form. Before GBIF indexes your datasets, your institution must receive endorsement as a data publisher from one of the countries or organizations participating in GBIF, through a GBIF Participant node. If your country is not yet participating in GBIF, we will seek endorsement on your behalf from the GBIF community.",
   "eoiTitle": "Become a publisher",
   "checkRegistration": "Check registration",
   "organisationDetails": "Organisation details",
   "organisationAddress": "Organisation address",
-  "endorsement": "Endorsement"
+  "endorsement": "Endorsement",
+  "validationError": {
+    "pleaseSelectYourOrganizationOnTheMap": "Please select your organization on the map",
+    "pleaseSelectTheCountryOfYourOrganization": "Please select the country of your organization"
+  },
+  "thankYouForYourRegistration": "Thank you for registering your organization",
+  "failedToRegisterOrganization": "Failed to register organization",
+  "associatedWithGbifProgramme": "Are you associated with a project funded by a GBIF programme?",
+  "loginToRegisterOrganization": {
+    "title": "You need an account to register a new organization",
+    "message": "Log in or create an account to continue registering your organization."
+  },
+  "registerAnotherOrganization": "Register another organization?"
 }

@@ -6,25 +6,23 @@
  * info: Information about the execution state of the operation which should only be used in advanced cases
  */
 export default {
-  Query: {
-    article: (_, { id }, { dataSources, locale, preview }) =>
-      dataSources.resourceAPI.getEntryById({ id, preview, locale }),
-  },
   MenuItem: {
-    children: ({ id }, _, { dataSources, locale, preview }) => {
+    children: ({ id }, _, { dataSources, locale }, info) => {
       // get the current element by ID
+      // never show the draft version of the home page. It is extremely slow and will delay preview on all pages. For those rare cases use a content branch instead
       return dataSources.resourceAPI
-        .getEntryById({ id, locale, preview })
+        .getEntryById({ id, locale, preview: false, info })
         .then(({ childNavigationElements }) => {
           if (!childNavigationElements) return null;
           // and for each of the children, get the full element
           return childNavigationElements.map(async (child) => {
-            const test = await dataSources.resourceAPI.getEntryById({
+            const children = await dataSources.resourceAPI.getEntryById({
               id: child.id,
               locale,
-              preview,
+              preview: false, // never show the draft version of the home page. It is extremely slow and will delay preview on all pages. For those rare cases use a content branch instead
+              info,
             });
-            return test;
+            return children;
           });
         });
     },

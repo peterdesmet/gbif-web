@@ -7,6 +7,7 @@ import {
 } from '@/components/headerComponents';
 import { FeatureList, GenericFeature, Homepage } from '@/components/highlights';
 import PageMetaData from '@/components/PageMetaData';
+import { NotFoundError } from '@/errors';
 import { InstallationQuery, InstallationQueryVariables } from '@/gql/graphql';
 import { LoaderArgs } from '@/reactRouterPlugins';
 import { ArticleContainer } from '@/routes/resource/key/components/articleContainer';
@@ -15,7 +16,9 @@ import { ArticleSkeleton } from '@/routes/resource/key/components/articleSkeleto
 import { ArticleTextContainer } from '@/routes/resource/key/components/articleTextContainer';
 import { ArticleTitle } from '@/routes/resource/key/components/articleTitle';
 import { PageContainer } from '@/routes/resource/key/components/pageContainer';
+import { throwCriticalErrors, usePartialDataNotification } from '@/routes/rootErrorPage';
 import { required } from '@/utils/required';
+import { useEffect } from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
 import { Outlet, useLoaderData } from 'react-router-dom';
 import { AboutContent, ApiContent } from './help';
@@ -61,13 +64,30 @@ const INSTALLATION_QUERY = /* GraphQL */ `
 export async function installationLoader({ params, graphql }: LoaderArgs) {
   const key = required(params.key, 'No key was provided in the URL');
 
-  return graphql.query<InstallationQuery, InstallationQueryVariables>(INSTALLATION_QUERY, { key });
+  const response = await graphql.query<InstallationQuery, InstallationQueryVariables>(
+    INSTALLATION_QUERY,
+    { key }
+  );
+  const { errors, data } = await response.json();
+  throwCriticalErrors({
+    path404: ['installation'],
+    errors,
+    requiredObjects: [data?.installation],
+  });
+
+  return { errors, data };
 }
 
 export function InstallationPage() {
-  const { data } = useLoaderData() as { data: InstallationQuery };
+  const { data, errors } = useLoaderData() as { data: InstallationQuery };
+  const notifyOfPartialData = usePartialDataNotification();
+  useEffect(() => {
+    if (errors) {
+      notifyOfPartialData();
+    }
+  }, [errors, notifyOfPartialData]);
 
-  if (data.installation == null) throw new Error('404');
+  if (data.installation == null) throw new NotFoundError();
   const { installation } = data;
 
   const deletedAt = installation.deleted;

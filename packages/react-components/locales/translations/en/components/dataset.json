@@ -21,7 +21,8 @@
     "project": "Project",
     "taxonomy": "Taxonomy",
     "download": "Download",
-    "phylogeny": "Phylogeny"
+    "phylogeny": "Phylogeny",
+    "events": "Events"
   },
   "noStatsForMetadata": "No statistics available for metadata only datasets",
   "siteScopeSmallerThanDataset": "Not all records from the dataset are included on this site. Visit [GBIF.org]({datasetUrl}) to explore the full dataset.",
@@ -30,6 +31,7 @@
   "constituentOf": "Constituent of",
   "dataset": "Dataset",
   "taxonomy": "Taxonomy",
+  "localContext": "",
   "project": "Project",
   "metrics": "Metrics",
   "metricsOccurrenceHelpText": "Metrics are based on interpreted data",
@@ -146,5 +148,10 @@
     "outOfSync": "Out of sync",
     "becauseTrustedContact": "Because you are trusted contact",
     "registrationDetails": "GBIF registration details"
-  }
+  },
+  "errors": {
+    "evenList": "",
+    "occurrenceInfo": ""
+  },
+  "eventTaxonomy": "Taxonomic distribution of occurrences"
 }

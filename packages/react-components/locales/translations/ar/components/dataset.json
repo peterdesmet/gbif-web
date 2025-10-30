@@ -21,7 +21,8 @@
     "project": "مشروع",
     "taxonomy": "التصنيف",
     "download": "تنزيل",
-    "phylogeny": ""
+    "phylogeny": "",
+    "events": "أحداث"
   },
   "noStatsForMetadata": "لا توجد إحصاءات متاحة للبيانات الوصفية فقط لمجموعات البيانات",
   "siteScopeSmallerThanDataset": "",
@@ -30,6 +31,7 @@
   "constituentOf": "مكون من",
   "dataset": "مجموعة البيانات",
   "taxonomy": "التصنيف",
+  "localContext": "",
   "project": "مشروع",
   "metrics": "المقاييس",
   "metricsOccurrenceHelpText": "",
@@ -146,5 +148,10 @@
     "outOfSync": "خارج التزامن",
     "becauseTrustedContact": "لأنك جهة اتصال موثوق بها",
     "registrationDetails": ""
-  }
+  },
+  "errors": {
+    "evenList": "",
+    "occurrenceInfo": ""
+  },
+  "eventTaxonomy": "التوزيع التصنيفي لتكرارات الحدوث"
 }

@@ -61,5 +61,13 @@
   "lastCrawled": "Last crawled",
   "goToRecord": "Go to record",
   "commonNameAccordingTo": "Common name according to: {source}",
-  "noResults": "No results"
+  "supportedChecklists": "",
+  "noResults": "No results",
+  "stepperFormProgress": "",
+  "next": "Next",
+  "back": "Back",
+  "submit": "Submit",
+  "pleaseTryAgainLater": "",
+  "weWillBeInTouchSoon": "",
+  "clickToSelect": "Click to select"
 }

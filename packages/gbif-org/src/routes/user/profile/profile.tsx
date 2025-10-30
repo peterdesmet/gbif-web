@@ -14,6 +14,7 @@ import { Card } from '@/components/ui/largeCard';
 import { useI18n } from '@/reactRouterPlugins';
 import { useIntl } from 'react-intl';
 import { ErrorMessage, FormButton, FormInput, FormSelect } from '../shared/FormComponents';
+import { readProfileFlashInfo } from '../shared/flashCookieUtils';
 import {
   getErrorMessage,
   hasFormErrors,
@@ -56,7 +57,7 @@ const Profile: React.FC = () => {
       value: locale.code,
       label: locale.label,
     }));
-  }, [intlConfig.availableLocales, formatMessage]);
+  }, [intlConfig.availableLocales]);
 
   // Country options
   const countryOptions = useMemo(() => {
@@ -123,34 +124,13 @@ const Profile: React.FC = () => {
 
   // Read flash cookie on component mount
   useEffect(() => {
-    const readFlashCookie = () => {
-      const cookies = document.cookie.split(';');
-      const profileFlashCookie = cookies.find((cookie) =>
-        cookie.trim().startsWith('profileFlashInfo=')
-      );
-
-      if (profileFlashCookie) {
-        try {
-          const cookieValue = profileFlashCookie.split('=')[1];
-          const decodedValue = decodeURIComponent(cookieValue);
-          const flashInfo = JSON.parse(decodedValue);
-
-          if (flashInfo.error && flashInfo.authProvider) {
-            setFlashError({
-              provider: flashInfo.authProvider,
-              error: flashInfo.error,
-            });
-          }
-
-          // Clear the cookie by setting it to expire
-          document.cookie = 'profileFlashInfo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        } catch (e) {
-          console.error('Failed to parse profileFlashInfo cookie:', e);
-        }
-      }
-    };
-
-    readFlashCookie();
+    const flashInfo = readProfileFlashInfo();
+    if (flashInfo && flashInfo.error && flashInfo.authProvider) {
+      setFlashError({
+        provider: flashInfo.authProvider,
+        error: flashInfo.error,
+      });
+    }
   }, []);
 
   // Validation logic
@@ -217,7 +197,16 @@ const Profile: React.FC = () => {
     setProfileError('');
 
     try {
-      await updateProfile(editedInfo);
+      await updateProfile({
+        firstName: editedInfo.firstName,
+        lastName: editedInfo.lastName,
+        email: editedInfo.email,
+        settings: {
+          country: editedInfo.country,
+          locale: editedInfo.locale,
+          has_read_gdpr_terms: undefined, //user?.settings?.has_read_gdpr_terms,
+        },
+      });
 
       setUserInfo(editedInfo);
       setIsEditing(false);

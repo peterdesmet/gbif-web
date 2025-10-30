@@ -1,18 +1,17 @@
-import dotenv from 'dotenv';
 import _ from 'lodash';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { update } from '../user/user.model.mjs';
 import { authCallback } from './oauthUtils.mjs';
-import { appendUser, isAuthenticated, jsonToBase64 } from './utils.mjs';
-
-dotenv.config();
+import { appendUser, getReturnUrl, isAuthenticated, jsonToBase64 } from './utils.mjs';
+import { secretEnv } from '../../envConfig.mjs';
 
 export function register(app) {
   // Google OAuth routes
   app.get('/auth/google/login', (req, res, next) => {
-    let state = { action: 'LOGIN', target: req.headers.referer || '/' };
-    let stateB64 = jsonToBase64(state);
+    const returnUrl = getReturnUrl(req);
+    const state = { action: 'LOGIN', target: returnUrl ?? '/' };
+    const stateB64 = jsonToBase64(state);
     passport.authenticate('google', { scope: ['profile', 'email'], state: stateB64 })(
       req,
       res,
@@ -73,9 +72,9 @@ function setProviderValues(user, profile) {
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${process.env.DOMAIN}/auth/google/callback`,
+      clientID: secretEnv.GOOGLE_CLIENT_ID,
+      clientSecret: secretEnv.GOOGLE_CLIENT_SECRET,
+      callbackURL: `${secretEnv.DOMAIN}/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       return done(null, profile);

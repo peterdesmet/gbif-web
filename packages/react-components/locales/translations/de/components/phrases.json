@@ -44,8 +44,8 @@
   "keep": "",
   "addressUnknown": "",
   "emptyValueProvided": "",
-  "otherIdentifiers": "{num, plural, one { ist im Cluster } other {# sind in Clustern}}",
-  "gbifIdentifier": "{num, plural, one { ist im Cluster } other {# sind in Clustern}}",
+  "otherIdentifiers": "",
+  "gbifIdentifier": "",
   "copyToClipboard": "",
   "copy": "",
   "fromCountry": "",
@@ -61,5 +61,12 @@
   "lastCrawled": "",
   "goToRecord": "",
   "commonNameAccordingTo": "",
-  "noResults": ""
+  "supportedChecklists": "",
+  "noResults": "",
+  "stepperFormProgress": "",
+  "next": "Weiter",
+  "back": "Zurück",
+  "submit": "",
+  "pleaseTryAgainLater": "",
+  "weWillBeInTouchSoon": ""
 }

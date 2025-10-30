@@ -1,12 +1,15 @@
+import { DownloadAsTSVLink } from '@/components/cardHeaderActions/downloadAsTSVLink';
 import { ClientSideOnly } from '@/components/clientSideOnly';
 import { DataHeader } from '@/components/dataHeader';
-import { DownloadAsTSVLink } from '@/components/cardHeaderActions/downloadAsTSVLink';
-import { FilterBar, FilterButtons, getAsQuery } from '@/components/filters/filterTools';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FilterBarWithActions } from '@/components/filters/filterBarWithActions';
+import { getAsQuery } from '@/components/filters/filterTools';
 import { NoRecords } from '@/components/noDataMessages';
 import { PaginationFooter } from '@/components/pagination';
 import { CardListSkeleton } from '@/components/skeletonLoaders';
 import { CardHeader, CardTitle } from '@/components/ui/largeCard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
 import { useConfig } from '@/config/config';
 import { FilterContext, FilterProvider } from '@/contexts/filter';
 import { SearchContextProvider, useSearchContext } from '@/contexts/search';
@@ -25,7 +28,7 @@ import { useFilters } from './filters';
 import { AboutContent, ApiContent } from './help';
 import { searchConfig } from './searchConfig';
 
-const DATASET_SEARCH_QUERY = /* GraphQL */ `
+export const DATASET_SEARCH_QUERY = /* GraphQL */ `
   query DatasetSearch($query: DatasetSearchInput) {
     datasetSearch(query: $query) {
       count
@@ -65,6 +68,7 @@ export function DatasetSearchPage(): React.ReactElement {
 }
 
 export function DatasetSearch(): React.ReactElement {
+  const { toast } = useToast();
   const [offset, setOffset] = useIntParam({ key: 'offset', defaultValue: 0, hideDefault: true });
   const filterContext = useContext(FilterContext);
   const searchContext = useSearchContext();
@@ -72,16 +76,27 @@ export function DatasetSearch(): React.ReactElement {
   const [tsvUrl, setTsvUrl] = useState('');
 
   const { filter, filterHash } = filterContext || { filter: { must: {} } };
-  const tabClassName = 'g-pt-2 g-pb-1.5';
 
   const { data, error, load, loading } = useQuery<DatasetSearchQuery, DatasetSearchQueryVariables>(
     DATASET_SEARCH_QUERY,
     {
-      throwAllErrors: true,
+      throwAllErrors: false,
       lazyLoad: true,
       forceLoadingTrueOnMount: true,
     }
   );
+
+  // if there is an error and there are no data.datasetSearch.results, then throw an error, else try to show the entries we have and inform the user it was a partially loaded page
+  useEffect(() => {
+    if (error && (!data || !data.datasetSearch.results)) {
+      throw error;
+    } else if (error) {
+      toast({
+        title: 'Unable to load all content',
+        variant: 'destructive',
+      });
+    }
+  }, [data, error, toast]);
 
   useEffect(() => {
     const query = getAsQuery({ filter, searchContext, searchConfig });
@@ -127,13 +142,19 @@ export function DatasetSearch(): React.ReactElement {
         /> */}
       </DataHeader>
 
-      <section className="">
-        <FilterBar>
-          <FilterButtons filters={filters} searchContext={searchContext} />
-        </FilterBar>
+      <section>
+        <FilterBarWithActions filters={filters} />
+
         <ArticleContainer className="g-bg-slate-100 g-flex">
           <ArticleTextContainer className="g-flex-auto g-w-full">
-            <Results loading={loading} datasets={datasets} setOffset={setOffset} tsvUrl={tsvUrl} />
+            <ErrorBoundary>
+              <DatasetResults
+                loading={loading}
+                datasets={datasets}
+                setOffset={setOffset}
+                tsvUrl={tsvUrl}
+              />
+            </ErrorBoundary>
           </ArticleTextContainer>
         </ArticleContainer>
       </section>
@@ -141,7 +162,7 @@ export function DatasetSearch(): React.ReactElement {
   );
 }
 
-function Results({
+export function DatasetResults({
   loading,
   datasets,
   setOffset,

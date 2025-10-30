@@ -10,6 +10,7 @@ import {
 } from '../validation';
 import logger from '#/logger';
 import config from '#/config';
+import { isAuthenticated } from '../../../middleware';
 
 const Schema = {
   body: z.object({
@@ -78,6 +79,7 @@ export type HostedPortalApplicationDTO = z.infer<typeof Schema['body']>;
 export function registerHostedPortalApplicationForm(router: Router) {
   router.post(
     '/hosted-portal-application',
+    isAuthenticated,
     validateRequest(Schema),
     async (req, res) => {
       try {
@@ -87,13 +89,13 @@ export function registerHostedPortalApplicationForm(router: Router) {
           title: req.body.hostedPortalName,
           body: createMarkdown(req.body),
         });
-        res.status(200).json({ message: 'From submitted succesfully' });
+        res.status(201).json({ success: true });
       } catch (error) {
         logger.error({
           message: 'Failed to submit "hosted-portal-application" form',
           error,
         });
-        res.status(200).json({ message: 'From submitted succesfully' });
+        res.status(500).send({ success: false });
       }
     },
   );

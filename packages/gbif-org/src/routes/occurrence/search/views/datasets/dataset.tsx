@@ -1,7 +1,9 @@
 import { getAsQuery } from '@/components/filters/filterTools';
+import { useToast } from '@/components/ui/use-toast';
 import { FilterContext } from '@/contexts/filter';
 import { useSearchContext } from '@/contexts/search';
 import useQuery from '@/hooks/useQuery';
+import { usePartialDataNotification } from '@/routes/rootErrorPage';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { searchConfig } from '../../searchConfig';
 import { useEntityDrawer } from '../browseList/useEntityDrawer';
@@ -30,18 +32,28 @@ query occurrenceDatasets($q: String, $predicate: Predicate, $size: Int) {
 `;
 
 export function Dataset({ size: defaultSize = 100 }) {
+  const { toast } = useToast();
+  const notifyOfPartialData = usePartialDataNotification();
   const [from, setFrom] = useState(0);
   const currentFilterContext = useContext(FilterContext);
   const searchContext = useSearchContext();
-  const { data, loading, load } = useQuery(OCCURRENCE_DATASETS, {
+  const { data, error, loading, load } = useQuery(OCCURRENCE_DATASETS, {
     lazyLoad: true,
-    throwAllErrors: true,
+    throwAllErrors: false,
   });
   const { setOrderedList } = useOrderedList();
   const [, setPreviewKey] = useEntityDrawer();
   const [size, setSize] = useState(defaultSize);
 
   const [allData, setAllData] = useState([]);
+
+  useEffect(() => {
+    if (error && !data?.occurrenceSearch?.facet?.datasetKey) {
+      throw error;
+    } else if (error) {
+      notifyOfPartialData();
+    }
+  }, [data, error, notifyOfPartialData]);
 
   useEffect(() => {
     setSize(defaultSize);
@@ -69,6 +81,15 @@ export function Dataset({ size: defaultSize = 100 }) {
       return unique;
     });
   }, [data]);
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: 'Unable to load all content',
+        variant: 'destructive',
+      });
+    }
+  }, [error, allData, toast]);
 
   useEffect(() => {
     const query = getAsQuery({ filter: currentFilterContext.filter, searchContext, searchConfig });

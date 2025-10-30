@@ -1,5 +1,3 @@
-import dotenv from 'dotenv';
-
 import { register as registerGitHub } from '../auth/github.ctrl.mjs';
 import { register as registerGoogle } from '../auth/google.ctrl.mjs';
 import { register as registerLocal } from '../auth/local.ctrl.mjs';
@@ -14,11 +12,10 @@ import {
   updatePasswordFromChallengeCode,
   updateProfile,
   whoAmI,
+  mailToUser,
+  showUserInRegistry,
 } from './controllers.mjs';
 import { getChallenge, requireProofOfWork } from './pow.mjs';
-
-dotenv.config({ path: '.env.local' });
-dotenv.config({ path: '.env' });
 
 export function register(app) {
   registerLocal(app);
@@ -38,4 +35,6 @@ export function register(app) {
   app.put('/api/user/update-profile', appendUser, updateProfile);
   app.put('/api/user/challenge', getChallenge);
   app.put('/api/user/create', requireProofOfWork, create);
+  app.get('/api/feedback/user/mailto/:user', appendUser, mailToUser);
+  app.get('/api/feedback/user/:user', appendUser, showUserInRegistry);
 }

@@ -1,13 +1,16 @@
+import { OccurrenceSortBy, SortOrder } from '@/gql/graphql';
 import { cn } from '@/utils/shadcn';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import useLocalStorage from 'use-local-storage';
 import { ErrorImage } from './icons/icons';
 import { Button } from './ui/button';
+import { Card } from './ui/smallCard';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
   invalidateOn?: string | number | boolean | object | null;
-  type?: 'PAGE' | 'BLOCK';
+  type?: 'PAGE' | 'BLOCK' | 'CARD';
   className?: string;
   title?: React.ReactNode;
   errorMessage?: React.ReactNode;
@@ -15,6 +18,7 @@ interface ErrorBoundaryProps {
   showStackTrace?: boolean;
   debugTitle?: string;
   additionalDebugInfo?: string;
+  fallback?: React.ReactNode;
 }
 
 interface ErrorBoundaryState {
@@ -55,17 +59,25 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     }
 
     return (
-      <ErrorComponent
-        error={error}
-        type={this.props.type ?? 'PAGE'}
-        className={this.props.className}
-        title={this.props.title}
-        errorMessage={this.props.errorMessage}
-        showReportButton={this.props.showReportButton}
-        showStackTrace={this.props.showStackTrace}
-        debugTitle={this.props.debugTitle}
-        additionalDebugInfo={this.props.additionalDebugInfo}
-      />
+      this.props.fallback ?? (
+        <ErrorComponent
+          error={error}
+          type={this.props.type ?? 'PAGE'}
+          className={this.props.className}
+          title={this.props.title}
+          errorMessage={this.props.errorMessage}
+          showReportButton={this.props.showReportButton}
+          showStackTrace={this.props.showStackTrace ?? import.meta.env.PUBLIC_DEBUGGING}
+          debugTitle={this.props.debugTitle}
+          additionalDebugInfo={this.props.additionalDebugInfo}
+          reload={() => {
+            this.setState({
+              ...this.state,
+              error: null,
+            });
+          }}
+        />
+      )
     );
   }
 }
@@ -80,7 +92,15 @@ export function ErrorComponent({
   showReportButton = true,
   showStackTrace,
   debugTitle,
-}: Omit<ErrorBoundaryProps, 'invalidateOn' | 'children'> & { error: Error }): React.ReactElement {
+  reload,
+}: Omit<ErrorBoundaryProps, 'invalidateOn' | 'children' | 'fallback'> & {
+  error: Error;
+  reload?: () => void;
+}): React.ReactElement {
+  const [occurrenceSort] = useLocalStorage<{ sortBy?: OccurrenceSortBy; sortOrder: SortOrder }>(
+    'occurrenceSort',
+    { sortBy: undefined, sortOrder: SortOrder.Asc }
+  );
   const [showStack, setShowStack] = useState(false);
   const displayTitle = title ?? (
     <FormattedMessage id="error.generic" defaultMessage="Something went wrong" />
@@ -102,31 +122,42 @@ export function ErrorComponent({
         <p className="g-text-slate-500 g-mt-2 g-text-sm">{displayDescription}</p>
       )}
       <div className="g-flex g-flex-row g-gap-2 g-my-4 g-items-center g-justify-center">
+        {showReportButton && reload && (
+          <Button variant="ghost" size="sm" className="g-text-slate-500" asChild>
+            <a
+              href=""
+              onClick={() => {
+                if (reload) {
+                  reload();
+                } else {
+                  if (typeof window !== 'undefined') {
+                    window.location.reload();
+                  }
+                }
+              }}
+              className="g-text-sm g-text-slate-500"
+            >
+              <FormattedMessage id="error.retry" defaultMessage="Retry" />
+            </a>
+          </Button>
+        )}
         {showReportButton && (
           <Button asChild size="sm">
             <a
               target="_blank"
               href={`https://github.com/gbif/gbif-web/issues/new?body=${encodeURIComponent(
-                generateGithubIssueBody(error, debugTitle, additionalDebugInfo)
+                generateGithubIssueBody({
+                  error,
+                  title: debugTitle,
+                  additionalInfo: additionalDebugInfo,
+                  occurrenceSort,
+                })
               )}`}
             >
               <FormattedMessage id="error.report" defaultMessage="Report issue" />
             </a>
           </Button>
         )}
-        <Button variant="ghost" size="sm" className="g-text-slate-500" asChild>
-          <a
-            href=""
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.location.reload();
-              }
-            }}
-            className="g-text-sm g-text-slate-500"
-          >
-            <FormattedMessage id="error.reloadPage" defaultMessage="Try to reload page" />
-          </a>
-        </Button>
         {error?.stack && showStackTrace && (
           <Button
             variant="ghost"
@@ -150,6 +181,9 @@ export function ErrorComponent({
           </h4>
           <pre className="g-text-sm g-overflow-auto" style={{ fontFamily: 'monospace' }}>
             {error?.stack}
+
+            {error?.query && <div>query: {error?.query}</div>}
+            {error?.variables && <div>variables: {JSON.stringify(error?.variables)}</div>}
           </pre>
         </div>
       )}
@@ -165,6 +199,17 @@ export function ErrorComponent({
     );
   }
 
+  if (type === 'CARD') {
+    return (
+      <Card>
+        <div className={cn('g-flex g-gap-4 g-py-4 g-items-start g-p-2', className)}>
+          <ErrorImage className="g-w-24 g-flex-none" />
+          <div className="g-flex-1 g-w-96">{commonContent}</div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <div className="g-flex g-flex-col g-items-center g-justify-center g-text-center g-w-full g-h-full g-py-48 g-px-2 g-min-h-[80dvh] g-bg-white">
       <ErrorImage className="g-w-72 g-max-w-full" />
@@ -173,7 +218,17 @@ export function ErrorComponent({
   );
 }
 
-function generateGithubIssueBody(error: Error, title?: string, additionalInfo?: string): string {
+function generateGithubIssueBody({
+  error,
+  title,
+  additionalInfo,
+  occurrenceSort,
+}: {
+  error: Error;
+  title?: string;
+  additionalInfo?: string;
+  occurrenceSort?: { sortBy?: OccurrenceSortBy; sortOrder: SortOrder };
+}): string {
   const url = typeof window !== 'undefined' ? window.location.href : 'Unknown URL';
   return `Thank you for reporting this issue. Please describe what happened..
 
@@ -183,19 +238,26 @@ function generateGithubIssueBody(error: Error, title?: string, additionalInfo?: 
   -----------
 \n\n\`\`\`
 **Error message for diagnostics:**
+**Note:** Please do not delete the stack trace or additional information when submitting this issue. 
+If you do not feel comfortable sharing your query parameters, then you should edit it before submitting.
+
 ${title ?? 'Unknown error'}
 ${error?.message ?? 'No message'}
 
 ${error?.stack || 'No stack trace available'}
+
+${error?.query ? `query: ${error?.query}` : ''}
+${error?.variables ? `variables: ${JSON.stringify(error?.variables)}` : ''}
+
 \`\`\`
 
 **Additional Info:**
+OccurrenceSorting: ${JSON.stringify(occurrenceSort)}
 ${additionalInfo || 'No additional information provided.'}
 
 **URL:**
 ${url}
-
-**Note:** Please do not delete the stack trace or additional information when submitting this issue.`;
+`;
 }
 
 export function ErrorBlock(props) {

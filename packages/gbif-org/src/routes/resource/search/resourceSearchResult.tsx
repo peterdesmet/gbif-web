@@ -9,6 +9,8 @@ import { ProgrammeResult } from '../key/programme/programmeResult';
 import { ProjectResult } from '../key/project/projectResult';
 import { ToolResult } from '../key/tool/toolResult';
 import { Resource } from './resourceSearch';
+import { HelpItemResult } from '@/routes/custom/faq/HelpItemResult';
+import { cn } from '@/utils/shadcn';
 
 type Props = {
   resource: Resource;
@@ -37,5 +39,9 @@ export function ResourceSearchResult({ resource, className }: Props) {
       return <DocumentResult className={className} document={resource} />;
     case 'NetworkProse':
       return <NetworkProseResult className={className} network={resource} />;
+    case 'Help':
+      return (
+        <HelpItemResult className={cn('[&_.g-help-prose]:g-text-sm', className)} item={resource} />
+      );
   }
 }

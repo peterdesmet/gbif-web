@@ -22,6 +22,7 @@ type Props = {
   className?: string;
   selectedProjection: Projection;
   setBoundingBox?: Setter<BoundingBox | undefined>;
+  setView?: Setter<{ center: [number, number]; zoom: number } | undefined>;
   onSearchAreaClick?: (geometryFilter: string) => void;
   enabledSearchAreaClick?: boolean;
   rasterStyles: RasterStyles;
@@ -29,12 +30,19 @@ type Props = {
   generatedAt?: string;
   isFullSize: boolean;
   toggleFullScreen: () => void;
+  capabilities?: {
+    minLat: number;
+    maxLat: number;
+    minLng: number;
+    maxLng: number;
+  };
 };
 
 export default function MapWidgetInner({
   className,
   selectedProjection,
   setBoundingBox,
+  setView,
   onSearchAreaClick,
   enabledSearchAreaClick = false,
   rasterStyles,
@@ -87,12 +95,14 @@ export default function MapWidgetInner({
     onSearchAreaClick,
     enabledSearchAreaClick,
     getProjectedCoordinate: projection.getProjectedCoordinate,
+    projectionCommonName: projection.commonName,
   });
 
   // Will update the geometry filter when the map is moved
   useSyncBoundingBox({
     map,
     setBoundingBox,
+    setView,
   });
 
   return (

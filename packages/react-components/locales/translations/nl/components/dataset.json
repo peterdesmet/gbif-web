@@ -21,7 +21,8 @@
     "project": "Project",
     "taxonomy": "",
     "download": "Download",
-    "phylogeny": ""
+    "phylogeny": "",
+    "events": "Evenementen"
   },
   "noStatsForMetadata": "Geen statistieken beschikbaar voor datasets met alleen metadata",
   "siteScopeSmallerThanDataset": "Niet alle gegevens van de dataset zijn opgenomen op deze site. Bezoek [GBIF.org]({datasetUrl}) om de volledige data te bekijken.",
@@ -30,6 +31,7 @@
   "constituentOf": "Onderdeel van",
   "dataset": "Dataset",
   "taxonomy": "Taxonomie",
+  "localContext": "",
   "project": "Project",
   "metrics": "Statistieken",
   "metricsOccurrenceHelpText": "",
@@ -146,5 +148,10 @@
     "outOfSync": "Niet gesynchroniseerd",
     "becauseTrustedContact": "",
     "registrationDetails": ""
-  }
+  },
+  "errors": {
+    "evenList": "",
+    "occurrenceInfo": ""
+  },
+  "eventTaxonomy": ""
 }

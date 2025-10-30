@@ -1,7 +1,7 @@
+import { DownloadAsTSVLink } from '@/components/cardHeaderActions/downloadAsTSVLink';
 import { ClientSideOnly } from '@/components/clientSideOnly';
 import { DataHeader } from '@/components/dataHeader';
-import { DownloadAsTSVLink } from '@/components/cardHeaderActions/downloadAsTSVLink';
-import { FilterBar, FilterButtons, getAsQuery } from '@/components/filters/filterTools';
+import { getAsQuery } from '@/components/filters/filterTools';
 import { PaginationFooter } from '@/components/pagination';
 import { CardListSkeleton } from '@/components/skeletonLoaders';
 import { CardHeader, CardTitle } from '@/components/ui/largeCard';
@@ -20,6 +20,7 @@ import { useNumberParam } from '@/hooks/useParam';
 import useQuery from '@/hooks/useQuery';
 import { ArticleContainer } from '@/routes/resource/key/components/articleContainer';
 import { ArticleTextContainer } from '@/routes/resource/key/components/articleTextContainer';
+import { usePartialDataNotification } from '@/routes/rootErrorPage';
 import { notNull } from '@/utils/notNull';
 import { stringify } from '@/utils/querystring';
 import React, { useContext, useEffect, useState } from 'react';
@@ -30,6 +31,7 @@ import { useFilters } from './filters';
 import { AboutContent, ApiContent } from './help';
 import { NoResultsMessage } from './noResultsMessage';
 import { searchConfig } from './searchConfig';
+import { FilterBarWithActions } from '@/components/filters/filterBarWithActions';
 
 const COLLECTION_SEARCH_QUERY = /* GraphQL */ `
   query CollectionSearch($query: CollectionSearchInput) {
@@ -71,6 +73,7 @@ export function CollectionSearchPage(): React.ReactElement {
 }
 
 export function CollectionSearch(): React.ReactElement {
+  const notifyOfPartialData = usePartialDataNotification();
   const [offset, setOffset] = useNumberParam({ key: 'offset', defaultValue: 0, hideDefault: true });
   const filterContext = useContext(FilterContext);
   const searchContext = useSearchContext();
@@ -83,10 +86,18 @@ export function CollectionSearch(): React.ReactElement {
     CollectionSearchQuery,
     CollectionSearchQueryVariables
   >(COLLECTION_SEARCH_QUERY, {
-    throwAllErrors: true,
+    throwAllErrors: false,
     lazyLoad: true,
     forceLoadingTrueOnMount: true,
   });
+
+  useEffect(() => {
+    if (error && !data?.collectionSearch?.results) {
+      throw error;
+    } else if (error) {
+      notifyOfPartialData();
+    }
+  }, [data, error, notifyOfPartialData]);
 
   useEffect(() => {
     const query = getAsQuery({ filter, searchContext, searchConfig });
@@ -123,9 +134,7 @@ export function CollectionSearch(): React.ReactElement {
       />
 
       <section className="">
-        <FilterBar>
-          <FilterButtons filters={filters} searchContext={searchContext} />
-        </FilterBar>
+        <FilterBarWithActions filters={filters} />
         <ArticleContainer className="g-bg-slate-100 g-flex">
           <ArticleTextContainer className="g-flex-auto g-w-full">
             <Results

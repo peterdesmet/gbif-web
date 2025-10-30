@@ -2,18 +2,18 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdownMenu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useConfig } from '@/config/config';
 import { DynamicLink } from '@/reactRouterPlugins';
 import { cn } from '@/utils/shadcn';
-import React from 'react';
-import { MdApps, MdCode, MdInfo } from 'react-icons/md';
+import React, { useMemo } from 'react';
+import { MdApps, MdCode, MdInfo, MdOutlineFeedback } from 'react-icons/md';
 import { FormattedMessage } from 'react-intl';
 import { DoiTag } from './identifierTag';
 import { Button } from './ui/button';
+import { FeedbackPopover } from '@/gbif/header/feedback/feedback';
 
 export function DataHeader({
   children,
@@ -37,7 +37,8 @@ export function DataHeader({
   className?: string;
   hideIfNoCatalogue?: boolean;
 }) {
-  const { availableCatalogues = [], dataHeader } = useConfig();
+  const { availableCatalogues = [], dataHeader, feedback = {} } = useConfig();
+  const { showFeedbackInDataHeader = false, enabled = false } = feedback;
 
   if (hideIfNoCatalogue && (availableCatalogues.length < 2 || hideCatalogueSelector)) return null;
 
@@ -60,6 +61,15 @@ export function DataHeader({
       <div className="g-flex-none g-mx-2">
         <div className="g-flex g-justify-center g-items-center g-gap-1">
           {doi && <DoiTag id={doi} className="g-me-2 g-text-xs g-hidden md:g-inline" />}
+          {enabled && showFeedbackInDataHeader && (
+            <FeedbackPopover
+              trigger={
+                <Button variant="ghost" size="sm" className="g-px-1 g-text-slate-400">
+                  <MdOutlineFeedback className="hover:g-text-slate-700 g-text-slate-400 g-block g-text-base g-relative g-top-[1px]" />
+                </Button>
+              }
+            />
+          )}
           {aboutContent && dataHeader.enableInfoPopup && (
             <Popup
               trigger={
@@ -109,6 +119,19 @@ function Popup({
   );
 }
 
+const availableCatalogueOptions = [
+  'OCCURRENCE',
+  'PUBLISHER',
+  'DATASET',
+  'TAXON',
+  'RESOURCE',
+  'LITERATURE',
+  'COLLECTION',
+  'INSTITUTION',
+] as const;
+
+type CatalogueOption = (typeof availableCatalogueOptions)[number];
+
 function CatalogSelector({
   title,
   availableCatalogues,
@@ -116,12 +139,25 @@ function CatalogSelector({
   title: React.ReactNode;
   availableCatalogues: string[];
 }) {
-  if (availableCatalogues.length < 2) return null;
+  const options = useMemo(() => {
+    const optionKeys = availableCatalogues.filter((o): o is CatalogueOption =>
+      (availableCatalogueOptions as readonly string[]).includes(o)
+    );
 
-  const lookup = availableCatalogues.reduce((acc: { [key: string]: boolean }, cur) => {
-    acc[cur] = true;
-    return acc;
-  }, {});
+    const lookUp: Record<CatalogueOption, { pageId: string; label: string }> = {
+      OCCURRENCE: { pageId: 'occurrenceSearch', label: 'catalogues.occurrences' },
+      PUBLISHER: { pageId: 'publisherSearch', label: 'catalogues.publishers' },
+      DATASET: { pageId: 'datasetSearch', label: 'catalogues.datasets' },
+      TAXON: { pageId: 'speciesSearch', label: 'catalogues.species' },
+      INSTITUTION: { pageId: 'institutionSearch', label: 'catalogues.institutions' },
+      COLLECTION: { pageId: 'collectionSearch', label: 'catalogues.collections' },
+      LITERATURE: { pageId: 'literatureSearch', label: 'catalogues.literature' },
+      RESOURCE: { pageId: 'resourceSearch', label: 'catalogues.resources' },
+    };
+    return optionKeys.map((k) => ({ key: k, item: lookUp[k] }));
+  }, [availableCatalogues]);
+
+  if (options.length < 2) return null;
 
   return (
     <div className="g-flex-none g-flex g-items-center">
@@ -132,53 +168,11 @@ function CatalogSelector({
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {lookup.OCCURRENCE && (
-            <MenuItem pageId="occurrenceSearch">
-              <FormattedMessage id="catalogues.occurrences" />
+          {options.map((x) => (
+            <MenuItem pageId={x.item.pageId} key={x.key}>
+              <FormattedMessage id={x.item.label} />
             </MenuItem>
-          )}
-          {lookup.DATASET && (
-            <MenuItem pageId="datasetSearch">
-              <FormattedMessage id="catalogues.datasets" />
-            </MenuItem>
-          )}
-          {lookup.PUBLISHER && (
-            <MenuItem pageId="publisherSearch">
-              <FormattedMessage id="catalogues.publishers" />
-            </MenuItem>
-          )}
-          {lookup.TAXON && (
-            <MenuItem pageId="speciesSearch">
-              <FormattedMessage id="catalogues.species" />
-            </MenuItem>
-          )}
-          {(lookup.INSTITUTION || lookup.COLLECTION) && <DropdownMenuSeparator />}
-          {lookup.INSTITUTION && (
-            <MenuItem pageId="institutionSearch">
-              <FormattedMessage id="catalogues.institutions" />
-            </MenuItem>
-          )}
-          {lookup.COLLECTION && (
-            <MenuItem pageId="collectionSearch">
-              <FormattedMessage id="catalogues.collections" />
-            </MenuItem>
-          )}
-          {lookup.LITERATURE && (
-            <>
-              <DropdownMenuSeparator />
-              <MenuItem pageId="literatureSearch">
-                <FormattedMessage id="catalogues.literature" />
-              </MenuItem>
-            </>
-          )}
-          {lookup.RESOURCE && (
-            <>
-              <DropdownMenuSeparator />
-              <MenuItem pageId="resourceSearch">
-                <FormattedMessage id="catalogues.resources" />
-              </MenuItem>
-            </>
-          )}
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

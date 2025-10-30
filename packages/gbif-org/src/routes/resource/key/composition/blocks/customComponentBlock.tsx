@@ -1,9 +1,17 @@
 import { CustomComponentBlockDetailsFragment } from '@/gql/graphql';
 import { fragmentManager } from '@/services/fragmentManager';
 import { backgroundColorMap, BlockContainer } from './_shared';
+import { AmbassadorsList } from './customComponents/ambassadorsList';
+import { EbbeWinnersTable } from './customComponents/ebbeWinnersList';
+import { GraList } from './customComponents/graList';
 import { HostedPortalForm } from './customComponents/hostedPortalForm';
+import { MdtForm } from './customComponents/mdtForm';
+import { MentorsList } from './customComponents/mentorsList';
 import { ProjectsTable } from './customComponents/projects';
 import { PublisherDatasetTable } from './customComponents/publisherDatasetTable';
+import { TranslatorsList } from './customComponents/translatorsList';
+import { ProtectedForm } from '@/components/protectedForm';
+import { FormattedMessage } from 'react-intl';
 
 fragmentManager.register(/* GraphQL */ `
   fragment CustomComponentBlockDetails on CustomComponentBlock {
@@ -28,13 +36,16 @@ type Props = {
 };
 
 export function CustomComponentBlock({ resource }: Props) {
-  const backgroundColor = backgroundColorMap[resource?.backgroundColour ?? 'white'];
-  const width = widthMap[resource?.width ?? 'normal'];
+  // This is a temporary fix to make the new hosted portal form work with the current contentful data.
+  const mofitiedResource = overwriteFormDetails(resource);
+
+  const backgroundColor = backgroundColorMap[mofitiedResource?.backgroundColour ?? 'white'];
+  const width = widthMap[mofitiedResource?.width ?? 'normal'];
   return (
     <BlockContainer className={`${backgroundColor} g-border-t g-border-slate-100 g-p-0`}>
       {/* <ArticleTextContainer> */}
       <div className={width}>
-        <CustomComponent resource={resource} />
+        <CustomComponent resource={mofitiedResource} />
       </div>
       {/* </ArticleTextContainer> */}
     </BlockContainer>
@@ -52,8 +63,26 @@ function CustomComponent({
   switch (resource.componentType) {
     // We could add the other forms as custom components in the future,
     // but our contentful data does not have them yet and adding them would make the transition to the new gbif.org less smooth.
+    case 'translatorsList':
+      return (
+        <TranslatorsList title={resource?.title} tableStyle={resource?.settings?.tablestyle} />
+      );
+    case 'ambassadorsList':
+      return (
+        <AmbassadorsList title={resource?.title} tableStyle={resource?.settings?.tablestyle} />
+      );
+    case 'mentorsList':
+      return <MentorsList title={resource?.title} tableStyle={resource?.settings?.tablestyle} />;
+    case 'graList':
+      return <GraList title={resource?.title} tableStyle={resource?.settings?.tablestyle} />;
+    case 'ebbeWinnersList':
+      return (
+        <EbbeWinnersTable title={resource?.title} tableStyle={resource?.settings?.tablestyle} />
+      );
+    case 'metabarcodingDataToolForm':
+      return <MdtForm />;
     case 'hostedPortalForm':
-      return <HostedPortalForm className="g-bg-white" />;
+      return <HostedPortalForm />;
     case 'projects':
       return (
         <ProjectsTable
@@ -73,4 +102,29 @@ function CustomComponent({
     default:
       return <pre>Unknown block: {JSON.stringify(resource, null, 2)}</pre>;
   }
+}
+
+// TODO: REMOVE
+// The current settings for some of the forms does not suit the form format.
+// This function is meant to be temporary until the new site has been deplyed and the contentful data can be updated.
+function overwriteFormDetails(
+  resource: CustomComponentBlockDetailsFragment
+): CustomComponentBlockDetailsFragment {
+  if (resource.componentType === 'hostedPortalForm') {
+    return {
+      ...resource,
+      width: 'fluid',
+      backgroundColour: 'white',
+    };
+  }
+
+  if (resource.componentType === 'metabarcodingDataToolForm') {
+    return {
+      ...resource,
+      width: 'fluid',
+      backgroundColour: 'white',
+    };
+  }
+
+  return resource;
 }

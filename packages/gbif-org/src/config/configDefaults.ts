@@ -1,11 +1,19 @@
 import { Config } from './config';
 
 export const configDefault: Partial<Config> = {
+  testSite: import.meta.env.PUBLIC_TEST_SITE === 'true',
   defaultChecklistKey: import.meta.env.PUBLIC_DEFAULT_CHECKLIST_KEY,
   availableChecklistKeys: [import.meta.env.PUBLIC_DEFAULT_CHECKLIST_KEY], //import.meta.env.PUBLIC_SUPPORTED_CHECKLISTS?.split(',') || [],
   hardcodedKeys: {
-    OBISKey: 'ba0670b9-4186-41e6-8e70-f9cb3065551a',
-    taiwanNodeidentifier: '239',
+    OBISKey: import.meta.env.PUBLIC_KEYS_OBIS_NODE,
+    taiwanNodeidentifier: import.meta.env.PUBLIC_KEYS_TAIWAN_PARTICIPANT,
+  },
+  experimentalFeatures: {
+    localContextEnabled: false,
+  },
+  feedback: {
+    enabled: true,
+    githubRepo: import.meta.env.PUBLIC_FEEDBACK_GITHUB_REPO,
   },
   openDrawerOnTableRowClick: true,
   availableCatalogues: [

@@ -1,20 +1,17 @@
-import dotenv from 'dotenv';
 import { expressjwt } from 'express-jwt';
 import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import logger from '../../config/logger.mjs';
 import { getByUserName, getClientUser } from '../user/user.model.mjs';
+import { secretEnv } from '../../envConfig.mjs';
 
-dotenv.config({ path: '.env.local' });
-dotenv.config({ path: '.env' });
-
-const useSecureCookie = process.env.USE_SECURE_COOKIE !== 'false';
+const useSecureCookie = secretEnv.USE_SECURE_COOKIE !== 'false';
 const minute = 60000;
 const hour = 60 * minute;
 const day = 24 * hour;
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const GRAPHQL_JWT_SECRET = process.env.GRAPHQL_JWT_SECRET;
+const JWT_SECRET = secretEnv.JWT_SECRET;
+const GRAPHQL_JWT_SECRET = secretEnv.GRAPHQL_JWT_SECRET;
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -35,7 +32,7 @@ export const generateToken = (user, ttl) => {
     tokenContent.roles = JSON.stringify(user.roles);
   }
   return jwt.sign(tokenContent, JWT_SECRET, {
-    expiresIn: ttl || '24h',
+    expiresIn: ttl || '7d', // should match when the cookie expires in setTokenCookie
     algorithm: 'HS256',
   });
 };
@@ -61,7 +58,7 @@ export const generateGraphQLToken = (user, ttl) => {
  */
 export function setTokenCookie(res, token) {
   let options = {
-    maxAge: day * 7,
+    maxAge: day * 7, // should match the token expiration in generateToken
     secure: useSecureCookie,
     httpOnly: true,
     sameSite: 'lax',
@@ -215,4 +212,17 @@ export function jsonToBase64(object) {
 export function base64ToJson(base64String) {
   const json = Buffer.from(base64String, 'base64').toString();
   return JSON.parse(json);
+}
+
+export function getReturnUrl(req) {
+  try {
+    const referer = req.headers.referer ?? '/';
+    const refererUrl = new URL(referer);
+    const searchParams = refererUrl.searchParams;
+    const unparsedReturnUrl = searchParams.get('returnUrl');
+    const returnUrl = unparsedReturnUrl.startsWith('/') ? unparsedReturnUrl : '/user/login';
+    return returnUrl ?? '/user/login';
+  } catch (error) {
+    return '/user/login';
+  }
 }

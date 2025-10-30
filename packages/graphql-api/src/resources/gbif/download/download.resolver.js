@@ -1,5 +1,5 @@
-import { getGbifMachineDescription } from '#/helpers/generateSql';
 import { highlight } from 'sql-highlight';
+import { getGbifMachineDescription } from '#/helpers/generateSql';
 
 /**
  * fieldName: (parent, args, context, info) => data;
@@ -27,6 +27,15 @@ export default {
         query: { limit, offset },
       });
     },
+    occurrenceSnapshots: (
+      parent,
+      { limit = 10, offset = 0 },
+      { dataSources },
+    ) => {
+      return dataSources.occurrenceSnapshotsAPI.getOccurrenceSnapshots({
+        query: { limit, offset },
+      });
+    },
     datasetsByDownload: (
       parent,
       { key, limit = 10, offset = 0 },
@@ -36,8 +45,18 @@ export default {
         key,
         query: { limit, offset },
       }),
-    download: (parent, { key }, { dataSources }) =>
-      dataSources.downloadAPI.getDownloadByKey({ key }),
+    download: (parent, { key }, { dataSources }, info) => {
+      return dataSources.downloadAPI
+        .getDownloadByKey({ key })
+        .then((download) => {
+          if (['PREPARING', 'RUNNING'].indexOf(download?.status) > -1) {
+            info.cacheControl.setCacheHint({
+              maxAge: 5, // seconds
+            });
+          }
+          return download;
+        });
+    },
   },
   DownloadRequest: {
     gbifMachineDescription: ({ sql, machineDescription }) => {

@@ -10,6 +10,7 @@ import {
 } from '@/gql/graphql';
 import useQuery from '@/hooks/useQuery';
 import { LoaderArgs } from '@/reactRouterPlugins';
+import { throwCriticalErrors, usePartialDataNotification } from '@/routes/rootErrorPage';
 import { required } from '@/utils/required';
 import { useEffect } from 'react';
 import { useLoaderData } from 'react-router-dom';
@@ -18,18 +19,36 @@ import { CollectionKey as Presentation } from './collectionKeyPresentation';
 export async function collectionLoader({ params, graphql }: LoaderArgs) {
   const key = required(params.key, 'No key was provided in the URL');
 
-  return graphql.query<CollectionQuery, CollectionQueryVariables>(COLLECTION_QUERY, { key });
+  const response = await graphql.query<CollectionQuery, CollectionQueryVariables>(
+    COLLECTION_QUERY,
+    { key }
+  );
+
+  const { errors, data } = await response.json();
+  throwCriticalErrors({
+    path404: ['collection'],
+    errors,
+    requiredObjects: [data?.collection],
+  });
+
+  return { errors, data };
 }
 
 export function CollectionKey() {
-  const { data } = useLoaderData() as { data: CollectionQuery };
+  const { data, errors } = useLoaderData() as { data: CollectionQuery };
+  const notifyOfPartialData = usePartialDataNotification();
+  useEffect(() => {
+    if (errors) {
+      notifyOfPartialData();
+    }
+  }, [errors, notifyOfPartialData]);
 
   const { data: collectionMetrics, load: slowLoad } = useQuery<
     CollectionSummaryMetricsQuery,
     CollectionSummaryMetricsQueryVariables
   >(SLOW_QUERY, {
     lazyLoad: true,
-    throwAllErrors: true,
+    notifyOnErrors: true,
   });
 
   const { data: imageData, load: imageLoad } = useQuery<
@@ -37,7 +56,7 @@ export function CollectionKey() {
     CollectionFallbackImageQueryVariables
   >(IMAGE_QUERY, {
     lazyLoad: true,
-    throwAllErrors: false,
+    notifyOnErrors: true,
   });
 
   useEffect(() => {

@@ -1,3 +1,5 @@
+import { getHtml } from '#/helpers/utils';
+
 /**
  * fieldName: (parent, args, context, info) => data;
  * parent: An object that contains the result returned from the resolver on the parent type
@@ -23,6 +25,38 @@ export default {
       return dataSources.directoryPersonAPI.getDirectoryContactByKey({
         key: personId,
       });
+    },
+  },
+  Participant: {
+    progressAndPlans: ({ progressAndPlans }) => getHtml(progressAndPlans),
+    nodeMission: ({ nodeMission }) => getHtml(nodeMission),
+    nodeHistory: ({ nodeHistory }) => getHtml(nodeHistory),
+    nodeFunding: ({ nodeFunding }) => getHtml(nodeFunding),
+    nodeStructure: ({ nodeStructure }) => getHtml(nodeStructure),
+    node: ({ id }, args, { dataSources }) => {
+      return dataSources.nodeAPI
+        .searchNodes({
+          query: {
+            identifierType: 'GBIF_PARTICIPANT',
+            identifier: id,
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          const list = response?.results.filter((x) =>
+            x.identifiers.some(
+              (y) =>
+                y.type === 'GBIF_PARTICIPANT' && `${y.identifier}` === `${id}`,
+            ),
+          );
+          return list[0];
+        });
+      // if (nodes && nodes.length > 0) {
+      //   return dataSources.nodeAPI.getNodeByKey({
+      //     key: nodes[0].id,
+      //   });
+      // }
+      // return null;
     },
   },
 };

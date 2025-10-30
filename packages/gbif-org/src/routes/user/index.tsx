@@ -2,6 +2,7 @@ import { RouteObjectWithPlugins } from '@/reactRouterPlugins';
 import { Navigate } from 'react-router-dom';
 import { ArticleSkeleton } from '../resource/key/components/articleSkeleton';
 import { ConfirmPage, confirmLoader } from './confirm/confirm';
+import { DerivedDatasets } from './derivedDatasets/derivedDatasets';
 import { Downloads } from './downloads/downloads';
 import { LoginPage, RegistrationPage } from './login/login';
 import Profile from './profile/profile';
@@ -9,6 +10,7 @@ import { UserProfileLayoutWrapper } from './profile/profileLayout';
 import { ProtectedRoute } from './shared/ProtectedRoute';
 import { UpdateEmailPage } from './updateEmail/updateEmail';
 import { UpdatePasswordPage, updatePasswordLoader } from './updatePassword/updatePassword';
+import { Validations } from './validations/validations';
 
 export const userRoutes: RouteObjectWithPlugins[] = [
   {
@@ -69,11 +71,11 @@ export const userRoutes: RouteObjectWithPlugins[] = [
       },
       {
         path: 'derived-datasets',
-        element: <span>derived datasets</span>,
+        element: <DerivedDatasets />,
       },
       {
         path: 'validations',
-        element: <span>validations</span>,
+        element: <Validations />,
       },
     ],
   },

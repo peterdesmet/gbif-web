@@ -2,7 +2,7 @@ import { DownloadAsTSVLink } from '@/components/cardHeaderActions/downloadAsTSVL
 import { ClientSideOnly } from '@/components/clientSideOnly';
 import { DataHeader } from '@/components/dataHeader';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { FilterBar, FilterButtons, getAsQuery } from '@/components/filters/filterTools';
+import { getAsQuery } from '@/components/filters/filterTools';
 import { NoRecords } from '@/components/noDataMessages';
 import { PaginationFooter } from '@/components/pagination';
 import { CardListSkeleton } from '@/components/skeletonLoaders';
@@ -23,7 +23,9 @@ import useQuery from '@/hooks/useQuery';
 import { DynamicLink } from '@/reactRouterPlugins';
 import { ArticleContainer } from '@/routes/resource/key/components/articleContainer';
 import { ArticleTextContainer } from '@/routes/resource/key/components/articleTextContainer';
+import { usePartialDataNotification } from '@/routes/rootErrorPage';
 import { CANCEL_REQUEST, fetchWithCancel } from '@/utils/fetchWithCancel';
+import { notNull } from '@/utils/notNull';
 import { stringify } from '@/utils/querystring';
 import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -33,6 +35,7 @@ import { AboutContent, ApiContent } from './help';
 import { InstitutionResult } from './institutionResult';
 import { Map } from './map/map';
 import { searchConfig } from './searchConfig';
+import { FilterBarWithActions } from '@/components/filters/filterBarWithActions';
 
 const INSTITUTION_SEARCH_QUERY = /* GraphQL */ `
   query InstitutionSearch($query: InstitutionSearchInput, $collectionScope: CollectionSearchInput) {
@@ -66,7 +69,9 @@ export function InstitutionSearchPage(): React.ReactElement {
 
       <SearchContextProvider searchContext={config.institutionSearch}>
         <FilterProvider filter={filter} onChange={setFilter}>
-          <InstitutionSearch />
+          <ErrorBoundary type="PAGE">
+            <InstitutionSearch />
+          </ErrorBoundary>
         </FilterProvider>
       </SearchContextProvider>
     </>
@@ -74,6 +79,7 @@ export function InstitutionSearchPage(): React.ReactElement {
 }
 
 export function InstitutionSearch(): React.ReactElement {
+  const notifyOfPartialData = usePartialDataNotification();
   const [offset, setOffset] = useNumberParam({ key: 'offset', defaultValue: 0, hideDefault: true });
   const filterContext = useContext(FilterContext);
   const config = useConfig();
@@ -94,6 +100,14 @@ export function InstitutionSearch(): React.ReactElement {
     lazyLoad: true,
     forceLoadingTrueOnMount: true,
   });
+
+  useEffect(() => {
+    if (error && !data?.institutionSearch?.results) {
+      throw error;
+    } else if (error) {
+      notifyOfPartialData();
+    }
+  }, [data, error, notifyOfPartialData]);
 
   useEffect(() => {
     const query = getAsQuery({ filter, searchContext, searchConfig });
@@ -154,9 +168,7 @@ export function InstitutionSearch(): React.ReactElement {
       />
 
       <section className="">
-        <FilterBar>
-          <FilterButtons filters={filters} searchContext={searchContext} />
-        </FilterBar>
+        <FilterBarWithActions filters={filters} />
         <ErrorBoundary>
           <ArticleContainer className="g-bg-slate-100 g-flex">
             <ArticleTextContainer className="g-flex-auto g-w-full">
@@ -200,7 +212,7 @@ function Results({
 }) {
   const excludeCode = excludedFilters?.includes('code');
   const excludeCountry = excludedFilters?.includes('country');
-  if (error) {
+  if (error && !institutions) {
     throw error;
   }
   return (
@@ -239,6 +251,7 @@ function Results({
           <ClientSideOnly>
             {institutions &&
               institutions.results
+                .filter(notNull)
                 .slice(0, 2)
                 .map((item) => (
                   <InstitutionResult
@@ -265,6 +278,7 @@ function Results({
 
             {institutions &&
               institutions.results
+                .filter(notNull)
                 .slice(2)
                 .map((item) => (
                   <InstitutionResult

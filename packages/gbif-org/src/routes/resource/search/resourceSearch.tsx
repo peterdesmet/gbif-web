@@ -1,6 +1,7 @@
 import { ClientSideOnly } from '@/components/clientSideOnly';
 import { DataHeader } from '@/components/dataHeader';
-import { FilterBar, FilterButtons, getAsQuery } from '@/components/filters/filterTools';
+import { getAsQuery } from '@/components/filters/filterTools';
+import { NoRecords } from '@/components/noDataMessages';
 import { PaginationFooter } from '@/components/pagination';
 import { CardListSkeleton } from '@/components/skeletonLoaders';
 import { Card, CardHeader, CardTitle } from '@/components/ui/largeCard';
@@ -25,15 +26,17 @@ import { ResourceSearchResult } from './resourceSearchResult';
 import { ResourceSearchTabs } from './resourceSearchTabs';
 import { searchConfig } from './searchConfig';
 import { orderedTabs, tabsConfig } from './tabsConfig';
+import { FilterBarWithActions } from '@/components/filters/filterBarWithActions';
 
-const RESOURCE_SEARCH_QUERY = /* GraphQL */ `
+export const RESOURCE_SEARCH_QUERY = /* GraphQL */ `
   query ResourceSearch(
     $from: Int
     $size: Int
     $predicate: Predicate
     $contentType: [ContentType!]
+    $q: String
   ) {
-    resourceSearch(predicate: $predicate, contentType: $contentType) {
+    resourceSearch(predicate: $predicate, contentType: $contentType, q: $q, searchable: true) {
       documents(from: $from, size: $size) {
         from
         size
@@ -73,6 +76,9 @@ const RESOURCE_SEARCH_QUERY = /* GraphQL */ `
           ... on NetworkProse {
             ...NetworkProseResult
           }
+          ... on Help {
+            ...HelpResult
+          }
         }
       }
     }
@@ -84,7 +90,7 @@ export type Resource = Extract<
   { id: string }
 >;
 
-function extractValidResources(data: ResourceSearchQuery | undefined): Resource[] {
+export function extractValidResources(data: ResourceSearchQuery | undefined): Resource[] {
   return (
     data?.resourceSearch?.documents?.results?.filter(
       (result) => result != null && 'id' in result
@@ -187,65 +193,102 @@ function ResourceSearchPageInner({ activeTab, defaultTab }: Props): React.ReactE
       </DataHeader>
 
       <Card>
-        <FilterBar>
-          <FilterButtons filters={filters} searchContext={searchContext} />
-        </FilterBar>
+        <FilterBarWithActions filters={filters} />
       </Card>
 
       <ArticleContainer className="g-bg-slate-100 g-flex">
         <ArticleTextContainer className="g-flex-auto g-w-full">
-          {loading && (
-            <>
-              <CardHeader>
-                <Skeleton className="g-max-w-64">
-                  <CardTitle>
-                    <FormattedMessage id="phrases.loading" />
-                  </CardTitle>
-                </Skeleton>
-              </CardHeader>
-              <CardListSkeleton />
-            </>
-          )}
-          {!loading && resources.length === 0 && (
-            <div className="g-min-h-52 g-flex g-items-center g-justify-center">
-              <FormattedMessage id="resourceSearch.noResults" />
-            </div>
-          )}
-          {!loading && resources.length > 0 && (
-            <>
-              <CardHeader className="g-flex-col md:g-flex-row g-items-start md:g-items-center g-justify-between">
-                <CardTitle>
-                  <FormattedMessage
-                    id={tabsConfig[activeTab].countKey}
-                    values={{ total: total ?? 0 }}
-                  />
-                </CardTitle>
-
-                <HeaderActionButtons activeTab={activeTab} />
-              </CardHeader>
-              <ul>
-                {resources.map((resource) => (
-                  <li key={resource.id}>
-                    <ResourceSearchResult resource={resource} className="g-bg-white" />
-                  </li>
-                ))}
-              </ul>
-              <ClientSideOnly>
-                {total != null && size != null && total > size && (
-                  <PaginationFooter
-                    offset={offset}
-                    count={total}
-                    limit={size}
-                    onChange={(x) => {
-                      setOffset(x);
-                    }}
-                  />
-                )}
-              </ClientSideOnly>
-            </>
-          )}
+          <ResourceSearchResults
+            loading={loading}
+            resources={resources}
+            activeTab={activeTab}
+            total={total}
+            size={size}
+            offset={offset}
+            setOffset={setOffset}
+          />
         </ArticleTextContainer>
       </ArticleContainer>
     </>
   );
+}
+
+type ResourceSearchResultsProps = {
+  loading: boolean;
+  resources: Resource[];
+  activeTab: string;
+  total: number;
+  size?: number;
+  offset: number;
+  setOffset: (offset: number) => void;
+  disableHeaderActionButtons?: boolean;
+};
+
+export function ResourceSearchResults({
+  loading,
+  resources,
+  activeTab,
+  total,
+  size,
+  offset,
+  setOffset,
+  disableHeaderActionButtons,
+}: ResourceSearchResultsProps) {
+  if (loading) {
+    return (
+      <>
+        <CardHeader>
+          <Skeleton className="g-max-w-64">
+            <CardTitle>
+              <FormattedMessage id="phrases.loading" />
+            </CardTitle>
+          </Skeleton>
+        </CardHeader>
+        <CardListSkeleton />
+      </>
+    );
+  }
+
+  if (resources.length === 0) {
+    return (
+      <div className="g-min-h-52 g-flex g-items-center g-justify-center">
+        <NoRecords />
+      </div>
+    );
+  }
+
+  if (resources.length > 0) {
+    return (
+      <>
+        <CardHeader className="g-flex-col md:g-flex-row g-items-start md:g-items-center g-justify-between">
+          <CardTitle>
+            <FormattedMessage id={tabsConfig[activeTab].countKey} values={{ total: total ?? 0 }} />
+          </CardTitle>
+
+          {!disableHeaderActionButtons && <HeaderActionButtons activeTab={activeTab} />}
+        </CardHeader>
+        <ul>
+          {resources.map((resource) => (
+            <li key={resource.id}>
+              <ResourceSearchResult resource={resource} className="g-bg-white g-mb-4" />
+            </li>
+          ))}
+        </ul>
+        <ClientSideOnly>
+          {total != null && size != null && total > size && (
+            <PaginationFooter
+              offset={offset}
+              count={total}
+              limit={size}
+              onChange={(x) => {
+                setOffset(x);
+              }}
+            />
+          )}
+        </ClientSideOnly>
+      </>
+    );
+  }
+
+  return null;
 }

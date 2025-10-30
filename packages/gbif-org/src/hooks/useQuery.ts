@@ -1,13 +1,10 @@
 import { useConfig } from '@/config/config';
 import { useI18n } from '@/reactRouterPlugins';
+import { usePartialDataNotification } from '@/routes/rootErrorPage';
 import { GraphQLService } from '@/services/graphQLService';
 import isArray from 'lodash/isArray';
 import Queue from 'queue-promise';
 import React, { useRef } from 'react';
-
-export class NetworkError extends Error {
-  name = 'NetworkError';
-}
 
 type Options<TVariabels> = {
   throwNetworkErrors?: boolean;
@@ -16,6 +13,7 @@ type Options<TVariabels> = {
   ignoreVariableUpdates?: boolean;
   lazyLoad?: boolean;
   keepDataWhileLoading?: boolean;
+  notifyOnErrors?: string | boolean;
   queue?: {
     name?: string;
     concurrent?: number;
@@ -34,6 +32,7 @@ const defaultOptions: Options<unknown> = {
   ignoreVariableUpdates: false,
   lazyLoad: false,
   keepDataWhileLoading: false,
+  notifyOnErrors: false,
   queue: {
     name: undefined,
     concurrent: 1,
@@ -50,11 +49,12 @@ export function useQuery<TResult, TVariabels>(
   query: string,
   options: Options<TVariabels> = defaultOptions as Options<TVariabels>
 ) {
+  const notifyOfPartialData = usePartialDataNotification();
   const isMounted = useRef(false);
   const randomTokenRef = useRef(getRandomToken());
   const [data, setData] = React.useState<TResult | undefined>();
   const [loading, setLoading] = React.useState(options.forceLoadingTrueOnMount ?? false);
-  const [error, setError] = React.useState<Error | undefined>();
+  const [error, setError] = React.useState<QueryError | undefined>();
   const cancelRequestRef = useRef<(reason: string) => void>(() => () => {});
   const config = useConfig();
   const { locale } = useI18n();
@@ -67,6 +67,13 @@ export function useQuery<TResult, TVariabels>(
       cancelRequestRef.current(ABORT_REASON);
     };
   }, []);
+
+  React.useEffect(() => {
+    if (error && options.notifyOnErrors) {
+      notifyOfPartialData();
+      console.error('Error in useQuery:', error);
+    }
+  }, [error, notifyOfPartialData, options.notifyOnErrors]);
 
   // Prevent a change in variable to trigger a reload if ignoreVariableUpdates has been enabled
   const optionsDependency = React.useMemo(() => {
@@ -106,7 +113,18 @@ export function useQuery<TResult, TVariabels>(
           .then(async (response) => {
             // Handle error response errors from the server
             if (response.ok === false) {
-              setError(new Error(response.statusText));
+              const data = await response.json();
+              if (data.errors) {
+                setError(formatErrors(data.errors, query, mergedOptions?.variables as object));
+              } else {
+                setError(
+                  new QueryError({
+                    query: query,
+                    variables: mergedOptions?.variables as object,
+                    error: new Error(`${response?.status} ${response.statusText}`),
+                  })
+                );
+              }
               setData(undefined);
             }
 
@@ -114,7 +132,11 @@ export function useQuery<TResult, TVariabels>(
             else {
               const result = await response.json();
               if (result.errors) {
-                const error = formatErrors(result.errors);
+                const error = formatErrors(
+                  result.errors,
+                  query,
+                  mergedOptions?.variables as object
+                );
                 setError(error);
               }
               setData(result.data);
@@ -131,7 +153,13 @@ export function useQuery<TResult, TVariabels>(
               return;
             }
             // Handle network errors
-            setError(netWorkErrorResponse(error));
+            setError(
+              new QueryError({
+                error,
+                query: query,
+                variables: mergedOptions?.variables as object,
+              })
+            );
           });
       };
 
@@ -173,8 +201,8 @@ export function useQuery<TResult, TVariabels>(
   }, [load, query, optionsDependency]);
 
   // Throw errors if enabled
-  if (error instanceof NetworkError && options?.throwNetworkErrors) throw error;
-  if (error instanceof Error && options?.throwAllErrors) throw error;
+  if (error?.error && options?.throwNetworkErrors) throw error.error;
+  if (error && options?.throwAllErrors) throw error;
 
   const cancelRequest = React.useCallback((reason: string) => cancelRequestRef.current(reason), []);
   return { data, loading, error, load, cancel: cancelRequest };
@@ -186,18 +214,17 @@ function getRandomToken() {
   return Math.random();
 }
 
-function formatErrors(errors) {
-  return new QueryError({ graphQLErrors: errors });
-}
-
-function netWorkErrorResponse(err) {
-  return new QueryError({
-    networkError: {
-      message: err?.response?.statusText || 'Network error',
-      statusCode: err?.response?.status,
-      data: err?.response?.data,
-    },
-  });
+function formatErrors(
+  errors: Array<{ message?: string; path?: string[] }>,
+  query: string,
+  variables: object
+): QueryError {
+  // Ensure each error has a defined message and path
+  const formattedErrors = errors.map((e) => ({
+    message: e.message ?? 'Error message not found.',
+    path: e.path ?? [],
+  }));
+  return new QueryError({ graphQLErrors: formattedErrors, query, variables });
 }
 
 // function canceledResponse(reason) {
@@ -207,33 +234,37 @@ function netWorkErrorResponse(err) {
 //   });
 // }
 
-type ErrorPathsType = { [key: string]: { where: string; status: number; message: string } };
-type NetworkErrorType = { message: string; statusCode: number; data: unknown };
-
 export class QueryError extends Error {
-  graphQLErrors?: any[];
-  networkError?: NetworkErrorType;
+  graphQLErrors?: Array<{ message?: string; path?: string[] }>;
+  error?: Error;
   isCanceled: boolean;
-  errorPaths: ErrorPathsType;
+  query?: string;
+  variables?: object;
 
   constructor({
     message,
     graphQLErrors,
-    networkError,
+    error,
     isCanceled,
+    query,
+    variables,
   }: {
     message?: string;
-    graphQLErrors?: any[];
-    networkError?: NetworkErrorType;
+    graphQLErrors?: Array<{ message?: string; path?: string[] }>;
+    error?: Error;
     isCanceled?: boolean;
+    query?: string;
+    variables?: object;
   }) {
     super(message);
     this.graphQLErrors = graphQLErrors || [];
-    this.networkError = networkError;
+    this.error = error;
     this.isCanceled = isCanceled || false;
+    this.query = query;
+    this.variables = variables;
 
     // Generate an error message based on errors if no explicit message is provided
-    const generateErrorMessage = (err) => {
+    const generateErrorMessage = (err: QueryError) => {
       let message = '';
       // If we have GraphQL errors present, add that to the error message.
       if (isArray(err?.graphQLErrors)) {
@@ -245,42 +276,15 @@ export class QueryError extends Error {
         });
       }
 
-      if (err?.networkError) {
-        message += 'Network error: ' + err?.networkError?.message + '\n';
-
-        // If we have an error list present, add that to the error message.
-        const responseErrors = err?.networkError?.data?.errors;
-        if (isArray(responseErrors)) {
-          responseErrors.forEach((graphQLError) => {
-            const errorMessage = graphQLError?.message
-              ? graphQLError.message
-              : 'Error message not found.';
-            message += `${errorMessage}\n`;
-          });
-        }
+      if (err?.error) {
+        message += 'Network error: ' + err?.error?.message + '\n';
       }
 
       // strip newline from the end of the message
-      message = message.replace(/\n$/, '');
+      message = message.replace(/\n$/, ' ');
       return message;
     };
 
     this.message = message ? message : generateErrorMessage(this);
-
-    const errorMap: ErrorPathsType = {};
-    if (isArray(graphQLErrors)) {
-      graphQLErrors.forEach((graphQLError) => {
-        const where = (graphQLError?.path || []).join('.');
-        const status = graphQLError?.extensions?.response?.status || 500;
-        const message = graphQLError.message;
-        errorMap[where] = {
-          where,
-          status,
-          message,
-        };
-      });
-    }
-
-    this.errorPaths = errorMap;
   }
 }

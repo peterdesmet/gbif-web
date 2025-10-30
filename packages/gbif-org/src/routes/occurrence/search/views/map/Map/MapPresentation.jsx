@@ -9,7 +9,7 @@ and some default styles for OL and MB to choose from, possibly an option to add 
 And probably the point overlays will have to be dependent on the basemap as well?
 
 */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 // import { DetailsDrawer, Menu, MenuAction, Button, Tooltip } from '../../../../components';
 // import { OccurrenceSidebar } from '../../../../entities';
@@ -30,6 +30,7 @@ import {
   MdZoomOut,
 } from 'react-icons/md';
 // import { ViewHeader } from '../ViewHeader';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { MapMenuButton as MenuButton } from '@/components/maps/mapMenuButton';
 import { SimpleTooltip } from '@/components/simpleTooltip';
 import StripeLoader from '@/components/stripeLoader';
@@ -39,6 +40,7 @@ import { useConfig } from '@/config/config';
 import { boundingBoxToWKT } from '@/utils/boundingBoxToWKT';
 import { pixelRatio } from '@/utils/pixelRatio';
 import { cn } from '@/utils/shadcn';
+import { BsLightningFill } from 'react-icons/bs';
 import { FormattedMessage } from 'react-intl';
 import { useEntityDrawer } from '../../browseList/useEntityDrawer';
 import { useOrderedList } from '../../browseList/useOrderedList';
@@ -120,9 +122,35 @@ function Map({
     () => pointData?.occurrenceSearch?.documents?.results || [],
     [pointData]
   );
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const timeoutRef = useRef(null);
 
   const updateLoading = useCallback((loading) => {
     setMapLoading(loading);
+  }, []);
+
+  const failedTileHandler = useCallback(() => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Show the div
+    setShowErrorMessage(true);
+
+    // Set a new timeout to hide it after 3 seconds
+    timeoutRef.current = setTimeout(() => {
+      setShowErrorMessage(false);
+    }, 3000);
+  }, []);
+
+  // Cleanup timeout on component unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   const updateList = useCallback(() => {
@@ -277,17 +305,31 @@ function Map({
         <ViewHeader message="counts.nResultsWithCoordinates" loading={loading} total={total} />
         <div className="g-flex-auto g-h-96 g-relative g-z-10">
           {listVisible && (
-            <ListBox
-              onCloseRequest={() => showList(false)}
-              labelMap={labelMap}
-              onClick={({ index }) => {
-                selectPreview(`${items[index].key}`);
-              }}
-              data={pointData}
-              error={pointError}
-              loading={pointLoading}
-              className="gbif-resultList g-z-20 g-absolute g-start-0 g-top-0 g-m-2 g-w-96 g-max-w-full g-max-h-[calc(100%-4rem)]"
-            />
+            <div className="gbif-resultList g-z-20 g-absolute g-start-0 g-top-0 g-m-2 g-w-96 g-max-w-full g-max-h-[calc(100%-4rem)]">
+              <ErrorBoundary type="CARD">
+                <ListBox
+                  onCloseRequest={() => showList(false)}
+                  labelMap={labelMap}
+                  onClick={({ index }) => {
+                    selectPreview(`${items[index].key}`);
+                  }}
+                  data={pointData}
+                  error={pointError}
+                  loading={pointLoading}
+                />
+              </ErrorBoundary>
+            </div>
+          )}
+          {showErrorMessage && (
+            <div className="g-z-10 g-absolute g-start-0 g-bottom-0 g-end-0 g-pointer-events-none">
+              <div className="g-p-2 g-bg-slate-800 g-text-slate-100 g-inline-block g-m-2 g-rounded g-text-sm">
+                <BsLightningFill style={{ color: 'orange' }} />{' '}
+                <FormattedMessage
+                  id="error.partialMapFailure"
+                  defaultMessage="Some tiles failed to load"
+                />
+              </div>
+            </div>
           )}
           <div className="g-z-10 g-absolute g-start-0 g-top-0 g-end-0">
             <StripeLoader active={mapLoading} className="g-w-full" />
@@ -354,6 +396,7 @@ function Map({
             className="mapComponent g-relative [&>canvas:focus]:g-outline-none g-border g-border-solid g-border-slate-200 g-rounded g-flex g-flex-col g-h-full g-flex-auto g-z-0"
             query={query}
             onLoading={updateLoading}
+            onTileError={failedTileHandler}
             onMapClick={(e) => showList(false)}
             onPointClick={(data) => {
               // check that it is only doing so for the top layer - it should call multiple times for each layer

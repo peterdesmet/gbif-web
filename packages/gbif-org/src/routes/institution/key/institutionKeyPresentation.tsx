@@ -50,7 +50,7 @@ export function InstitutionKey({
   fallbackImage?: string | null;
 }) {
   const useInlineImage = useBelow(800);
-  if (data.institution == null) throw new Error('404');
+  if (data.institution == null) throw new Error('No institution provided');
   const { institution } = data;
   const { occurrenceSearch } = institutionMetrics ?? {};
 

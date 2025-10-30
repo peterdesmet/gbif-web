@@ -37,6 +37,19 @@
           }
         }
       }
-    }
+    },
+    "participant": "Deelnemer",
+    "node": "",
+    "participantSummary": "Overzicht deelnemer",
+    "memberStatus": "Status van lid",
+    "gbifParticipantSince": "GBIF deelnemer sinds",
+    "headOfDelegation": "Hoofd van de delegatie",
+    "gbifRegion": "GBIF regio",
+    "countryOrArea": "Land of regio",
+    "nodeName": "Nodenaam",
+    "nodeEstablished": "",
+    "website": "Website",
+    "participantNodeManager": "",
+    "pending": "In behandeling"
   }
 }

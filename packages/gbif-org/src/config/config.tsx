@@ -53,6 +53,21 @@ type ApiKeysType = {
 // TODO: The config object should probably be refactored in the future with logical nesting
 export type Config = Endpoints & {
   version: number;
+  testSite: boolean; // clearly indicate that it is a test site
+  experimentalFeatures: {
+    localContextEnabled: boolean;
+  };
+  feedback?: {
+    enabled?: boolean;
+    gbifFeedback?: boolean;
+    showFeedbackInDataHeader?: boolean;
+    // only relevant for hosted portals
+    githubRepo?: string;
+    githubMessage?: string;
+    githubUsernames?: string[];
+    contactEmail?: string;
+  };
+  notFoundPageImageUrl?: string;
   defaultChecklistKey?: string;
   availableChecklistKeys?: string[];
   suggest?: {

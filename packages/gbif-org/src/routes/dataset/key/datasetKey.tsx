@@ -1,4 +1,6 @@
 import { DataHeader } from '@/components/dataHeader';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { PublisherLabel } from '@/components/filters/displayNames';
 import {
   defaultDateFormatProps,
   DeletedMessage,
@@ -26,6 +28,7 @@ import { ArticleSkeleton } from '@/routes/resource/key/components/articleSkeleto
 import { ArticleTextContainer } from '@/routes/resource/key/components/articleTextContainer';
 import { ArticleTitle } from '@/routes/resource/key/components/articleTitle';
 import { PageContainer } from '@/routes/resource/key/components/pageContainer';
+import { throwCriticalErrors, usePartialDataNotification } from '@/routes/rootErrorPage';
 import { required } from '@/utils/required';
 import { getDatasetSchema } from '@/utils/schemaOrg';
 import { createContext, useEffect, useMemo } from 'react';
@@ -206,6 +209,17 @@ const DATASET_QUERY = /* GraphQL */ `
         name
         value
       }
+      localContext {
+        project_page
+        title
+        description
+        notice {
+          name
+          img_url
+          default_text
+          notice_page
+        }
+      }
       gridded {
         percent
       }
@@ -264,17 +278,34 @@ export const DatasetKeyContext = createContext<{
   contentMetrics?: DatasetOccurrenceSearchQuery;
 }>({});
 
-export function datasetLoader({ params, graphql }: LoaderArgs) {
+export async function datasetLoader({ params, graphql }: LoaderArgs) {
   const key = required(params.key, 'No key was provided in the URL');
 
-  return graphql.query<DatasetQuery, DatasetQueryVariables>(DATASET_QUERY, { key });
+  const response = await graphql.query<DatasetQuery, DatasetQueryVariables>(DATASET_QUERY, { key });
+  const { errors, data } = await response.json();
+  throwCriticalErrors({
+    path404: ['dataset'],
+    errors,
+    requiredObjects: [data?.dataset],
+  });
+
+  return { errors, data };
 }
 
 export const DatasetPageSkeleton = ArticleSkeleton;
 
 export function DatasetPage() {
   const config = useConfig();
-  const { data } = useLoaderData() as { data: DatasetQuery };
+  const { errors, data } = useLoaderData() as {
+    data: DatasetQuery;
+    errors: Array<{ message: string; path: [string] }>;
+  };
+  const notifyOfPartialData = usePartialDataNotification();
+  useEffect(() => {
+    if (errors) {
+      notifyOfPartialData();
+    }
+  }, [errors, notifyOfPartialData]);
 
   if (data.dataset == null) throw new NotFoundError();
   const dataset = data.dataset;
@@ -282,18 +313,14 @@ export function DatasetPage() {
   const contactThreshold = 6;
   const contactsCitation = dataset.contactsCitation?.filter((c) => c.abbreviatedName) || [];
 
-  const {
-    data: occData,
-    error,
-    load,
-    loading,
-  } = useQuery<DatasetOccurrenceSearchQuery, DatasetOccurrenceSearchQueryVariables>(
-    OCURRENCE_SEARCH_QUERY,
-    {
-      throwAllErrors: true,
-      lazyLoad: true,
-    }
-  );
+  const { data: occData, load } = useQuery<
+    DatasetOccurrenceSearchQuery,
+    DatasetOccurrenceSearchQueryVariables
+  >(OCURRENCE_SEARCH_QUERY, {
+    throwAllErrors: true,
+    lazyLoad: true,
+    notifyOnErrors: true,
+  });
 
   // check for various tabs
   let hasPhylogeny = false;
@@ -388,6 +415,7 @@ export function DatasetPage() {
     hasTaxonomy,
     hasOccurrences,
     hasLiterature,
+    withEventId,
     dataset?.key,
     dataset?.type,
     dataset?.project,
@@ -476,19 +504,19 @@ export function DatasetPage() {
               dangerouslySetTitle={{ __html: dataset.title || 'No title provided' }}
             ></ArticleTitle>
 
-            {dataset.publishingOrganizationTitle && (
-              <div className="g-mt-2">
-                <FormattedMessage id="dataset.publishedBy" />{' '}
-                <DynamicLink
-                  className="hover:g-underline g-text-primary-500"
-                  to={`/publisher/${dataset.publishingOrganizationKey}`}
-                  pageId="publisherKey"
-                  variables={{ key: dataset.publishingOrganizationKey }}
-                >
-                  {dataset?.publishingOrganizationTitle}
-                </DynamicLink>
-              </div>
-            )}
+            <div className="g-mt-2">
+              <FormattedMessage id="dataset.publishedBy" />{' '}
+              <DynamicLink
+                className="hover:g-underline g-text-primary-500"
+                to={`/publisher/${dataset.publishingOrganizationKey}`}
+                pageId="publisherKey"
+                variables={{ key: dataset.publishingOrganizationKey }}
+              >
+                {dataset?.publishingOrganizationTitle ?? (
+                  <PublisherLabel id={dataset.publishingOrganizationKey} />
+                )}
+              </DynamicLink>
+            </div>
 
             {deletedAt && <DeletedMessage date={deletedAt} />}
 
@@ -552,7 +580,9 @@ export function DatasetPage() {
             contentMetrics: occData,
           }}
         >
-          <Outlet />
+          <ErrorBoundary type="PAGE">
+            <Outlet />
+          </ErrorBoundary>
         </DatasetKeyContext.Provider>
       </article>
     </>

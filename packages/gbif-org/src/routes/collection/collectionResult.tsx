@@ -29,15 +29,8 @@ fragmentManager.register(/* GraphQL */ `
       recordedBy
       typeStatus
       identifiedBy
-      taxon {
-        kingdom
-        phylum
-        class
-        order
-        family
-        genus
-        species
-      }
+      biomeType
+      objectClassification
     }
   }
 `);
@@ -53,7 +46,7 @@ export function CollectionResult({
     <div className="g-mb-4">
       <Wrapper>
         <Card className="g-max-w-full">
-          <article className="g-p-8">
+          <article className="g-p-4">
             <div className="g-flex g-flex-col md:g-flex-row g-gap-4">
               <div className="g-flex-grow">
                 <h3 className="g-text-base g-font-semibold g-mb-2">
@@ -80,7 +73,7 @@ export function CollectionResult({
                   </p>
                 )}
 
-                {!excludeInstitution && (
+                {!excludeInstitution && collection.institutionKey && (
                   <p className="g-font-normal g-text-slate-500 g-text-sm g-mt-2">
                     <FormattedMessage
                       id="grscicoll.fromInstitution"
@@ -157,6 +150,8 @@ export function CollectionResult({
               <thead className="">
                 <tr>
                   <th>Taxon</th>
+                  <th>Biome type</th>
+                  <th>Object classification</th>
                   <th>Country</th>
                   <th>Individual count</th>
                   <th>Recorded by</th>
@@ -168,12 +163,14 @@ export function CollectionResult({
                 {collection.descriptorMatches.slice(0, 3).map((descriptor) => (
                   <tr key={descriptor.key} className="g-text-slate-600">
                     <td>{descriptor.usageName}</td>
+                    <td>{descriptor.biomeType && descriptor.biomeType}</td>
+                    <td>{descriptor.objectClassification && descriptor.objectClassification}</td>
                     <td>
                       {descriptor.country && (
                         <FormattedMessage id={`enums.countryCode.${descriptor.country}`} />
                       )}
                     </td>
-                    <td>
+                    <td className="g-text-end">
                       {descriptor.individualCount && (
                         <FormattedNumber value={descriptor.individualCount} />
                       )}

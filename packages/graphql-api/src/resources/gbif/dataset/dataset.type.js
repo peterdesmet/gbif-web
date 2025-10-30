@@ -28,6 +28,7 @@ const typeDef = gql`
       Not implemented yet
       """
       continent: [Continent]
+      endpointType: [EndpointType]
       projectId: [ID]
       hl: Boolean
       """
@@ -35,6 +36,13 @@ const typeDef = gql`
       """
       query: DatasetSearchInput
     ): DatasetSearchResults!
+    datasetSearchByPredicate(
+      apiKey: String
+      predicate: Predicate
+      q: String
+      size: Int
+      from: Int
+    ): DatasetByPredicateSearchResult
     datasetList(
       limit: Int
       offset: Int
@@ -76,8 +84,16 @@ const typeDef = gql`
     Not implemented yet
     """
     continent: [Continent]
+    endpointType: [EndpointType]
     projectId: [ID]
     hl: Boolean
+  }
+
+  type DatasetByPredicateSearchResult {
+    size: Int!
+    from: Int!
+    total: Int!
+    results: [DatasetSearchStub!]!
   }
 
   type DatasetSearchResults {
@@ -212,6 +228,7 @@ const typeDef = gql`
     eventCount(optParentEventID: ID): Int
 
     firstOccurrence: Occurrence
+    localContext: LocalContext
     events(
       key: ID!
       limit: Int
@@ -357,8 +374,8 @@ const typeDef = gql`
     publishingCountry(limit: Int, offset: Int): [DatasetFacetResult]
     projectId(limit: Int, offset: Int): [DatasetFacetResult]
     license(limit: Int, offset: Int): [DatasetFacetResult]
-    dwcaExtension(size: Int, from: Int): [DatasetFacetResult]
-    networkKey(size: Int, from: Int): [DatasetFacetResult]
+    dwcaExtension(limit: Int, from: Int): [DatasetFacetResult]
+    networkKey(limit: Int, from: Int): [DatasetFacetResult]
   }
 
   type DatasetOrganizationFacet {

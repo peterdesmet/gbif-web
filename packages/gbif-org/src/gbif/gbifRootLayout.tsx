@@ -1,15 +1,16 @@
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LoadingIndicator } from '@/components/loadingIndicator';
 import { NoscriptNotification } from '@/components/noscriptNotification';
 import { Toaster } from '@/components/ui/toaster';
+import { UserProvider } from '@/contexts/UserContext';
 import { HeaderQuery, HeaderQueryVariables } from '@/gql/graphql';
 import { LoaderArgs } from '@/reactRouterPlugins';
 import React from 'react';
 import { ScrollRestoration, useLoaderData } from 'react-router-dom';
-import { Header } from './header';
-import { LoadingIndicator } from '@/components/loadingIndicator';
 import { Footer } from './footer';
-import { UserProvider } from '@/contexts/UserContext';
-
+import { Header } from './header';
+import { GDPR } from '@/components/gdpr';
+import { Helmet } from 'react-helmet-async';
 const HEADER_QUERY = /* GraphQL */ `
   query Header {
     gbifHome {
@@ -57,6 +58,7 @@ export function GbifRootLayout({ children }: Props) {
           <NoscriptNotification />
           <ScrollRestoration />
           <Toaster />
+          <GDPR />
           <ErrorBoundary>{children}</ErrorBoundary>
           {/* Visualization of the table of contents IntersectionObserver area
           <div className="g-fixed g-pointer-events-none g-top-0 g-left-0 g-w-screen g-h-screen">

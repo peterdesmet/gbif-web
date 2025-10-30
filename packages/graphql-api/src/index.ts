@@ -21,6 +21,7 @@ import resolvers from './resolvers';
 // how to fetch the actual data and possible format/remap it to match the schemas
 import api from './dataSources';
 // we will attach a user if an authorization header is present.
+import feedbackController from './api-utils/forms/feedback';
 import citesController from './api-utils/cites.ctrl';
 import formController from './api-utils/forms/index.ctrl';
 import geometryController from './api-utils/geometry/index.ctrl.js';
@@ -32,7 +33,8 @@ import sourceArchiveCtrl from './api-utils/sourceArchive.ctrl.js';
 import suggestFilter from './api-utils/suggestFilter.ctrl.js';
 import extractUser from './helpers/auth/extractUser';
 import { explicitNoCacheWhenErrorsPlugin } from './plugins/explicitNoCacheWhenErrorsPlugin';
-import { loggingPlugin } from './plugins/loggingPlugin';
+import headerBasedCachePlugin from './plugins/headerBasedCachePlugin';
+import loggingPlugin from './plugins/loggingPlugin';
 
 // we are doing this async as we need to load the various enumerations from the APIs
 // and generate the schema from those
@@ -46,7 +48,11 @@ async function initializeServer() {
       // on all requests attach a user if present
       const user = await extractUser(get(req, 'headers.authorization'));
       if (user) {
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        // it isn't possible to set cache headers on the response object here as the cache control headers will be overwritten by the apollo cache plugin
+        // res.header(
+        //   'Cache-Control',
+        //   'private, no-cache, no-store, must-revalidate',
+        // );
         res.header('Pragma', 'no-cache');
         res.header('Expires', '0');
         res.header('Surrogate-Control', 'no-store');
@@ -90,9 +96,10 @@ async function initializeServer() {
     validationRules: [depthLimit(14)], // this likely have to be much higher than 6, but let us increase it as needed and not before
     plugins: [
       ApolloServerPluginCacheControl({
-        defaultMaxAge: config.debug ? 0 : 600,
+        defaultMaxAge: config.debug ? 0 : 603,
       }),
       loggingPlugin,
+      headerBasedCachePlugin,
       explicitNoCacheWhenErrorsPlugin,
     ],
     logger: console,
@@ -128,7 +135,7 @@ async function initializeServer() {
 
   await server.start();
   server.applyMiddleware({ app });
-
+  feedbackController(app);
   mapController(app);
   ipController(app);
   polygonName(app);

@@ -3,6 +3,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { prettifyEnum } from '@/components/filters/displayNames';
 import Globe from '@/components/globe';
 import { HeaderInfo, HeaderInfoMain } from '@/components/headerComponents';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 import {
   FeatureList,
   GadmClassification,
@@ -16,8 +18,8 @@ import {
 import { FormattedDateRange } from '@/components/message';
 import { SimpleTooltip } from '@/components/simpleTooltip';
 import { Tabs } from '@/components/tabs';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useConfig } from '@/config/config';
+import { NotFoundError } from '@/errors';
 import {
   OccurrenceIssue,
   OccurrenceQuery,
@@ -34,6 +36,7 @@ import { ArticleSkeleton } from '@/routes/resource/key/components/articleSkeleto
 import { ArticleTextContainer } from '@/routes/resource/key/components/articleTextContainer';
 import { ArticleTitle } from '@/routes/resource/key/components/articleTitle';
 import { PageContainer } from '@/routes/resource/key/components/pageContainer';
+import { throwCriticalErrors, usePartialDataNotification } from '@/routes/rootErrorPage';
 import { fragmentManager } from '@/services/fragmentManager';
 import { required } from '@/utils/required';
 import { createContext, useEffect } from 'react';
@@ -41,10 +44,10 @@ import { Helmet } from 'react-helmet-async';
 import { BsLightningFill } from 'react-icons/bs';
 import { MdInfoOutline } from 'react-icons/md';
 import { FormattedMessage } from 'react-intl';
-import { Outlet, redirect, useLoaderData } from 'react-router-dom';
+import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
 import { AboutContent, ApiContent } from './help';
 import { IssueTag, IssueTags } from './properties';
-
+import getTitle from './Title';
 const OCCURRENCE_QUERY = /* GraphQL */ `
   query Occurrence($key: ID!) {
     occurrence(key: $key) {
@@ -189,6 +192,17 @@ const SLOW_OCCURRENCE_QUERY = /* GraphQL */ `
   query SlowOccurrenceKey($key: ID!, $language: String!) {
     occurrence(key: $key) {
       key
+      localContext {
+        project_page
+        title
+        description
+        notice {
+          name(lang: $language)
+          img_url
+          default_text(lang: $language)
+          notice_page
+        }
+      }
       institution {
         name
       }
@@ -265,14 +279,16 @@ export async function occurrenceKeyLoader({ params, graphql }: LoaderArgs) {
     }
   );
 
-  // If the occurrence does not exist, we try to redirect to the occurrence tombstone page
-  const result = await response.json();
-  if (result.errors?.some((error) => error.message === '404: Not Found')) {
-    return redirect('fragment');
-  }
+  const { errors, data } = await response.json();
+  throwCriticalErrors({
+    path404: ['occurrence'],
+    errors,
+    requiredObjects: [data?.occurrence],
+  });
 
-  return result;
+  return { errors, data };
 }
+
 export const OccurrenceKeyContext = createContext<{
   key?: string;
   datasetKey?: string;
@@ -294,7 +310,18 @@ const notableCoordinateIssues = [
 ];
 
 export function OccurrenceKey() {
-  const { data } = useLoaderData() as { data: OccurrenceQuery };
+  const location = useLocation();
+  const { data, errors } = useLoaderData() as {
+    data: OccurrenceQuery;
+    errors: Array<{ message: string; path: [string] }>;
+  };
+  const notifyOfPartialData = usePartialDataNotification();
+  useEffect(() => {
+    if (errors) {
+      notifyOfPartialData();
+    }
+  }, [errors, notifyOfPartialData]);
+
   const hideGlobe = useBelow(800);
   const config = useConfig();
   const { locale } = useI18n();
@@ -302,11 +329,11 @@ export function OccurrenceKey() {
   const {
     data: slowData,
     loading: slowLoading,
-    error: slowError,
     load: slowLoad,
   } = useQuery<SlowOccurrenceKeyQuery, SlowOccurrenceKeyQueryVariables>(SLOW_OCCURRENCE_QUERY, {
     lazyLoad: true,
     throwAllErrors: false,
+    notifyOnErrors: true,
   });
 
   useEffect(() => {
@@ -325,7 +352,7 @@ export function OccurrenceKey() {
     config?.vernacularNames?.sourceTitle,
   ]);
 
-  if (data?.occurrence == null) throw new Error('404');
+  if (data?.occurrence == null) throw new NotFoundError();
   const occurrence = data.occurrence;
   const slowOccurrence = slowData?.occurrence;
 
@@ -379,7 +406,7 @@ export function OccurrenceKey() {
   return (
     <>
       <Helmet>
-        <title>{occurrence.verbatimScientificName}</title>
+        <title>{getTitle({ occurrence, termMap })}</title>
       </Helmet>
       <DataHeader
         className="g-bg-white"
@@ -420,9 +447,7 @@ export function OccurrenceKey() {
               ></ArticleTitle> */}
                 <ArticleTitle className="lg:g-text-3xl">
                   <>
-                    <span className="g-me-4">
-                      {occurrence.verbatimScientificName ?? 'No title provided'}
-                    </span>
+                    <span className="g-me-4">{getTitle({ occurrence, termMap })}</span>
                     {occurrence?.issues?.includes(OccurrenceIssue.TaxonMatchHigherrank) && (
                       <TooltipProvider>
                         <Tooltip delayDuration={0}>
@@ -568,7 +593,7 @@ export function OccurrenceKey() {
             <Tabs links={tabs} />
           </ArticleTextContainer>
         </PageContainer>
-        <ErrorBoundary invalidateOn={occurrence?.key} showReportButton showStackTrace>
+        <ErrorBoundary invalidateOn={occurrence?.key} showReportButton>
           <OccurrenceKeyContext.Provider
             value={{
               key: occurrence?.key,
@@ -578,7 +603,9 @@ export function OccurrenceKey() {
               occurrence,
             }}
           >
-            <Outlet />
+            <ErrorBoundary invalidateOn={location.pathname + location.search}>
+              <Outlet />
+            </ErrorBoundary>
           </OccurrenceKeyContext.Provider>
         </ErrorBoundary>
       </article>

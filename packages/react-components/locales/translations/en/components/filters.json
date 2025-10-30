@@ -80,6 +80,21 @@
     "count": "{num, plural, one { audience } other {# audiences}}",
     "description": "Who are the audiences for the resource."
   },
+  "biostratigraphy": {
+    "name": "Biostratigraphy",
+    "count": "",
+    "description": ""
+  },
+  "lithostratigraphy": {
+    "name": "Lithostratigraphy",
+    "count": "",
+    "description": ""
+  },
+  "geologicalTime": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
   "purposes": {
     "name": "Topic",
     "count": "{num, plural, one { purpose } other {# purposes}}",
@@ -165,6 +180,16 @@
     "count": "{num, plural, one {# preservation type } other {# preservation types}}",
     "description": "The method used to preserve the objects available in the collection"
   },
+  "biomeType": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "objectClassification": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
   "taxonKey": {
     "name": "Scientific name",
     "count": "{num, plural, one {scientific name} other {# scientific names}}",
@@ -204,6 +229,13 @@
     "isNull": "Has no issues",
     "description": "The types of issues or flags of potential interest discovered in processing the data."
   },
+  "occurrenceTaxonomicIssue": {
+    "name": "",
+    "count": "",
+    "isNotNull": "",
+    "isNull": "",
+    "description": ""
+  },
   "occurrenceCountry": {
     "name": "Country or area",
     "count": "{num, plural, one {country or area} other {# countries or areas}}",
@@ -228,9 +260,9 @@
     "description": "The ISO code for the country or territory in which the data publisher is located"
   },
   "q": {
-    "name": "Text search",
+    "name": "Full text search",
     "count": "{num, plural, one {text string} other {# search strings}}",
-    "description": "Free text search across several fields"
+    "description": "Full text search across several fields"
   },
   "coordinates": {
     "name": "Coordinates"
@@ -251,9 +283,9 @@
     "description": "The title of the dataset under which the record is shared."
   },
   "datasetId": {
-    "name": "Dataset ID",
+    "name": "dwc:datasetID",
     "count": "{num, plural, one {dataset ID} other {# dataset IDs}}",
-    "description": "The publisher's internal ID for the dataset that the record is associated with. Notice, that this is different from the datasetKey used on GBIF for the dataset."
+    "description": "The publishers internal ID for the dataset the record is associated with. Notice that this is different from the datasetKey used on GBIF for the dataset."
   },
   "publisherKey": {
     "name": "Publisher",
@@ -396,9 +428,9 @@
     "description": ""
   },
   "datasetName": {
-    "name": "Dataset name",
-    "count": "",
-    "description": ""
+    "name": "dwc:datasetName",
+    "count": "{num, plural, one { dataset name } other {# dataset names}}",
+    "description": "The name of the dataset used by the publisher. Records in a dataset might come from multiple other datasets."
   },
   "programme": {
     "name": "Programme",

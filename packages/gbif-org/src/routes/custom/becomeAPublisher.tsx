@@ -1,3 +1,4 @@
+import { StaticRenderSuspence } from '@/components/staticRenderSuspence';
 import { BecomeAPublisherPageQuery } from '@/gql/graphql';
 import { LoaderArgs, RouteObjectWithPlugins } from '@/reactRouterPlugins';
 import { ArticleBanner } from '@/routes/resource/key/components/articleBanner';
@@ -17,6 +18,7 @@ import { Documents } from '../resource/key/components/documents';
 import { PageContainer } from '../resource/key/components/pageContainer';
 import { SecondaryLinks } from '../resource/key/components/secondaryLinks';
 import { BecomeAPublisherForm } from '../resource/key/composition/blocks/customComponents/becomeAPublisherForm';
+import { ProtectedForm } from '@/components/protectedForm';
 
 const BECOME_A_PUBLISHER_QUERY = /* GraphQL */ `
   query BecomeAPublisherPage {
@@ -90,7 +92,7 @@ function BecomeAPublisherPage() {
 
           <hr className="g-mt-8" />
 
-          <BecomeAPublisherForm className="g-px-0" />
+          <BecomeAPublisherForm />
 
           <ArticleFooterWrapper>
             {resource.secondaryLinks && (

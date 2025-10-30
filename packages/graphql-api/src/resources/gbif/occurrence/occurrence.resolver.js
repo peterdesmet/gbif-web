@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+import _ from 'lodash';
+import md5 from 'md5';
 import interpretationRemark from '#/helpers/enums/interpretationRemark';
 import getFeedbackOptions from '#/helpers/feedback';
 import getGlobe from '#/helpers/globe';
@@ -7,8 +9,6 @@ import {
   getFirstIIIFImage,
   simplifyUrlObjectKeys,
 } from '#/helpers/utils';
-import _ from 'lodash';
-import md5 from 'md5';
 import config from '../../../config';
 import {
   getAutoDateHistogram,
@@ -119,38 +119,6 @@ export default {
       { dataSources },
     ) => {
       return dataSources.occurrenceAPI.publisherSuggest({ predicate, q, size });
-    },
-    occurrenceClusterSearch: (
-      _parent,
-      { predicate, ...query },
-      { dataSources },
-    ) => {
-      // custom cluster search
-      const nodes = [];
-      const links = [];
-      return dataSources.occurrenceAPI
-        .searchOccurrenceDocuments({
-          query: {
-            predicate: {
-              type: 'and',
-              predicates: [
-                {
-                  type: 'equals',
-                  key: 'isInCluster',
-                  value: true,
-                },
-                predicate,
-              ],
-            },
-            ...query,
-          },
-        })
-        .then((response) => {
-          return {
-            nodes: [],
-            links: [{ source: 'hej', target: 'goddag' }],
-          };
-        });
     },
     occurrence: (_parent, { key }, { dataSources }) =>
       dataSources.occurrenceAPI.getOccurrenceByKey({ key }),
@@ -335,6 +303,7 @@ export default {
       });
       return filteredIssues;
     },
+
     // acceptedTaxon: ({ acceptedTaxonKey }, _args, { dataSources }) => {
     //   if (!acceptedTaxonKey) return null;
     //   return dataSources.taxonAPI.getTaxonByKey({ key: acceptedTaxonKey });
@@ -355,6 +324,20 @@ export default {
       if (!classification) return null;
       // if classification, return the classification
       return classification;
+    },
+    originalUsageMatch: (
+      { originalNameUsage },
+      { checklistKey },
+      { dataSources },
+    ) => {
+      if (!originalNameUsage) return null;
+      if (!checklistKey) {
+        checklistKey = DEFAULT_CHECKLIST_KEY;
+      }
+      return dataSources.taxonAPI.getSpeciesMatchByName({
+        name: originalNameUsage,
+        checklistKey,
+      });
     },
     volatile: (occurrence) => occurrence,
     related: ({ key }, { from = 0, size = 20 }, { dataSources }) => {
@@ -400,6 +383,14 @@ export default {
     },
     bionomia: (occurrence, _args, { dataSources }) => {
       return dataSources.occurrenceAPI.getBionomia({ occurrence });
+    },
+    localContext: (occurrence, _args, { dataSources }) => {
+      // this is a special field that is used to provide the local context for the occurrence
+      // it is used to provide the local context for the occurrence in the UI
+      // it is not used in the API, but it is used in the UI to provide the local context for the occurrence
+      return dataSources.localContextAPI.getLocalContextFromOccurrence(
+        occurrence,
+      );
     },
     extensions: (occurrence) => {
       const extensions = {

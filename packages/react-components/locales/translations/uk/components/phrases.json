@@ -61,5 +61,12 @@
   "lastCrawled": "Останній просканований",
   "goToRecord": "",
   "commonNameAccordingTo": "",
-  "noResults": ""
+  "supportedChecklists": "",
+  "noResults": "",
+  "stepperFormProgress": "",
+  "next": "Далі",
+  "back": "Назад",
+  "submit": "Надіслати",
+  "pleaseTryAgainLater": "",
+  "weWillBeInTouchSoon": ""
 }

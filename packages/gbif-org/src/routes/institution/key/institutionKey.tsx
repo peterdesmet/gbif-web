@@ -1,4 +1,5 @@
 import { useConfig } from '@/config/config';
+import { NotFoundError } from '@/errors';
 import {
   InstitutionFallbackImageQuery,
   InstitutionFallbackImageQueryVariables,
@@ -10,6 +11,7 @@ import {
 } from '@/gql/graphql';
 import useQuery from '@/hooks/useQuery';
 import { LoaderArgs } from '@/reactRouterPlugins';
+import { throwCriticalErrors, usePartialDataNotification } from '@/routes/rootErrorPage';
 import { required } from '@/utils/required';
 import { useEffect } from 'react';
 import { useLoaderData } from 'react-router-dom';
@@ -19,30 +21,58 @@ export async function institutionLoader({ params, graphql, config }: LoaderArgs)
   const key = required(params.key, 'No key was provided in the URL');
   const scope = config.collectionSearch?.scope;
 
-  return graphql.query<InstitutionQuery, InstitutionQueryVariables>(INSTITUTION_QUERY, {
-    key,
-    collectionScope: scope ?? {},
+  const response = await graphql.query<InstitutionQuery, InstitutionQueryVariables>(
+    INSTITUTION_QUERY,
+    {
+      key,
+      collectionScope: scope ?? {},
+    }
+  );
+  const { errors, data } = await response.json();
+  throwCriticalErrors({
+    path404: ['institution'],
+    errors,
+    requiredObjects: [data?.institution],
   });
+
+  return { errors, data };
 }
 
 export function InstitutionKey() {
-  const { data } = useLoaderData() as { data: InstitutionQuery };
+  const { data, errors } = useLoaderData() as {
+    data: InstitutionQuery;
+    errors: Array<{ message: string; path: [string] }>;
+  };
   const config = useConfig();
+
+  const notifyOfPartialData = usePartialDataNotification();
+  useEffect(() => {
+    if (errors) {
+      notifyOfPartialData();
+    }
+  }, [errors, notifyOfPartialData]);
+
   const collectionScope = config.collectionSearch?.scope;
 
-  const { data: institutionMetrics, load: slowLoad } = useQuery<
-    InstitutionSummaryMetricsQuery,
-    InstitutionSummaryMetricsQueryVariables
-  >(SLOW_QUERY, {
-    lazyLoad: true,
-    throwAllErrors: true,
-  });
+  const {
+    data: institutionMetrics,
+    load: slowLoad,
+    error: slowLoadError,
+  } = useQuery<InstitutionSummaryMetricsQuery, InstitutionSummaryMetricsQueryVariables>(
+    SLOW_QUERY,
+    {
+      notifyOnErrors: true,
+      lazyLoad: true,
+      throwAllErrors: false,
+    }
+  );
 
   const { data: imageData, load: imageLoad } = useQuery<
     InstitutionFallbackImageQuery,
     InstitutionFallbackImageQueryVariables
   >(IMAGE_QUERY, {
     lazyLoad: true,
+    notifyOnErrors: true,
     throwAllErrors: false,
   });
 
@@ -84,9 +114,10 @@ export function InstitutionKey() {
       });
       imageLoad({ variables: { key: id } });
     }
-  }, [data.institution?.key, slowLoad, imageLoad]);
+  }, [data.institution?.key, slowLoad, imageLoad, collectionScope]);
 
-  if (data.institution == null) throw new Error('404');
+  if (!errors && data && !data.institution) throw new NotFoundError();
+
   return (
     <Presentation
       data={data}
