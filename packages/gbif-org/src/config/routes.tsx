@@ -1,11 +1,9 @@
 import { collectionKeyRoute } from '@/routes/collection/key';
-import { collectionSearchRoute } from '@/routes/collection/search';
 import { countryKeyRoute } from '@/routes/country/key';
 import { datasetKeyRoute } from '@/routes/dataset/key';
 import { datasetSearchRoute } from '@/routes/dataset/search';
 import { installationKeyRoute } from '@/routes/installation/key';
 import { institutionKeyRoute } from '@/routes/institution/key';
-import { institutionSearchRoute } from '@/routes/institution/search';
 import { literatureSearchRoute } from '@/routes/literature/search';
 
 import { networkKeyRoute } from '@/routes/network/key';
@@ -23,9 +21,7 @@ import { taxonSearchRoute } from '@/routes/taxon/search';
 
 export const dataRoutes = [
   // search routes first in case of conflict
-  collectionSearchRoute,
   datasetSearchRoute,
-  institutionSearchRoute,
   occurrenceSearchRoute,
   taxonSearchRoute,
   publisherSearchRoute,
@@ -34,9 +30,9 @@ export const dataRoutes = [
 
   // detail routes
   collectionKeyRoute,
+  institutionKeyRoute,
   datasetKeyRoute,
   installationKeyRoute,
-  institutionKeyRoute,
   networkKeyRoute,
   ...occurrenceKeyRoutes,
   downloadKeyRoute,
