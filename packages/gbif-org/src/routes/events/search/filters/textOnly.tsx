@@ -24,26 +24,3 @@ export const eventIdConfig: filterSuggestConfig = {
   `,
   group: 'event',
 };
-
-export const fieldNumberConfig: filterSuggestConfig = {
-  filterType: filterConfigTypes.SUGGEST,
-  filterHandle: 'fieldNumber',
-  displayName: IdentityLabel,
-  filterTranslation: 'filters.fieldNumber.name',
-  allowExistence: true,
-  allowNegations: true,
-  about: () => <Message id="filters.fieldNumber.description" />,
-  facetQuery: /* GraphQL */ `
-    query EventFieldNumberFacet($predicate: Predicate) {
-      search: eventSearch(predicate: $predicate) {
-        facet {
-          field: fieldNumber(size: 10) {
-            name: key
-            count
-          }
-        }
-      }
-    }
-  `,
-  group: 'event',
-};

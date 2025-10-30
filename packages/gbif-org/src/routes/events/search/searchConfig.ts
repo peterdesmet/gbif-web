@@ -44,7 +44,6 @@ const otherParams = [
   'dwcaExtension',
 
   'eventId',
-  'fieldNumber',
   'eventType',
 
   'locality',
