@@ -130,7 +130,7 @@ function OccurrenceDownloadFlow({
 export function PredicateDownloadFlow({
   defaultChecklist = import.meta.env.PUBLIC_DEFAULT_CHECKLIST_KEY,
 }: {
-  defaultChecklist: string;
+  defaultChecklist?: string;
 }) {
   const [currentStep, setCurrentStep] = useState<'PREDICATE' | 'FORMAT' | 'CONFIGURE' | 'TERMS'>(
     'PREDICATE'
@@ -168,13 +168,15 @@ export function PredicateDownloadFlow({
 
         {/* Step Content */}
         {currentStep === 'PREDICATE' && (
-          <OccurrenceDownloadRequestCreate onContinue={handleFilterSelect} content={predicate} />
+          <OccurrenceDownloadRequestCreate onContinue={handleFilterSelect} />
+          // <OccurrenceDownloadRequestCreate onContinue={handleFilterSelect} content={predicate} />
         )}
 
         {currentStep === 'FORMAT' && (
           <FormatSelection
             onFormatSelect={handleFormatSelect}
-            totalRecords={3500000000}
+            totalRecords={total}
+            loadingCounts={loading}
             onBack={() => setCurrentStep('PREDICATE')}
           />
         )}
@@ -201,10 +203,10 @@ export function PredicateDownloadFlow({
   );
 }
 
-function SqlDownloadFlow({
+export function SqlDownloadFlow({
   defaultChecklist = import.meta.env.PUBLIC_DEFAULT_CHECKLIST_KEY,
 }: {
-  defaultChecklist: string;
+  defaultChecklist?: string;
 }) {
   const [currentStep, setCurrentStep] = useState<'SQL' | 'TERMS'>('SQL');
   const [selectedFormat, setSelectedFormat] = useState(null);

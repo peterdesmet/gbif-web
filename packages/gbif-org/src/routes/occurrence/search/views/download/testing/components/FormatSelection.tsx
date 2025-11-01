@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/largeCard';
+import { Skeleton } from '@/components/ui/skeleton';
 import { DynamicLink } from '@/reactRouterPlugins';
 import React from 'react';
 import { FaChevronLeft } from 'react-icons/fa';
@@ -17,6 +18,7 @@ interface FormatSelectionProps {
   onFormatSelect: (format: Format) => void;
   onBack?: () => void;
   totalRecords?: number;
+  loadingCounts?: boolean;
 }
 
 // Size estimation constants from portal16
@@ -112,6 +114,7 @@ export default function FormatSelection({
   onFormatSelect,
   onBack,
   totalRecords = 0,
+  loadingCounts = false,
 }: FormatSelectionProps) {
   const [configurations] = React.useState<Record<string, any>>({
     SIMPLE_CSV: { checklistKey: 'gbif' },
@@ -151,7 +154,10 @@ export default function FormatSelection({
                             {format.title}
                           </h3>
                         </div>
-                        {totalRecords > 0 && format.estimateSize && (
+                        {loadingCounts && (
+                          <Skeleton className="g-text-sm g-text-slate-500 g-mb-2">Loading</Skeleton>
+                        )}
+                        {!loadingCounts && totalRecords > 0 && format.estimateSize && (
                           <div className="g-text-sm g-text-slate-500 g-mb-2">
                             Estimated size:{' '}
                             {formatFileSize(getEstimatedSizeInBytes(format.id, totalRecords))} bytes

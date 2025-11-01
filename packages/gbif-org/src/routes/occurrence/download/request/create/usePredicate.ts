@@ -141,13 +141,13 @@ export async function getPredicateFromGraphQL(
   }
 
   const result = await response.json();
-  const predicate = result?.data?.occurrenceSearch?._meta?.predicate;
+  const predicate = result?.data?.occurrenceSearch?._meta?.normalizedPredicate?.predicate;
 
   if (!predicate) {
     throw new Error('No predicate found in GraphQL response.');
   }
 
-  return JSON.stringify(predicate);
+  return JSON.stringify(predicate, null, 2);
 }
 
 export async function getOriginalPredicate(

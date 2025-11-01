@@ -3,15 +3,10 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/largeCard';
 import { Switch } from '@/components/ui/switch';
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  LuFileEdit as Edit3,
-  LuStopCircle as StopCircle,
-  LuFileText as FileText,
-  LuArrowRight as ArrowRight,
-  LuAlertCircle as AlertCircle,
-} from 'react-icons/lu';
+import { LuFileText as FileText, LuAlertCircle as AlertCircle } from 'react-icons/lu';
 import { FormattedMessage } from 'react-intl';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ValidationResponse } from './validate';
 
 export default function Editor({
   documentationUrl,
@@ -20,19 +15,33 @@ export default function Editor({
   onContinue,
   text,
   setText,
+  handleFormat,
+  placeholder,
+  handleValidation,
 }: {
   title: string;
-  initialText?: string;
   documentationUrl?: string;
   PrettyDisplay: React.FC<{ content: string; onError: (error: Error) => void }>;
-  onContinue: (predicate?: string) => void;
+  onContinue: (content: string) => void;
   text: string;
   setText: (text: string) => void;
+  handleFormat?: (text: string) => Promise<string>;
+  placeholder?: string;
+  handleValidation?: (text: string) => Promise<ValidationResponse>;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
+  const [isEditing, setIsEditing] = useState(!text || text.length === 0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const handleFormat = () => {
-    console.log('Format SQL - functionality to be implemented');
+  const onFormat = () => {
+    if (handleFormat) {
+      handleFormat(text)
+        .then((str) => {
+          setText(str);
+        })
+        .catch(() => {
+          // ignore format errors
+        });
+    }
   };
 
   const handleError = useCallback((error: Error) => {
@@ -41,8 +50,25 @@ export default function Editor({
   }, []);
 
   useEffect(() => {
-    if (isEditing) setErrorMessage(null);
-  }, [text, isEditing]);
+    async function validate(str: string) {
+      if (!handleValidation) return null;
+      setIsValidating(true);
+      try {
+        const { error } = await handleValidation(str);
+        if (error) {
+          setErrorMessage(error.message);
+        }
+      } catch (err) {
+        setErrorMessage('Validation failed due to an unexpected error.');
+      }
+      setIsValidating(false);
+    }
+    if (isEditing) {
+      setErrorMessage(null);
+    } else if (!isEditing && handleValidation && text) {
+      validate(text);
+    }
+  }, [text, isEditing, handleValidation, setText]);
 
   return (
     <div className="g-flex g-justify-center g-p-6 g-transition-colors g-duration-300">
@@ -76,7 +102,7 @@ export default function Editor({
         <div
           className={`dark:g-bg-slate-900 g-bg-slate-50 focus:g-ring-2 ${
             isEditing
-              ? 'g-border-blue-500 g-shadow-lg g-shadow-blue-500/20 focus:g-ring-blue-500'
+              ? 'g-border-blue-500 g-shadow-blue-500/20 focus:g-ring-blue-500'
               : 'g-border-transparent focus:g-ring-slate-500'
           } ${errorMessage && !isEditing ? 'g-border-red-500' : ''}`}
         >
@@ -88,7 +114,7 @@ export default function Editor({
           >
             {(isEditing || !text) && (
               <textarea
-                placeholder="Enter SQL here..."
+                placeholder={placeholder || 'Enter filter here...'}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 disabled={!isEditing}
@@ -115,7 +141,7 @@ export default function Editor({
             {isEditing && (
               <div className="g-absolute g-top-2 g-right-4 g-hidden md:g-block">
                 <button
-                  onClick={handleFormat}
+                  onClick={onFormat}
                   className="g-px-2 g-py-1 dark:g-bg-slate-700 g-bg-slate-200 dark:hover:g-bg-slate-600 hover:g-bg-slate-300 dark:g-text-white g-text-slate-900 g-text-sm g-rounded-md g-transition-colors g-duration-200 g-border dark:g-border-slate-600 g-border-slate-300"
                 >
                   Format
@@ -124,14 +150,17 @@ export default function Editor({
             )}
           </div>
 
-          <div className="g-mt-3 g-min-h-4 g-px-2 g-flex g-items-center g-gap-2 dark:g-text-red-400 g-text-red-600 g-text-sm">
-            {errorMessage && (
+          {errorMessage && (
+            <div className="g-mt-2 g-pb-2 g-min-h-4 g-px-2 g-flex g-gap-2 dark:g-text-red-400 g-text-red-600 g-text-sm">
               <>
-                <AlertCircle className="g-w-4 g-h-4" />
-                <span>Invalid SQL: {errorMessage}</span>
+                <AlertCircle className="g-w-4 g-h-4 g-flex-none" />
+                <div className="g-flex-auto">
+                  <div className="g-font-bold">Invalid</div>
+                  <div className="g-text-sm">{errorMessage}</div>
+                </div>
               </>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         <div className="g-p-6 g-border-t dark:g-border-slate-700 g-border-slate-200 g-flex g-items-start g-justify-between">
@@ -145,14 +174,18 @@ export default function Editor({
           )}
 
           <div className="g-flex g-flex-col g-items-end g-gap-2">
-            <Button disabled={!!isEditing || !!errorMessage} onClick={() => onContinue(text)}>
-              Next
-            </Button>
-            {isEditing && (
-              <span className="g-text-sm dark:g-text-amber-400 g-text-amber-600 g-flex g-items-center g-gap-1.5">
-                <AlertCircle className="g-w-4 g-h-4" />
-                Stop editing before proceeding
-              </span>
+            {(isEditing || isValidating) && (
+              <Button disabled={isValidating} onClick={() => setIsEditing(false)}>
+                Validate
+              </Button>
+            )}
+            {!isEditing && !isValidating && (
+              <Button
+                disabled={!!isEditing || !!errorMessage || !text || text.trim().length === 0}
+                onClick={() => onContinue(text)}
+              >
+                Next
+              </Button>
             )}
           </div>
         </div>

@@ -42,7 +42,7 @@ const stepOptions = {
   TERMS: {
     ordering: 5,
     id: 'TERMS',
-    name: 'Download',
+    name: 'Terms',
     icon: FaDownload,
     description: 'Accept terms and download',
   },

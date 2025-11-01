@@ -31,12 +31,10 @@ export function usePredicateInformation({ predicate }: { predicate?: Predicate }
   const { data, loading, error, load } = useQuery<
     NormalizePredicateAndCountQuery,
     NormalizePredicateAndCountQueryVariables
-  >(PREDICATE_COUNT_QUERY, { lazyLoad: true });
+  >(PREDICATE_COUNT_QUERY, { lazyLoad: false });
+
   useEffect(() => {
-    console.log('predicate', predicate);
-    if (predicate) {
-      load({ variables: { predicate } });
-    }
+    load({ variables: { predicate } });
   }, [predicate, load]);
 
   return {

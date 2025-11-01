@@ -60,7 +60,7 @@ export function DownloadHostedPortal() {
 
   try {
     downloadQueryParams += data._variablesId
-      ? `&queryId=${data?._queryId}&variablesId=${data?._variablesId}`
+      ? `&variablesId=${data?._variablesId}`
       : fullPredicate
       ? `&predicate=${encodeURIComponent(JSON.stringify(fullPredicate))}`
       : '';

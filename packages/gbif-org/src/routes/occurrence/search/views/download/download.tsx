@@ -11,8 +11,6 @@ export function Download() {
   } else {
     return (
       <>
-        <PredicateEditor />
-        <SqlEditor />
         <App />
         {/* <DownloadGbifOrgVertical />
         <DownloadGbifOrgHorizontal /> */}

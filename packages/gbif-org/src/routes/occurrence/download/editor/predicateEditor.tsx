@@ -3,8 +3,10 @@ import { PredicateDisplay } from '../key/predicate';
 import { RestoredPredicateNotice } from '../request/create/components/restoredPredicateNotice';
 import { getOriginalPredicate, usePredicate } from '../request/create/usePredicate';
 import Editor, { EditorSkeleton } from './editor';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { validatePredicate } from './validate';
+import { useIntl } from 'react-intl';
 
 //a hook to store content in textarea. per default it should store to url, but if above 1200 characters then use session storage instead
 function useTextAreaContent(key: string): [string, (text: string) => void] {
@@ -28,13 +30,13 @@ function useTextAreaContent(key: string): [string, (text: string) => void] {
 export default function PredicateEditor({
   onContinue,
 }: {
-  onContinue: (predicate?: string) => void;
+  onContinue: (predicate: string) => void;
 }) {
   const [searchParams] = useSearchParams();
   const [queryId, setQueryId] = useStringParam({ key: 'queryId', replace: true });
   const [variablesId, setVariablesId] = useStringParam({ key: 'variablesId', replace: true });
   const [predicate, setPredicate] = useTextAreaContent('predicate');
-  // const [predicate, setPredicate] = useStringParam({ key: 'predicate', replace: true });
+  const { formatMessage } = useIntl();
 
   useEffect(() => {
     if (predicate || !searchParams.get('queryId')) return;
@@ -63,14 +65,20 @@ export default function PredicateEditor({
       setVariablesId(undefined);
     }
   }, [predicate, setQueryId, setVariablesId, queryId, variablesId]);
-  // const {
-  //   loading,
-  //   error: predicateError,
-  //   predicate,
-  //   setPredicate,
-  //   wasLoadedFromSession,
-  //   discardSessionPredicate,
-  // } = usePredicate();
+
+  const handleFormat = useCallback(async (text: string) => {
+    try {
+      const obj = JSON.parse(text);
+      return JSON.stringify(obj, null, 2);
+    } catch (error) {
+      return text;
+    }
+  }, []);
+
+  const handleValidation = useCallback(
+    (str: string) => validatePredicate(str, formatMessage),
+    [formatMessage]
+  );
 
   return (
     <Editor
@@ -80,17 +88,13 @@ export default function PredicateEditor({
       onContinue={onContinue}
       text={predicate ?? ''}
       setText={setPredicate}
+      handleFormat={handleFormat}
+      handleValidation={handleValidation}
     />
   );
 }
 
-function PredicateVisual({
-  content,
-  onError,
-}: {
-  content: string;
-  onError: (error: Error) => void;
-}) {
+function PredicateVisual({ content }: { content: string; onError: (error: Error) => void }) {
   return (
     <div className="gbif-predicates">
       <PredicateDisplay predicate={content} />
