@@ -9,11 +9,13 @@ import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
 import { FormattedMessage } from 'react-intl';
 import { FilterType } from '@/contexts/filter';
 import { generateCubeSql, hasAllFilters, hasFilter, hasFilters } from './cubeService';
+import { DownloadSummary } from './DownloadSummary';
 
 interface ConfigurationStepProps {
   selectedFormat: any;
   defaultChecklist?: string;
   filter?: FilterType;
+  predicate?: any;
   onBack: () => void;
   onContinue: (config: any) => void;
 }
@@ -36,11 +38,12 @@ interface CubeConfig extends BaseConfig {
 export default function ConfigurationStep({
   defaultChecklist,
   selectedFormat,
+  predicate,
   onBack,
   filter,
   onContinue,
 }: ConfigurationStepProps) {
-  const { checklists, loading } = useSupportedChecklists();
+  const { checklists } = useSupportedChecklists();
   const currentContextChecklistKey = useChecklistKey();
   const isDarwinCoreArchive = selectedFormat?.id === 'DWCA';
   const isCubeData = selectedFormat?.id === 'SQL_TSV_ZIP';
@@ -115,7 +118,7 @@ export default function ConfigurationStep({
   const handleContinue = async () => {
     if (isCubeData && 'cube' in config) {
       // Ensure SQL is generated for cube data before continuing
-      const result = await generateCubeSql(config.cube, undefined);
+      const result = await generateCubeSql(config.cube, predicate);
       if (!result.sql) {
         alert('Error generating SQL'); // TODO inform the user and do not proceed. instead allow the user to try again.
         return;
@@ -142,36 +145,20 @@ export default function ConfigurationStep({
   };
 
   // Get configuration summary for sidebar
-  const getConfigSummary = () => {
+  const getConfigSummary = (selectedFormat, configuration) => {
+    const isDarwinCoreArchive = selectedFormat?.id === 'DWCA';
     const summary = [
       { label: 'Format', value: selectedFormat.title },
+      { label: 'CSV delimiter', value: 'TAB' },
       {
         label: 'Taxonomy',
-        value: checklists.find((x) => x.key === config.checklistKey)?.alias ?? '',
+        value: checklists.find((x) => x.key === configuration.checklistKey)?.alias ?? '',
       },
     ];
 
-    if (isDarwinCoreArchive && 'extensions' in config) {
-      summary.push({ label: 'Extensions', value: config.extensions.length.toString() });
+    if (isDarwinCoreArchive && 'extensions' in configuration) {
+      summary.push({ label: 'Extensions', value: configuration.extensions.length.toString() });
     }
-
-    if (isCubeData && 'cube' in config) {
-      const dims = config.cube;
-      summary.push({
-        label: 'Spatial Res.',
-        value: dims.spatialResolution,
-      });
-      summary.push({
-        label: 'Temporal Res.',
-        value: dims.temporalResolution,
-      });
-      summary.push({
-        label: 'Taxonomic Level',
-        value: dims.taxonomicLevel,
-      });
-    }
-
-    summary.push({ label: 'CSV delimiter', value: 'TAB' });
 
     return summary;
   };
@@ -228,14 +215,15 @@ export default function ConfigurationStep({
           <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
             <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Download Summary</h3>
 
-            <div className="g-space-y-3 g-text-sm">
-              {getConfigSummary().map((item) => (
+            {/* <div className="g-space-y-3 g-text-sm">
+              {getConfigSummary(selectedFormat, config).map((item) => (
                 <div key={item.label} className="g-flex g-justify-between">
                   <span className="g-text-gray-600">{item.label}:</span>
                   <span className="g-font-medium">{item.value}</span>
                 </div>
               ))}
-            </div>
+            </div> */}
+            <DownloadSummary selectedFormat={selectedFormat} configuration={config} />
 
             <div className="g-mt-6 g-pt-4 g-border-t g-border-gray-200">
               {canContinue && (

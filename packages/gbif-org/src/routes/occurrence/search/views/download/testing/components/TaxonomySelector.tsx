@@ -1,5 +1,5 @@
-import { FaGlobe } from 'react-icons/fa';
 import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
+import { TaxonomyIcon } from '@/components/highlights';
 
 interface TaxonomySelectorProps {
   value: string;
@@ -23,7 +23,7 @@ export default function TaxonomySelector({
         className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
       >
         <div className="g-flex g-items-start g-gap-3">
-          <FaGlobe size={20} className="g-text-primary-600 g-flex-none" />
+          <TaxonomyIcon size={20} className="g-text-primary-600 g-flex-none" />
           <div>
             <h3 className="g-font-semibold g-text-gray-900">Taxonomic Reference</h3>
             <p className="g-text-sm g-text-gray-600">

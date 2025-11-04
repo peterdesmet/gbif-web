@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import React from 'react';
 import { FaPuzzlePiece, FaInfoCircle } from 'react-icons/fa';
 
@@ -149,7 +150,12 @@ const AVAILABLE_EXTENSIONS = [
   },
 ];
 
-export default function ExtensionsSelector({ selectedExtensions, onChange, isExpanded, onToggle }: ExtensionsSelectorProps) {
+export default function ExtensionsSelector({
+  selectedExtensions,
+  onChange,
+  isExpanded,
+  onToggle,
+}: ExtensionsSelectorProps) {
   const toggleExtension = (extensionUrl: string) => {
     const newExtensions = selectedExtensions.includes(extensionUrl)
       ? selectedExtensions.filter((url) => url !== extensionUrl)
@@ -179,32 +185,26 @@ export default function ExtensionsSelector({ selectedExtensions, onChange, isExp
         <div className="g-border-t g-border-gray-200 g-p-6">
           <div className="g-mb-4 g-bg-blue-50 g-border g-border-blue-200 g-rounded g-p-4">
             <div className="g-flex g-items-start g-gap-3">
-              <FaInfoCircle
-                size={16}
-                className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0"
-              />
+              <FaInfoCircle size={16} className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0" />
               <p className="g-text-sm g-text-blue-800">
-                Extensions provide additional data fields beyond the core occurrence data.
-                Only select extensions that are relevant to your research needs.
+                Extensions provide additional data fields beyond the core occurrence data. Only
+                select extensions that are relevant to your research needs.
               </p>
             </div>
           </div>
 
           <div className="g-flex g-gap-2 g-mb-4">
-            <button
-              onClick={() => onChange(AVAILABLE_EXTENSIONS.map(ext => ext.url))}
-              className="g-px-3 g-py-1 g-text-sm g-bg-primary-600 g-text-white g-rounded hover:g-bg-primary-700 g-transition-colors"
+            <Button
+              size="sm"
+              onClick={() => onChange(AVAILABLE_EXTENSIONS.map((ext) => ext.url))}
+              variant="default"
               type="button"
             >
               Select All
-            </button>
-            <button
-              onClick={() => onChange([])}
-              className="g-px-3 g-py-1 g-text-sm g-bg-gray-600 g-text-white g-rounded hover:g-bg-gray-700 g-transition-colors"
-              type="button"
-            >
+            </Button>
+            <Button size="sm" variant="primaryOutline" onClick={() => onChange([])} type="button">
               Deselect All
-            </button>
+            </Button>
           </div>
 
           <div className="g-grid g-gap-3">
@@ -220,9 +220,7 @@ export default function ExtensionsSelector({ selectedExtensions, onChange, isExp
                   className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
                 />
                 <div className="g-ml-3 g-flex-1">
-                  <span className="g-font-medium g-text-gray-900 g-text-sm">
-                    {extension.name}
-                  </span>
+                  <span className="g-font-medium g-text-gray-900 g-text-sm">{extension.name}</span>
                   <p className="g-text-xs g-text-gray-500 g-break-all g-mt-0.5">
                     {extension.description}
                   </p>

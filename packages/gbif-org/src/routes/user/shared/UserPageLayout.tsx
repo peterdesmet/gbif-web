@@ -22,23 +22,35 @@ export function UserPageLayout({
       </Helmet>
       <article>
         <PageContainer topPadded hasDataHeader className="g-bg-white">
-          <ArticleTextContainer className="g-max-w-screen-xl">
-            <div className="g-flex g-gap-4 g-h-full g-pb-16 g-flex-row">
-              <div className="g-flex-1">
-                <div className="g-flex g-items-center g-justify-center g-p-4">
-                  <div className="g-max-w-md g-w-full g-bg-white g-p-8 g-space-y-6">{children}</div>
-                </div>
-              </div>
-              <div
-                className="g-flex-1 g-rounded-2xl g-bg-slate-100 g-shadow-xl g-bg-cover g-bg-center g-hidden md:g-block"
-                style={{
-                  backgroundImage: `url("${backgroundImage}")`,
-                }}
-              ></div>
-            </div>
+          <ArticleTextContainer className="g-max-w-screen-xl g-pb-16">
+            <LoginFlowLayout backgroundImage={backgroundImage}>{children}</LoginFlowLayout>
           </ArticleTextContainer>
         </PageContainer>
       </article>
     </>
+  );
+}
+
+export function LoginFlowLayout({
+  children,
+  backgroundImage = DEFAULT_BACKGROUND_IMAGE,
+}: {
+  children: React.ReactNode;
+  backgroundImage?: string;
+}) {
+  return (
+    <div className="g-flex g-gap-4 g-h-full g-flex-row">
+      <div className="g-flex-1">
+        <div className="g-flex g-items-center g-justify-center g-p-4">
+          <div className="g-max-w-md g-w-full g-p-8 g-space-y-6">{children}</div>
+        </div>
+      </div>
+      <div
+        className="g-flex-1 g-rounded-2xl g-bg-slate-100 g-shadow-xl g-bg-cover g-bg-center g-hidden md:g-block"
+        style={{
+          backgroundImage: `url("${backgroundImage}")`,
+        }}
+      ></div>
+    </div>
   );
 }

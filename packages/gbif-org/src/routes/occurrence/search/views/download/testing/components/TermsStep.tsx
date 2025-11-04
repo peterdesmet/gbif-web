@@ -1,20 +1,18 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { useState } from 'react';
-import {
-  FaChevronLeft,
-  FaFileAlt,
-  FaCheck,
-  FaExclamationTriangle,
-  FaDownload,
-} from 'react-icons/fa';
+import { useCallback, useState } from 'react';
+import { FaChevronLeft, FaCheck, FaDownload } from 'react-icons/fa';
+import { getEstimatedSizeInBytes } from './FormatSelection';
+import { generateCubeSql } from './cubeService';
+import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
+import { DownloadSummary } from './DownloadSummary';
 
 interface TermsStepProps {
   predicate?: any;
   sql?: string;
   selectedFormat: any;
   configuration: any;
+  totalRecords?: number;
   onBack: () => void;
 }
 
@@ -23,10 +21,15 @@ export default function TermsStep({
   sql,
   selectedFormat,
   configuration,
+  totalRecords,
   onBack,
 }: TermsStepProps) {
   // Hardcoded flag to show large download warning - replace with actual logic later
-  const isLargeDownload = true;
+  const estimatedSizeInBytes = getEstimatedSizeInBytes(selectedFormat.id, totalRecords ?? 0);
+  const isLargeDownload = totalRecords ? estimatedSizeInBytes > 500_000_000 : false;
+  const [preparingDownload, setPreparingDownload] = useState(false);
+  const [error, setError] = useState(null);
+  const { checklists, loading } = useSupportedChecklists();
 
   const [acceptedTerms, setAcceptedTerms] = useState({
     dataUse: false,
@@ -36,6 +39,32 @@ export default function TermsStep({
   });
 
   const allTermsAccepted = Object.values(acceptedTerms).every(Boolean);
+
+  const handleDownload = useCallback(async () => {
+    // if it is a cube, then refresh it in case the filters have changed
+    setPreparingDownload(true);
+    if (configuration.cube) {
+      const result = await generateCubeSql(configuration.cube, predicate);
+      console.log(result);
+      if (!result.sql) {
+        alert('Error generating SQL'); // TODO inform the user and do not proceed. instead allow the user to try again.
+        return;
+      }
+      console.log('Download initiated with configuration:', {
+        selectedFormat,
+        configuration,
+        predicate,
+      });
+      setPreparingDownload(false);
+    } else {
+      console.log('Download initiated with configuration:', {
+        selectedFormat,
+        configuration,
+        predicate,
+      });
+      setPreparingDownload(false);
+    }
+  }, [configuration, predicate, selectedFormat]);
 
   const handleTermChange = (term: keyof typeof acceptedTerms) => {
     setAcceptedTerms((prev) => ({
@@ -47,7 +76,7 @@ export default function TermsStep({
   return (
     <div className="g-max-w-4xl g-mx-auto">
       {/* Header */}
-      <div className="g-mb-8">
+      <div className="g-mb-4">
         <button
           onClick={onBack}
           className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-4 g-transition-colors"
@@ -65,7 +94,20 @@ export default function TermsStep({
             <p className="g-text-gray-600">Please review and accept the terms before downloading</p>
           </div>
         </div> */}
-        <pre>{JSON.stringify({ selectedFormat, configuration, predicate, sql }, null, 2)}</pre>
+        <pre>
+          {JSON.stringify(
+            {
+              totalRecords,
+              estimatedSizeInBytes,
+              selectedFormat,
+              configuration,
+              predicate,
+              sql,
+            },
+            null,
+            2
+          )}
+        </pre>
       </div>
 
       <div className="g-grid lg:g-grid-cols-3 g-gap-8">
@@ -127,7 +169,7 @@ export default function TermsStep({
                       htmlFor="largeDownload"
                       className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                     >
-                      Large Download Warning
+                      Large Download Acknowledgment
                     </label>
                     <div className="g-text-sm g-text-gray-700 g-space-y-3">
                       <p>
@@ -166,49 +208,30 @@ export default function TermsStep({
           <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
             <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Download Summary</h3>
 
-            <div className="g-space-y-3 g-text-sm g-mb-6">
-              <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Format:</span>
-                <span className="g-font-medium">{selectedFormat.title}</span>
-              </div>
-              <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Taxonomy:</span>
-                <span className="g-font-medium">
-                  {configuration?.taxonomy?.toUpperCase() ?? 'GBIF'}
-                </span>
-              </div>
-              <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Extensions:</span>
-                <span className="g-font-medium">{configuration?.extensions?.length ?? 0}</span>
-              </div>
-              <div className="g-flex g-justify-between">
-                <span className="g-text-gray-600">Est. Size:</span>
-                <span className="g-font-medium">{selectedFormat.size}</span>
-              </div>
-            </div>
+            <DownloadSummary selectedFormat={selectedFormat} configuration={configuration} />
 
-            <div className="g-space-y-3 g-mb-6">
+            <div className="g-space-y-3 g-mb-6 g-mt-6">
               <h4 className="g-font-medium g-text-gray-900">Terms Status</h4>
               {Object.entries(acceptedTerms).map(([key, accepted]) => (
-                <div key={key} className="g-flex g-items-start g-gap-2 g-text-sm">
-                  {accepted ? (
-                    <FaCheck size={16} className="g-text-green-600" />
-                  ) : (
-                    <div className="g-w-4 g-h-4 g-border-2 g-border-gray-300 g-rounded"></div>
-                  )}
+                <label key={key} className="g-flex g-items-start g-gap-2 g-text-sm">
+                  <Checkbox
+                    id={key}
+                    checked={accepted}
+                    onCheckedChange={() => handleTermChange(key as keyof typeof acceptedTerms)}
+                    className="'g-flex-none g-me-2 g-mt-0.5 g-h-4 g-w-4"
+                  />
                   <span className={accepted ? 'g-text-green-700' : 'g-text-gray-600'}>
                     {key === 'dataUse' && 'Data Use Agreement'}
                     {key === 'largeDownload' && 'Large Download Acknowledgment'}
-                    {key === 'privacy' && 'Privacy & Sensitive Data'}
-                    {key === 'processing' && 'Processing & Delivery'}
                   </span>
-                </div>
+                </label>
               ))}
             </div>
 
             <Button
               disabled={!allTermsAccepted}
               className={`g-w-full g-flex g-items-center g-justify-center g-gap-2`}
+              onClick={handleDownload}
             >
               <FaDownload size={16} />
               Create download

@@ -1,9 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import StepIndicator, {
-  occurrenceDownloadSteps,
-  predicateDownloadSteps,
-  sqlDownloadSteps,
-} from './components/StepIndicator';
+import StepIndicator from './components/StepIndicator';
 import FormatSelection from './components/FormatSelection';
 import ConfigurationStep from './components/ConfigurationStep';
 import TermsStep from './components/TermsStep';
@@ -17,6 +13,18 @@ import { useSearchContext } from '@/contexts/search';
 import { getAsQuery } from '@/components/filters/filterTools';
 import { Predicate } from '@/gql/graphql';
 import { usePredicateInformation } from './components/usePredicateInformation';
+import {
+  occurrenceDownloadSteps,
+  predicateDownloadSteps,
+  sqlDownloadSteps,
+} from './components/stepOptions';
+import { LoginFlowLayout } from '@/routes/user/shared/UserPageLayout';
+import { Card } from '@/components/ui/largeCard';
+import { PageTitle } from '@/routes/user/shared/PageHeader';
+import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
+import { DynamicLink } from '@/reactRouterPlugins';
+import { ProtectedForm } from '@/components/protectedForm';
 
 function App() {
   const currentFilterContext = useContext(FilterContext);
@@ -77,8 +85,8 @@ function OccurrenceDownloadFlow({
     setCurrentStep('FORMAT');
   };
 
-  const handleFormatSelect = (format: any) => {
-    setSelectedFormat(format);
+  const handleFormatSelect = (format: any, estimatedSizeInBytes: number) => {
+    setSelectedFormat({ ...format });
     setCurrentStep('CONFIGURE');
   };
 
@@ -90,38 +98,50 @@ function OccurrenceDownloadFlow({
   return (
     <div className="g-min-h-screen g-py-8">
       <div className="g-max-w-6xl g-mx-auto">
-        {/* Step Indicator */}
-        <StepIndicator currentStep={currentStep} steps={occurrenceDownloadSteps} />
+        <ProtectedForm
+          className=""
+          title="Please sign in"
+          message="A user account is required to download occurrence data."
+        >
+          {/* Step Indicator */}
+          {/* <Card className="g-p-6 g-mb-8"> */}
 
-        {/* Step Content */}
-        {currentStep === 'QUALITY' && <QualityFilters onContinue={handleFilterSelect} />}
+          {/* </Card> */}
+          <StepIndicator currentStep={currentStep} steps={occurrenceDownloadSteps} />
 
-        {currentStep === 'FORMAT' && (
-          <FormatSelection
-            onFormatSelect={handleFormatSelect}
-            totalRecords={!loading ? total : undefined}
-            // onBack={handleBackToFilters}
-          />
-        )}
+          {/* Step Content */}
+          {currentStep === 'QUALITY' && <QualityFilters onContinue={handleFilterSelect} />}
 
-        {currentStep === 'CONFIGURE' && selectedFormat && (
-          <ConfigurationStep
-            defaultChecklist={defaultChecklist}
-            selectedFormat={selectedFormat}
-            onBack={() => setCurrentStep('FORMAT')}
-            onContinue={handleConfigurationComplete}
-            filter={filter}
-          />
-        )}
+          {currentStep === 'FORMAT' && (
+            <FormatSelection
+              onFormatSelect={handleFormatSelect}
+              totalRecords={total}
+              loadingCounts={loading}
+              // onBack={() => setCurrentStep('QUALITY')}
+            />
+          )}
 
-        {currentStep === 'TERMS' && selectedFormat && configuration && (
-          <TermsStep
-            selectedFormat={selectedFormat}
-            configuration={configuration}
-            predicate={normalizedPredicate}
-            onBack={() => setCurrentStep('CONFIGURE')}
-          />
-        )}
+          {currentStep === 'CONFIGURE' && selectedFormat && (
+            <ConfigurationStep
+              defaultChecklist={defaultChecklist}
+              selectedFormat={selectedFormat}
+              onBack={() => setCurrentStep('FORMAT')}
+              predicate={normalizedPredicate}
+              onContinue={handleConfigurationComplete}
+              filter={filter}
+            />
+          )}
+
+          {currentStep === 'TERMS' && selectedFormat && configuration && (
+            <TermsStep
+              selectedFormat={selectedFormat}
+              configuration={configuration}
+              predicate={normalizedPredicate}
+              totalRecords={total}
+              onBack={() => setCurrentStep('CONFIGURE')}
+            />
+          )}
+        </ProtectedForm>
       </div>
     </div>
   );
@@ -143,7 +163,9 @@ export function PredicateDownloadFlow({
     loading,
     error,
     predicate: normalizedPredicate,
-  } = usePredicateInformation({ predicate });
+  } = usePredicateInformation({
+    predicate: currentStep === 'FORMAT' ? predicate : undefined,
+  });
 
   const handleFilterSelect = (predicate: string) => {
     setPredicate(predicate);
@@ -195,7 +217,7 @@ export function PredicateDownloadFlow({
             selectedFormat={selectedFormat}
             configuration={configuration}
             onBack={() => setCurrentStep('CONFIGURE')}
-            predicate={predicate}
+            predicate={normalizedPredicate}
           />
         )}
       </div>

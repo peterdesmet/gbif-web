@@ -1,67 +1,5 @@
-import { FaCheck, FaCog, FaFileAlt, FaDownload, FaFilter } from 'react-icons/fa';
-import { ComponentType } from 'react';
-
-export interface Step {
-  ordering: number;
-  id: string;
-  name: string;
-  icon: ComponentType<{ className?: string }>;
-  description: string;
-}
-
-const stepOptions = {
-  QUALITY: {
-    ordering: 0,
-    id: 'QUALITY',
-    name: 'Quality',
-    icon: FaFilter,
-    description: 'Apply quality filters',
-  },
-  PREDICATE: {
-    ordering: 1,
-    id: 'PREDICATE',
-    name: 'Filter',
-    icon: FaFilter,
-    description: 'Compose a filter predicate',
-  },
-  SQL: { ordering: 2, id: 'SQL', name: 'SQL', icon: FaFilter, description: 'Write SQL query' },
-  FORMAT: {
-    ordering: 3,
-    id: 'FORMAT',
-    name: 'Format',
-    icon: FaFileAlt,
-    description: 'Choose download format',
-  },
-  CONFIGURE: {
-    ordering: 4,
-    id: 'CONFIGURE',
-    name: 'Configure',
-    icon: FaCog,
-    description: 'Set options and fields',
-  },
-  TERMS: {
-    ordering: 5,
-    id: 'TERMS',
-    name: 'Terms',
-    icon: FaDownload,
-    description: 'Accept terms and download',
-  },
-};
-
-export const occurrenceDownloadSteps: Step[] = [
-  stepOptions.FORMAT,
-  stepOptions.CONFIGURE,
-  stepOptions.TERMS,
-];
-
-export const sqlDownloadSteps: Step[] = [stepOptions.SQL, stepOptions.TERMS];
-
-export const predicateDownloadSteps: Step[] = [
-  stepOptions.PREDICATE,
-  stepOptions.FORMAT,
-  stepOptions.CONFIGURE,
-  stepOptions.TERMS,
-];
+import { FaCheck } from 'react-icons/fa';
+import { occurrenceDownloadSteps, Step, stepOptions } from './stepOptions';
 
 interface StepIndicatorProps {
   currentStep: string;
@@ -97,7 +35,7 @@ export default function StepIndicator({
                 )}
                 <div className="g-relative g-flex g-items-center g-justify-center">
                   <div
-                    className={`g-flex g-h-10 g-w-10 g-items-center g-justify-center g-rounded-full g-border-2 ${
+                    className={`g-flex g-h-8 g-w-8 g-items-center g-justify-center g-rounded-full g-border-2 ${
                       isCompleted
                         ? 'g-border-primary-600 g-bg-primary-600'
                         : isCurrent
@@ -106,10 +44,10 @@ export default function StepIndicator({
                     }`}
                   >
                     {isCompleted ? (
-                      <FaCheck className="g-h-5 g-w-5 g-text-white" />
+                      <FaCheck className="g-h-4 g-w-4 g-text-white" />
                     ) : (
                       <IconComponent
-                        className={`g-h-5 g-w-5 ${
+                        className={`g-h-4 g-w-4 ${
                           isCurrent ? 'g-text-primary-600' : 'g-text-gray-500'
                         }`}
                       />

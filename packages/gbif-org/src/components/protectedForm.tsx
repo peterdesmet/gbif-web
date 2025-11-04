@@ -18,12 +18,7 @@ export function ProtectedForm({ children, className, title, message }: Props) {
   if (isLoggedIn) return children;
 
   return (
-    <div
-      className={cn(
-        'g-bg-gray-50 g-py-28 g-px-2 g-flex g-flex-col g-items-center g-shadow-sm',
-        className
-      )}
-    >
+    <div className={cn('g-py-28 g-px-2 g-flex g-flex-col g-items-center ', className)}>
       <h3 className="g-font-medium g-text-xl g-text-center">{title}</h3>
 
       <p className="g-text-sm g-pt-1 g-text-center">{message}</p>

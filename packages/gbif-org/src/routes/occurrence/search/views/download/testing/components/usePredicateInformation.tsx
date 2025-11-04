@@ -27,14 +27,19 @@ const PREDICATE_QUERY = /* GraphQL */ `
   }
 `;
 
-export function usePredicateInformation({ predicate }: { predicate?: Predicate }) {
+export function usePredicateInformation({ predicate }: { predicate?: Predicate | string }) {
   const { data, loading, error, load } = useQuery<
     NormalizePredicateAndCountQuery,
     NormalizePredicateAndCountQueryVariables
   >(PREDICATE_COUNT_QUERY, { lazyLoad: false });
 
   useEffect(() => {
-    load({ variables: { predicate } });
+    try {
+      const p = typeof predicate === 'string' ? JSON.parse(predicate) : predicate;
+      load({ variables: { predicate: p } });
+    } catch (e) {
+      console.error('Failed to parse predicate', e);
+    }
   }, [predicate, load]);
 
   return {

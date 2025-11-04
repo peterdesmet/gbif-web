@@ -1,4 +1,6 @@
-import { FaThLarge, FaInfoCircle } from 'react-icons/fa';
+import { FaInfoCircle } from 'react-icons/fa';
+import { FaCube as CubeIcon } from 'react-icons/fa6';
+
 import { useState, useEffect } from 'react';
 import { generateCubeSql, hasAllFilters, hasFilter } from './cubeService';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -181,7 +183,7 @@ export default function CubeDimensionsSelector({
         className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
       >
         <div className="g-flex g-items-center g-gap-3">
-          <FaThLarge size={20} className="g-text-primary-600" />
+          <CubeIcon size={20} className="g-text-primary-600" />
           <div>
             <h3 className="g-font-semibold g-text-gray-900">Cube Dimensions</h3>
             <p className="g-text-sm g-text-gray-600">
@@ -189,13 +191,13 @@ export default function CubeDimensionsSelector({
             </p>
           </div>
         </div>
-        <div className="g-text-sm g-text-gray-500">
+        {/* <div className="g-text-sm g-text-gray-500">
           {cube.spatial && cube.spatial !== '' ? cube.spatial : 'None'} ×{' '}
           {cube.temporalResolution && cube.temporalResolution !== ''
             ? cube.temporalResolution
             : 'None'}{' '}
           × {cube.taxonomicLevel && cube.taxonomicLevel !== '' ? cube.taxonomicLevel : 'None'}
-        </div>
+        </div> */}
       </button>
 
       {isExpanded && (
