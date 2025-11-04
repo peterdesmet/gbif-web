@@ -72,6 +72,7 @@ export default function ConfigurationStep({
           removeFossilsAndLiving: !hasFilter(filter, 'basisOfRecord'),
           removeAbsenceRecords: !hasFilter(filter, 'occurrenceStatus'),
           temporalResolution: 'YEAR',
+          randomize: 'YES',
         },
       } as CubeConfig;
     }
