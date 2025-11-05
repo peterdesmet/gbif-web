@@ -68,7 +68,7 @@ export function CheckboxField({
         className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
       />
       <div>
-        <span className={`g-text-sm ${disabled ? '' : 'g-font-medium'}`}>
+        <span className={`g-text-sm g-font-medium`}>
           <FormattedMessage id={labelId} defaultMessage={labelDefault || labelId} />
         </span>
         {helpText && (

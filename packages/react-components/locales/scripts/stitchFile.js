@@ -30,6 +30,7 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
       counts: getFile(locale, `../${folder}/${locale}/components/counts`),
       contact: getFile(locale, `../${folder}/${locale}/components/contact`),
       pagination: getFile(locale, `../${folder}/${locale}/components/pagination`),
+      definitions: getFile(locale, `../${folder}/${locale}/components/definitions`).definitions,
       search: getFile(locale, `../${folder}/${locale}/components/search`),
       phrases: getFile(locale, `../${folder}/${locale}/components/phrases`),
       profile: getFile(locale, `../${folder}/${locale}/components/profile`).profile,

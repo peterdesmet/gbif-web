@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/largeCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DynamicLink } from '@/reactRouterPlugins';
-import React from 'react';
 import { FaChevronLeft } from 'react-icons/fa';
+import { formatFileSize, getEstimatedSizeInBytes } from './utils';
 
 interface Format {
   id: string;
@@ -20,44 +20,6 @@ interface FormatSelectionProps {
   totalRecords?: number;
   loadingCounts?: boolean;
 }
-
-// Size estimation constants from portal16
-const EST_KB_DWCA = 0.355350332594235;
-const EST_KB_CSV = 0.1161948717948718;
-const UNZIP_FACTOR = 4.52617;
-
-// Helper function to format file sizes
-export const formatFileSize = (bytes: number): string => {
-  if (bytes < 0) return 'Unknown';
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-};
-
-// Calculate estimated sizes based on format and record count
-export const getEstimatedSizeInBytes = (type: string, totalRecords: number): number => {
-  if (totalRecords === 0) return -1;
-
-  let sizeKb: number;
-  switch (type) {
-    case 'SIMPLE_CSV':
-      sizeKb = EST_KB_CSV * totalRecords * UNZIP_FACTOR;
-      break;
-    case 'DWCA':
-      sizeKb = EST_KB_DWCA * totalRecords * UNZIP_FACTOR;
-      break;
-    case 'SPECIES_LIST':
-      // Species list is much smaller as it's just unique species. Below are based on a few random downloads. But it varies a lot depending on the filters. BBetter would be to use cardinality instead of occurrence counts.
-      sizeKb = Math.max(EST_KB_CSV * totalRecords * 0.0002 * UNZIP_FACTOR, 5000);
-      break;
-    default:
-      sizeKb = -1;
-  }
-
-  return sizeKb * 1024; // Convert to bytes
-};
 
 const formatCards: Format[] = [
   {
@@ -116,13 +78,6 @@ export default function FormatSelection({
   totalRecords = 0,
   loadingCounts = false,
 }: FormatSelectionProps) {
-  const [configurations] = React.useState<Record<string, any>>({
-    SIMPLE_CSV: { checklistKey: 'gbif' },
-    SPECIES_LIST: { checklistKey: 'gbif' },
-    DWCA: { checklistKey: 'gbif', extensions: [] },
-    SQL_TSV_ZIP: { checklistKey: 'gbif' },
-  });
-
   return (
     <div className="g-max-w-4xl g-mx-auto g-space-y-4">
       {/* Back Button */}
