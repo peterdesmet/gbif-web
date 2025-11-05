@@ -218,205 +218,216 @@ export default function CubeDimensionsSelector({
           </div>
 
           {/* Dimensions */}
-          <fieldset className="g-space-y-6">
-            <legend className="g-text-lg g-font-medium g-text-gray-900 g-mb-4">
+          <fieldset className="g-bg-white g-rounded g-shadow-lg g-border g-border-gray-200 g-p-4">
+            <legend className="g-text-lg g-font-medium g-text-gray-900 g-mb-0 g-px-2">
               <FormattedMessage id="customSqlDownload.dimensions" defaultMessage="Dimensions" />
             </legend>
+            <div className="g-space-y-4">
+              <div className="g-text-slate-500 g-text-sm g-mb-8">
+                <FormattedMessage
+                  id="customSqlDownload.help.dimensions"
+                  defaultMessage="Apply quality filters to exclude problematic records"
+                />
+              </div>
 
-            {/* Taxonomic Dimension */}
-            <div>
-              <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                <FormattedMessage
-                  id="customSqlDownload.taxonomicDimension"
-                  defaultMessage="Taxonomic dimension"
-                />
-              </label>
-              <p className="g-text-sm g-text-gray-600 g-mb-3">
-                <FormattedMessage
-                  id="customSqlDownload.help.taxonomicDimension"
-                  defaultMessage="This dimension aggregates occurrences by their taxonomic rank."
-                />
-              </p>
-              <select
-                value={cube.taxonomicLevel || ''}
-                onChange={(e) => handleTaxonomicLevelChange(e.target.value)}
-                className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
-              >
-                <option value="">
+              {/* Taxonomic Dimension */}
+              <div>
+                <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
                   <FormattedMessage
-                    id="customSqlDownload.noneSelected"
-                    defaultMessage="None selected"
+                    id="customSqlDownload.taxonomicDimension"
+                    defaultMessage="Taxonomic dimension"
                   />
-                </option>
-                {TAXONOMIC_GROUPS.map((group) => (
-                  <option key={group} value={group}>
+                </label>
+                <p className="g-text-sm g-text-gray-600 g-mb-3">
+                  <FormattedMessage
+                    id="customSqlDownload.help.taxonomicDimension"
+                    defaultMessage="This dimension aggregates occurrences by their taxonomic rank."
+                  />
+                </p>
+                <select
+                  value={cube.taxonomicLevel || ''}
+                  onChange={(e) => handleTaxonomicLevelChange(e.target.value)}
+                  className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
+                >
+                  <option value="">
                     <FormattedMessage
-                      id={`customSqlDownload.taxon.${group}`}
-                      defaultMessage={group}
+                      id="customSqlDownload.noneSelected"
+                      defaultMessage="None selected"
                     />
                   </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Temporal Dimension */}
-            <div>
-              <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                <FormattedMessage
-                  id="customSqlDownload.temporalDimension"
-                  defaultMessage="Temporal dimension"
-                />
-              </label>
-              <p className="g-text-sm g-text-gray-600 g-mb-3">
-                <FormattedMessage
-                  id="customSqlDownload.help.temporalDimension"
-                  defaultMessage="This dimension aggregates occurrences by time."
-                />
-              </p>
-              <select
-                value={cube.temporalResolution || ''}
-                onChange={(e) => updateDimensions({ temporalResolution: e.target.value })}
-                className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
-              >
-                <option value="">
-                  <FormattedMessage
-                    id="customSqlDownload.noneSelected"
-                    defaultMessage="None selected"
-                  />
-                </option>
-                {TEMPORAL_GROUPS.map((group) => (
-                  <option key={group} value={group}>
-                    <FormattedMessage
-                      id={`customSqlDownload.time.${group}`}
-                      defaultMessage={group}
-                    />
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Spatial Dimension */}
-            <div>
-              <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                <FormattedMessage
-                  id="customSqlDownload.spatialDimension"
-                  defaultMessage="Spatial dimension"
-                />
-              </label>
-              <p className="g-text-sm g-text-gray-600 g-mb-3">
-                <FormattedMessage
-                  id="customSqlDownload.help.grid"
-                  defaultMessage="This dimension aggregates occurrences in a spatial grid."
-                />
-              </p>
-              <select
-                value={cube.spatial || ''}
-                onChange={(e) => handleSpatialChange(e.target.value)}
-                className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
-              >
-                <option value="">
-                  <FormattedMessage
-                    id="customSqlDownload.noneSelected"
-                    defaultMessage="None selected"
-                  />
-                </option>
-                {SPATIAL_GROUPS.map((group) => (
-                  <option key={group} value={group}>
-                    <FormattedMessage
-                      id={`customSqlDownload.grid.${group}`}
-                      defaultMessage={group}
-                    />
-                  </option>
-                ))}
-              </select>
-
-              {/* Spatial Resolution */}
-              {cube.spatial && cube.spatial !== 'COUNTRY' && (
-                <div className="g-mt-4">
-                  <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                    <FormattedMessage
-                      id="customSqlDownload.spatialResolution"
-                      defaultMessage="Spatial resolution"
-                    />
-                  </label>
-                  <p className="g-text-sm g-text-gray-600 g-mb-3">
-                    <FormattedMessage
-                      id="customSqlDownload.help.gridResolution"
-                      defaultMessage="The size of each grid cell."
-                    />
-                  </p>
-                  <select
-                    value={cube.resolution || ''}
-                    onChange={(e) => updateDimensions({ resolution: parseInt(e.target.value) })}
-                    className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
-                  >
-                    <option value="" disabled>
+                  {TAXONOMIC_GROUPS.map((group) => (
+                    <option key={group} value={group}>
                       <FormattedMessage
-                        id="customSqlDownload.noneSelected"
-                        defaultMessage="None selected"
+                        id={`customSqlDownload.taxon.${group}`}
+                        defaultMessage={group}
                       />
                     </option>
-                    {(RESOLUTION_OPTIONS[cube.spatial] || []).map((res) => (
-                      <option key={res} value={res}>
+                  ))}
+                </select>
+              </div>
+
+              {/* Temporal Dimension */}
+              <div>
+                <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
+                  <FormattedMessage
+                    id="customSqlDownload.temporalDimension"
+                    defaultMessage="Temporal dimension"
+                  />
+                </label>
+                <p className="g-text-sm g-text-gray-600 g-mb-3">
+                  <FormattedMessage
+                    id="customSqlDownload.help.temporalDimension"
+                    defaultMessage="This dimension aggregates occurrences by time."
+                  />
+                </p>
+                <select
+                  value={cube.temporalResolution || ''}
+                  onChange={(e) => updateDimensions({ temporalResolution: e.target.value })}
+                  className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
+                >
+                  <option value="">
+                    <FormattedMessage
+                      id="customSqlDownload.noneSelected"
+                      defaultMessage="None selected"
+                    />
+                  </option>
+                  {TEMPORAL_GROUPS.map((group) => (
+                    <option key={group} value={group}>
+                      <FormattedMessage
+                        id={`customSqlDownload.time.${group}`}
+                        defaultMessage={group}
+                      />
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Spatial Dimension */}
+              <div>
+                <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
+                  <FormattedMessage
+                    id="customSqlDownload.spatialDimension"
+                    defaultMessage="Spatial dimension"
+                  />
+                </label>
+                <p className="g-text-sm g-text-gray-600 g-mb-3">
+                  <FormattedMessage
+                    id="customSqlDownload.help.grid"
+                    defaultMessage="This dimension aggregates occurrences in a spatial grid."
+                  />
+                </p>
+                <select
+                  value={cube.spatial || ''}
+                  onChange={(e) => handleSpatialChange(e.target.value)}
+                  className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
+                >
+                  <option value="">
+                    <FormattedMessage
+                      id="customSqlDownload.noneSelected"
+                      defaultMessage="None selected"
+                    />
+                  </option>
+                  {SPATIAL_GROUPS.map((group) => (
+                    <option key={group} value={group}>
+                      <FormattedMessage
+                        id={`customSqlDownload.grid.${group}`}
+                        defaultMessage={group}
+                      />
+                    </option>
+                  ))}
+                </select>
+
+                {/* Spatial Resolution */}
+                {cube.spatial && cube.spatial !== 'COUNTRY' && (
+                  <div className="g-mt-4">
+                    <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
+                      <FormattedMessage
+                        id="customSqlDownload.spatialResolution"
+                        defaultMessage="Spatial resolution"
+                      />
+                    </label>
+                    <p className="g-text-sm g-text-gray-600 g-mb-3">
+                      <FormattedMessage
+                        id="customSqlDownload.help.gridResolution"
+                        defaultMessage="The size of each grid cell."
+                      />
+                    </p>
+                    <select
+                      value={cube.resolution || ''}
+                      onChange={(e) => updateDimensions({ resolution: parseInt(e.target.value) })}
+                      className="g-w-full g-p-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500"
+                    >
+                      <option value="" disabled>
                         <FormattedMessage
-                          id={`customSqlDownload.resolution.${cube.spatial}.${res}`}
-                          defaultMessage={res.toString()}
+                          id="customSqlDownload.noneSelected"
+                          defaultMessage="None selected"
                         />
                       </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* Randomize Points */}
-              {cube.spatial && (
-                <div className="g-mt-4">
-                  <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-                    <FormattedMessage
-                      id="customSqlDownload.randomPoints"
-                      defaultMessage="Randomize points within uncertainty circle"
-                    />
-                  </label>
-                  <p className="g-text-sm g-text-gray-600 g-mb-3">
-                    <FormattedMessage
-                      id="customSqlDownload.help.randomizePoints"
-                      defaultMessage="For occurrence records with a coordinate uncertainty that covers more than one grid cell, should a random cell be chosen?"
-                    />
-                  </p>
-                  <div className="g-flex g-gap-4">
-                    <label className="g-flex g-items-center g-gap-2">
-                      <input
-                        type="radio"
-                        name="randomize"
-                        value="YES"
-                        checked={cube.randomize === 'YES'}
-                        onChange={(e) =>
-                          updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })
-                        }
-                        className="g-h-4 g-w-4 g-text-primary-600"
-                      />
-                      <span className="g-text-sm">
-                        <FormattedMessage id="customSqlDownload.boolean.YES" defaultMessage="Yes" />
-                      </span>
-                    </label>
-                    <label className="g-flex g-items-center g-gap-2">
-                      <input
-                        type="radio"
-                        name="randomize"
-                        value="NO"
-                        checked={cube.randomize === 'NO'}
-                        onChange={(e) =>
-                          updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })
-                        }
-                        className="g-h-4 g-w-4 g-text-primary-600"
-                      />
-                      <span className="g-text-sm">
-                        <FormattedMessage id="customSqlDownload.boolean.NO" defaultMessage="No" />
-                      </span>
-                    </label>
+                      {(RESOLUTION_OPTIONS[cube.spatial] || []).map((res) => (
+                        <option key={res} value={res}>
+                          <FormattedMessage
+                            id={`customSqlDownload.resolution.${cube.spatial}.${res}`}
+                            defaultMessage={res.toString()}
+                          />
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                </div>
-              )}
+                )}
+
+                {/* Randomize Points */}
+                {cube.spatial && (
+                  <div className="g-mt-4">
+                    <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
+                      <FormattedMessage
+                        id="customSqlDownload.randomPoints"
+                        defaultMessage="Randomize points within uncertainty circle"
+                      />
+                    </label>
+                    <p className="g-text-sm g-text-gray-600 g-mb-3">
+                      <FormattedMessage
+                        id="customSqlDownload.help.randomizePoints"
+                        defaultMessage="For occurrence records with a coordinate uncertainty that covers more than one grid cell, should a random cell be chosen?"
+                      />
+                    </p>
+                    <div className="g-flex g-gap-4">
+                      <label className="g-flex g-items-center g-gap-2">
+                        <input
+                          type="radio"
+                          name="randomize"
+                          value="YES"
+                          checked={cube.randomize === 'YES'}
+                          onChange={(e) =>
+                            updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })
+                          }
+                          className="g-h-4 g-w-4 g-text-primary-600"
+                        />
+                        <span className="g-text-sm">
+                          <FormattedMessage
+                            id="customSqlDownload.boolean.YES"
+                            defaultMessage="Yes"
+                          />
+                        </span>
+                      </label>
+                      <label className="g-flex g-items-center g-gap-2">
+                        <input
+                          type="radio"
+                          name="randomize"
+                          value="NO"
+                          checked={cube.randomize === 'NO'}
+                          onChange={(e) =>
+                            updateDimensions({ randomize: e.target.value as 'YES' | 'NO' })
+                          }
+                          className="g-h-4 g-w-4 g-text-primary-600"
+                        />
+                        <span className="g-text-sm">
+                          <FormattedMessage id="customSqlDownload.boolean.NO" defaultMessage="No" />
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </fieldset>
 
@@ -593,94 +604,98 @@ export default function CubeDimensionsSelector({
 
           {/* Data Quality */}
           {!hideDataQuality && (
-            <fieldset className="g-space-y-4">
-              <legend className="g-text-lg g-font-medium g-text-gray-900 g-mb-4">
+            <fieldset className="g-bg-white g-rounded g-shadow-lg g-border g-border-gray-200 g-p-4">
+              <legend className="g-text-lg g-font-medium g-text-gray-900 g-mb-0 g-px-2">
                 <FormattedMessage
                   id="customSqlDownload.dataQuality"
                   defaultMessage="Data quality"
                 />
               </legend>
-              <p className="g-text-sm g-text-gray-600 g-mb-4">
-                <FormattedMessage
-                  id="customSqlDownload.help.dataQuality"
-                  defaultMessage="Apply quality filters to exclude problematic records"
-                />
-              </p>
+              <div className="g-space-y-4">
+                <div className="g-text-slate-500 g-text-sm g-mb-8">
+                  <FormattedMessage
+                    id="customSqlDownload.help.dataQuality"
+                    defaultMessage="Apply quality filters to exclude problematic records"
+                  />
+                </div>
 
-              <div className="g-space-y-3">
-                {!hasFilter(filter, 'hasGeospatialIssue') && (
-                  <label className="g-flex g-items-start g-gap-3">
-                    <Checkbox
-                      checked={cube.removeRecordsWithGeospatialIssues}
-                      onCheckedChange={(checked) =>
-                        updateDimensions({ removeRecordsWithGeospatialIssues: checked as boolean })
-                      }
-                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                    />
-                    <span className="g-text-sm">
-                      <FormattedMessage id="customSqlDownload.removeRecordsWithGeospatialIssues" />
-                    </span>
-                  </label>
-                )}
-                {!hasFilter(filter, 'taxonomicIssue') && (
-                  <label className="g-flex g-items-start g-gap-3">
-                    <Checkbox
-                      checked={cube.removeRecordsTaxonIssues}
-                      onCheckedChange={(checked) =>
-                        updateDimensions({ removeRecordsTaxonIssues: checked as boolean })
-                      }
-                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                    />
-                    <span className="g-text-sm">
-                      <FormattedMessage id="customSqlDownload.removeRecordsTaxonIssues" />
-                    </span>
-                  </label>
-                )}
+                <div className="g-space-y-3">
+                  {!hasFilter(filter, 'hasGeospatialIssue') && (
+                    <label className="g-flex g-items-start g-gap-3">
+                      <Checkbox
+                        checked={cube.removeRecordsWithGeospatialIssues}
+                        onCheckedChange={(checked) =>
+                          updateDimensions({
+                            removeRecordsWithGeospatialIssues: checked as boolean,
+                          })
+                        }
+                        className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                      />
+                      <span className="g-text-sm">
+                        <FormattedMessage id="customSqlDownload.removeRecordsWithGeospatialIssues" />
+                      </span>
+                    </label>
+                  )}
+                  {!hasFilter(filter, 'taxonomicIssue') && (
+                    <label className="g-flex g-items-start g-gap-3">
+                      <Checkbox
+                        checked={cube.removeRecordsTaxonIssues}
+                        onCheckedChange={(checked) =>
+                          updateDimensions({ removeRecordsTaxonIssues: checked as boolean })
+                        }
+                        className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                      />
+                      <span className="g-text-sm">
+                        <FormattedMessage id="customSqlDownload.removeRecordsTaxonIssues" />
+                      </span>
+                    </label>
+                  )}
 
-                {!hasFilter(filter, 'distanceFromCentroidInMeters') && (
-                  <label className="g-flex g-items-start g-gap-3">
-                    <Checkbox
-                      checked={cube.removeRecordsAtCentroids}
-                      onCheckedChange={(checked) =>
-                        updateDimensions({ removeRecordsAtCentroids: checked as boolean })
-                      }
-                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                    />
-                    <span className="g-text-sm">
-                      <FormattedMessage id="customSqlDownload.removeRecordsAtCentroids" />
-                    </span>
-                  </label>
-                )}
+                  {!hasFilter(filter, 'distanceFromCentroidInMeters') && (
+                    <label className="g-flex g-items-start g-gap-3">
+                      <Checkbox
+                        checked={cube.removeRecordsAtCentroids}
+                        onCheckedChange={(checked) =>
+                          updateDimensions({ removeRecordsAtCentroids: checked as boolean })
+                        }
+                        className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                      />
+                      <span className="g-text-sm">
+                        <FormattedMessage id="customSqlDownload.removeRecordsAtCentroids" />
+                      </span>
+                    </label>
+                  )}
 
-                {!hasFilter(filter, 'basisOfRecord') && (
-                  <label className="g-flex g-items-start g-gap-3">
-                    <Checkbox
-                      checked={cube.removeFossilsAndLiving}
-                      onCheckedChange={(checked) =>
-                        updateDimensions({ removeFossilsAndLiving: checked as boolean })
-                      }
-                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                    />
-                    <span className="g-text-sm">
-                      <FormattedMessage id="customSqlDownload.removeFossilsAndLiving" />
-                    </span>
-                  </label>
-                )}
+                  {!hasFilter(filter, 'basisOfRecord') && (
+                    <label className="g-flex g-items-start g-gap-3">
+                      <Checkbox
+                        checked={cube.removeFossilsAndLiving}
+                        onCheckedChange={(checked) =>
+                          updateDimensions({ removeFossilsAndLiving: checked as boolean })
+                        }
+                        className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                      />
+                      <span className="g-text-sm">
+                        <FormattedMessage id="customSqlDownload.removeFossilsAndLiving" />
+                      </span>
+                    </label>
+                  )}
 
-                {!hasFilter(filter, 'occurrenceStatus') && (
-                  <label className="g-flex g-items-start g-gap-3">
-                    <Checkbox
-                      checked={cube.removeAbsenceRecords}
-                      onCheckedChange={(checked) =>
-                        updateDimensions({ removeAbsenceRecords: checked as boolean })
-                      }
-                      className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-                    />
-                    <span className="g-text-sm">
-                      <FormattedMessage id="customSqlDownload.removeAbsenceRecords" />
-                    </span>
-                  </label>
-                )}
+                  {!hasFilter(filter, 'occurrenceStatus') && (
+                    <label className="g-flex g-items-start g-gap-3">
+                      <Checkbox
+                        checked={cube.removeAbsenceRecords}
+                        onCheckedChange={(checked) =>
+                          updateDimensions({ removeAbsenceRecords: checked as boolean })
+                        }
+                        className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
+                      />
+                      <span className="g-text-sm">
+                        <FormattedMessage id="customSqlDownload.removeAbsenceRecords" />
+                      </span>
+                    </label>
+                  )}
+                </div>
               </div>
             </fieldset>
           )}
