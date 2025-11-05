@@ -5,6 +5,7 @@ import { generateCubeSql, hasAllFilters, hasFilter } from './cubeService';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FilterType } from '@/contexts/filter';
 import { FormattedMessage } from 'react-intl';
+import ExpandableSection from './ExpandableSection';
 
 // ============================================================================
 // Types & Constants
@@ -350,32 +351,25 @@ export default function CubeDimensionsSelector({
   const higherTaxonomicGroups = getHigherTaxonomicGroups();
 
   return (
-    <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
-      <button
-        onClick={onToggle}
-        className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
-      >
-        <div className="g-flex g-items-center g-gap-3">
-          <CubeIcon size={20} className="g-text-primary-600" />
-          <div>
-            <h3 className="g-font-semibold g-text-gray-900">
-              <FormattedMessage
-                id="customSqlDownload.cubeConfiguration"
-                defaultMessage="Cube configuration"
-              />
-            </h3>
-            <p className="g-text-sm g-text-gray-600">
-              <FormattedMessage
-                id="customSqlDownload.cubeDescription"
-                defaultMessage="Configure spatial, temporal, and taxonomic resolution"
-              />
-            </p>
-          </div>
-        </div>
-      </button>
-
+    <ExpandableSection
+      icon={<CubeIcon size={20} className="g-text-primary-600" />}
+      title={
+        <FormattedMessage
+          id="customSqlDownload.cubeConfiguration"
+          defaultMessage="Cube configuration"
+        />
+      }
+      description={
+        <FormattedMessage
+          id="customSqlDownload.cubeDescription"
+          defaultMessage="Configure spatial, temporal, and taxonomic resolution"
+        />
+      }
+      isExpanded={isExpanded}
+      onToggle={onToggle}
+    >
       {isExpanded && (
-        <div className="g-border-t g-border-gray-200 g-p-6 g-space-y-8">
+        <div className="g-space-y-8">
           {/* Info Banner */}
           <div className="g-mb-4 g-bg-blue-50 g-border g-border-blue-200 g-rounded g-p-4">
             <div className="g-flex g-items-start g-gap-3">
@@ -640,6 +634,6 @@ export default function CubeDimensionsSelector({
           </div>
         </div>
       )}
-    </div>
+    </ExpandableSection>
   );
 }

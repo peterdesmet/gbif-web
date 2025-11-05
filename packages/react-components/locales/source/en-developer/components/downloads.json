@@ -240,7 +240,7 @@
       "EXACT_TAXON": "Exact taxon"
     },
     "cubeTitle": "Download cube",
-    "cubeDescription": "Description placeholder",
+    "cubeDescription": "Configure spatial, temporal, and taxonomic resolution.",
     "readMore": "Read more",
     "time": {
       "YEAR": "Year",

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
-import React from 'react';
 import { FaPuzzlePiece, FaInfoCircle } from 'react-icons/fa';
+import ExpandableSection from './ExpandableSection';
 
 interface ExtensionsSelectorProps {
   selectedExtensions: string[];
@@ -164,72 +164,59 @@ export default function ExtensionsSelector({
   };
 
   return (
-    <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200">
-      <button
-        onClick={onToggle}
-        className="g-w-full g-p-6 g-text-left g-flex g-items-center g-justify-between hover:g-bg-gray-50 g-transition-colors"
-      >
-        <div className="g-flex g-items-center g-gap-3">
-          <FaPuzzlePiece size={20} className="g-text-primary-600" />
-          <div>
-            <h3 className="g-font-semibold g-text-gray-900">Extensions</h3>
-            <p className="g-text-sm g-text-gray-600">
-              Select additional data extensions to include
-            </p>
-          </div>
+    <ExpandableSection
+      icon={<FaPuzzlePiece size={20} className="g-text-primary-600" />}
+      title="Extensions"
+      description="Select additional data extensions to include"
+      summary={`${selectedExtensions.length} selected`}
+      isExpanded={isExpanded}
+      onToggle={onToggle}
+    >
+      <div className="g-mb-4 g-bg-blue-50 g-border g-border-blue-200 g-rounded g-p-4">
+        <div className="g-flex g-items-start g-gap-3">
+          <FaInfoCircle size={16} className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0" />
+          <p className="g-text-sm g-text-blue-800">
+            Extensions provide additional data fields beyond the core occurrence data. Only select
+            extensions that are relevant to your research needs.
+          </p>
         </div>
-        <div className="g-text-sm g-text-gray-500">{selectedExtensions.length} selected</div>
-      </button>
+      </div>
 
-      {isExpanded && (
-        <div className="g-border-t g-border-gray-200 g-p-6">
-          <div className="g-mb-4 g-bg-blue-50 g-border g-border-blue-200 g-rounded g-p-4">
-            <div className="g-flex g-items-start g-gap-3">
-              <FaInfoCircle size={16} className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0" />
-              <p className="g-text-sm g-text-blue-800">
-                Extensions provide additional data fields beyond the core occurrence data. Only
-                select extensions that are relevant to your research needs.
+      <div className="g-flex g-gap-2 g-mb-4">
+        <Button
+          size="sm"
+          onClick={() => onChange(AVAILABLE_EXTENSIONS.map((ext) => ext.url))}
+          variant="default"
+          type="button"
+        >
+          Select All
+        </Button>
+        <Button size="sm" variant="primaryOutline" onClick={() => onChange([])} type="button">
+          Deselect All
+        </Button>
+      </div>
+
+      <div className="g-grid g-gap-3">
+        {AVAILABLE_EXTENSIONS.map((extension) => (
+          <label
+            key={extension.url}
+            className="g-flex g-items-start g-p-3 g-rounded g-border g-border-gray-200 hover:g-bg-gray-50 g-cursor-pointer g-transition-colors"
+          >
+            <input
+              type="checkbox"
+              checked={selectedExtensions.includes(extension.url)}
+              onChange={() => toggleExtension(extension.url)}
+              className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
+            />
+            <div className="g-ml-3 g-flex-1">
+              <span className="g-font-medium g-text-gray-900 g-text-sm">{extension.name}</span>
+              <p className="g-text-xs g-text-gray-500 g-break-all g-mt-0.5">
+                {extension.description}
               </p>
             </div>
-          </div>
-
-          <div className="g-flex g-gap-2 g-mb-4">
-            <Button
-              size="sm"
-              onClick={() => onChange(AVAILABLE_EXTENSIONS.map((ext) => ext.url))}
-              variant="default"
-              type="button"
-            >
-              Select All
-            </Button>
-            <Button size="sm" variant="primaryOutline" onClick={() => onChange([])} type="button">
-              Deselect All
-            </Button>
-          </div>
-
-          <div className="g-grid g-gap-3">
-            {AVAILABLE_EXTENSIONS.map((extension) => (
-              <label
-                key={extension.url}
-                className="g-flex g-items-start g-p-3 g-rounded g-border g-border-gray-200 hover:g-bg-gray-50 g-cursor-pointer g-transition-colors"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedExtensions.includes(extension.url)}
-                  onChange={() => toggleExtension(extension.url)}
-                  className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
-                />
-                <div className="g-ml-3 g-flex-1">
-                  <span className="g-font-medium g-text-gray-900 g-text-sm">{extension.name}</span>
-                  <p className="g-text-xs g-text-gray-500 g-break-all g-mt-0.5">
-                    {extension.description}
-                  </p>
-                </div>
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+          </label>
+        ))}
+      </div>
+    </ExpandableSection>
   );
 }
