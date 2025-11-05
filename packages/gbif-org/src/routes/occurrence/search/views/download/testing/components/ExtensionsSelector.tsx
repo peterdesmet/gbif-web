@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { FaPuzzlePiece, FaInfoCircle } from 'react-icons/fa';
 import ExpandableSection from './ExpandableSection';
 
@@ -202,11 +203,10 @@ export default function ExtensionsSelector({
             key={extension.url}
             className="g-bg-white g-flex g-items-start g-p-4 g-rounded g-border g-border-gray-200 g-cursor-pointer"
           >
-            <input
-              type="checkbox"
+            <Checkbox
               checked={selectedExtensions.includes(extension.url)}
-              onChange={() => toggleExtension(extension.url)}
-              className="g-mt-1 g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
+              onCheckedChange={() => toggleExtension(extension.url)}
+              className="g-mt-1"
             />
             <div className="g-ml-3 g-flex-1">
               <span className="g-font-medium g-text-gray-900 g-text-sm">{extension.name}</span>

@@ -1,48 +1,42 @@
 import { FormattedMessage } from 'react-intl';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup as RadixRadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 // ============================================================================
 // Radio Group Component
 // ============================================================================
 
-interface RadioGroupProps {
+interface BooleanRadioGroupProps {
   name: string;
   value: 'YES' | 'NO';
   onChange: (value: 'YES' | 'NO') => void;
 }
 
-export function RadioGroup({ name, value, onChange }: RadioGroupProps) {
+export function BooleanRadioGroup({ name, value, onChange }: BooleanRadioGroupProps) {
   return (
-    <div className="g-flex g-gap-4">
-      <label className="g-flex g-items-center g-gap-2">
-        <input
-          type="radio"
-          name={name}
-          value="YES"
-          checked={value === 'YES'}
-          onChange={(e) => onChange(e.target.value as 'YES' | 'NO')}
-          className="g-h-4 g-w-4 g-text-primary-600"
-        />
+    <RadixRadioGroup
+      value={value}
+      onValueChange={(newValue) => onChange(newValue as 'YES' | 'NO')}
+      className="g-flex g-gap-4"
+    >
+      <label className="g-flex g-items-center g-gap-2 g-cursor-pointer">
+        <RadioGroupItem value="YES" id={`${name}-yes`} />
         <span className="g-text-sm">
           <FormattedMessage id="customSqlDownload.boolean.YES" defaultMessage="Yes" />
         </span>
       </label>
-      <label className="g-flex g-items-center g-gap-2">
-        <input
-          type="radio"
-          name={name}
-          value="NO"
-          checked={value === 'NO'}
-          onChange={(e) => onChange(e.target.value as 'YES' | 'NO')}
-          className="g-h-4 g-w-4 g-text-primary-600"
-        />
+      <label className="g-flex g-items-center g-gap-2 g-cursor-pointer">
+        <RadioGroupItem value="NO" id={`${name}-no`} />
         <span className="g-text-sm">
           <FormattedMessage id="customSqlDownload.boolean.NO" defaultMessage="No" />
         </span>
       </label>
-    </div>
+    </RadixRadioGroup>
   );
 }
+
+// Export as RadioGroup for backward compatibility
+export const RadioGroup = BooleanRadioGroup;
 
 // ============================================================================
 // Checkbox Field Component

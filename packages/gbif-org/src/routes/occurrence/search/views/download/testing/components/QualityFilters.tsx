@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import React, { useState } from 'react';
 import {
   FaFilter,
@@ -270,13 +271,11 @@ export default function QualityFilters({ onContinue }: QualityFiltersProps) {
                             className="g-flex g-items-start g-gap-4 g-p-4 g-bg-white g-rounded g-border g-border-gray-200 hover:g-border-gray-300 g-cursor-pointer g-transition-colors"
                           >
                             <div className="g-flex-shrink-0 g-mt-1">
-                              <input
-                                type="checkbox"
+                              <Checkbox
                                 checked={isActive}
-                                onChange={(e) =>
-                                  updateFilter(section.id, filter.key, e.target.checked)
+                                onCheckedChange={(checked) =>
+                                  updateFilter(section.id, filter.key, checked === true)
                                 }
-                                className="g-h-4 g-w-4 g-text-primary-600 g-focus:ring-primary-500 g-border-gray-300 g-rounded"
                               />
                             </div>
                             <div className="g-flex-1">
