@@ -1,4 +1,5 @@
 import { FaCheck } from 'react-icons/fa';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { occurrenceDownloadSteps, Step, stepOptions } from './stepOptions';
 
 interface StepIndicatorProps {
@@ -10,9 +11,14 @@ export default function StepIndicator({
   currentStep,
   steps = occurrenceDownloadSteps,
 }: StepIndicatorProps) {
+  const intl = useIntl();
+  const progressLabel = intl.formatMessage({
+    id: 'occurrenceDownloadFlow.progressLabel',
+    defaultMessage: 'Progress',
+  });
   return (
     <div className="g-mb-12">
-      <nav aria-label="Progress">
+      <nav aria-label={progressLabel}>
         <ol className="g-flex g-items-center g-justify-center">
           {steps.map((step, stepIdx) => {
             const isCompleted = stepOptions[currentStep]?.ordering > step.ordering;
@@ -55,7 +61,7 @@ export default function StepIndicator({
                   </div>
                   <div className="g-absolute g-top-12 g-text-center">
                     <div
-                      className={`g-text-sm g-font-medium ${
+                      className={`g-text-sm g-font-medium g-whitespace-nowrap${
                         isCurrent
                           ? 'g-text-primary-600'
                           : isCompleted
@@ -63,10 +69,10 @@ export default function StepIndicator({
                           : 'g-text-gray-500'
                       }`}
                     >
-                      {step.name}
+                      <FormattedMessage id={step.name} />
                     </div>
                     {/* <div className="g-text-xs g-text-gray-500 g-mt-1 g-hidden sm:g-block">
-                      {step.description}
+                      <FormattedMessage id={step.description} />
                     </div> */}
                   </div>
                 </div>
