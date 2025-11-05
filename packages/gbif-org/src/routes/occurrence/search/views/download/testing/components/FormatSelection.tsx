@@ -3,15 +3,14 @@ import { Card } from '@/components/ui/largeCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DynamicLink } from '@/reactRouterPlugins';
 import { FaChevronLeft } from 'react-icons/fa';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { formatFileSize, getEstimatedSizeInBytes } from './utils';
 
 interface Format {
   id: string;
-  title: string;
   hasNextStep?: boolean;
-  description: string;
   estimateSize: boolean;
-  features: string[];
+  featureKeys: string[];
 }
 
 interface FormatSelectionProps {
@@ -24,51 +23,31 @@ interface FormatSelectionProps {
 const formatCards: Format[] = [
   {
     id: 'SIMPLE_CSV',
-    title: 'Occurrence list',
-    description: 'A single CSV file with standardized, interpreted occurrence data.',
     estimateSize: true,
-    features: [
-      'Single CSV file',
-      'Interpreted data only',
-      'Coordinates (if available)',
-      'Individual occurrences',
-    ],
+    featureKeys: ['singleCsv', 'interpretedData', 'coordinates', 'individualOccurrences'],
   },
   {
     id: 'DWCA',
-    title: 'Darwin Core Archive',
     hasNextStep: true,
-    description:
-      'Multiple files (core, raw values, interpreted data, extensions) for detailed or specialized use. The download can be customized by selecting specific extensions.',
     estimateSize: true,
-    features: [
-      'Multiple csv files',
-      'Raw + interpreted data',
-      'Multimedia links',
-      'Coordinates (if available)',
-      'Individual occurrences',
+    featureKeys: [
+      'multipleCsv',
+      'rawAndInterpreted',
+      'multimediaLinks',
+      'coordinates',
+      'individualOccurrences',
     ],
   },
   {
     id: 'SPECIES_LIST',
-    title: 'Species list',
-    description: 'A distinct list of species with occurrence counts.',
     estimateSize: true,
-    features: ['Single CSV file', 'Interpreted data only', 'Occurrence counts'],
+    featureKeys: ['singleCsv', 'interpretedData', 'occurrenceCounts'],
   },
   {
     id: 'SQL_TSV_ZIP',
-    title: 'Occurrence cube',
     hasNextStep: true,
-    description:
-      'Gridded occurrence counts by taxonomic, spatial and temporal dimensions. Dimensions and aggregations can be configured in the next step.',
     estimateSize: false,
-    features: [
-      'Single CSV file',
-      'Interpreted data only',
-      'Coordinates (if selected)',
-      'Occurrence counts',
-    ],
+    featureKeys: ['singleCsv', 'interpretedData', 'coordinatesIfSelected', 'occurrenceCounts'],
   },
 ];
 
@@ -97,7 +76,7 @@ export default function FormatSelection({
         {formatCards.map((format) => {
           return (
             <div
-              key={format.title}
+              key={format.id}
               className={`g-border-b g-overflow-hidden g-border-gray-200 last:g-border-0`}
             >
               {/* Main Card Content */}
@@ -116,7 +95,9 @@ export default function FormatSelection({
                               )
                             }
                           >
-                            {format.title}
+                            <FormattedMessage
+                              id={`occurrenceDownloadFlow.downloadFormats.${format.id}.title`}
+                            />
                           </h3>
                         </div>
                         {loadingCounts && (
@@ -125,19 +106,25 @@ export default function FormatSelection({
                         {!loadingCounts && totalRecords > 0 && format.estimateSize && (
                           <div className="g-text-sm g-text-slate-500 g-mb-2">
                             Estimated size:{' '}
-                            {formatFileSize(getEstimatedSizeInBytes(format.id, totalRecords))} bytes
+                            {formatFileSize(getEstimatedSizeInBytes(format.id, totalRecords))}
                           </div>
                         )}
-                        <p className="g-text-gray-600 g-text-sm g-mb-3">{format.description}</p>
+                        <p className="g-text-gray-600 g-text-sm g-mb-3">
+                          <FormattedMessage
+                            id={`occurrenceDownloadFlow.downloadFormats.${format.id}.description`}
+                          />
+                        </p>
 
                         {/* Compact Features */}
                         <div className="g-flex g-flex-wrap g-gap-2">
-                          {format.features.map((feature, index) => (
+                          {format.featureKeys.map((featureKey, index) => (
                             <span
                               key={index}
                               className="g-inline-flex g-items-center g-gap-1 g-text-xs g-bg-gray-50 g-text-gray-700 g-px-2 g-py-1 g-rounded-full"
                             >
-                              {feature}
+                              <FormattedMessage
+                                id={`occurrenceDownloadFlow.downloadFormats.features.${featureKey}`}
+                              />
                             </span>
                           ))}
                         </div>

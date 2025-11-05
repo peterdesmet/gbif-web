@@ -41,6 +41,8 @@ function builder({ locale = 'en', folder = 'translations', keepEmptyStrings = fa
       gbifNetwork: getFile(locale, `../${folder}/${locale}/components/gbifNetwork`).gbifNetwork,
       downloadKey: getFile(locale, `../${folder}/${locale}/components/downloads`).downloadKey,
       participant: getFile(locale, `../${folder}/${locale}/components/participant`).participant,
+      occurrenceDownloadFlow: getFile(locale, `../${folder}/${locale}/components/downloads`)
+        .occurrenceDownloadFlow,
       customSqlDownload: getFile(locale, `../${folder}/${locale}/components/downloads`)
         .customSqlDownload,
       homepage: getFile(locale, `../${folder}/${locale}/components/homepage`).homepage,

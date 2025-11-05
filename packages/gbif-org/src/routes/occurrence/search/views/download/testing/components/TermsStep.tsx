@@ -2,10 +2,10 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import React, { useCallback, useState } from 'react';
 import { FaChevronLeft, FaCheck, FaDownload } from 'react-icons/fa';
-import { getEstimatedSizeInBytes } from './FormatSelection';
 import { generateCubeSql } from './cubeService';
 import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
 import { DownloadSummary } from './DownloadSummary';
+import { getEstimatedSizeInBytes } from './utils';
 
 interface TermsStepProps {
   predicate?: any;

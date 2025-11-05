@@ -222,6 +222,37 @@
     "invalidUrlPredicate": "The predicate in the URL is invalid",
     "redirectNotice": "It looks like you you have been directed here from another site. To download you need to login or register first."
   },
+  "occurrenceDownloadFlow": {
+    "downloadFormats": {
+      "SIMPLE_CSV": {
+        "title": "Occurrence list",
+        "description": "A single CSV file with standardized, interpreted occurrence data."
+      },
+      "DWCA": {
+        "title": "Darwin Core Archive",
+        "description": "Multiple files (core, raw values, interpreted data, extensions) for detailed or specialized use. The download can be customized by selecting specific extensions."
+      },
+      "SPECIES_LIST": {
+        "title": "Species list",
+        "description": "A distinct list of species with occurrence counts."
+      },
+      "SQL_TSV_ZIP": {
+        "title": "Occurrence cube",
+        "description": "Gridded occurrence counts by taxonomic, spatial and temporal dimensions. Dimensions and aggregations can be configured in the next step."
+      },
+      "features": {
+        "singleCsv": "Single CSV file",
+        "multipleCsv": "Multiple csv files",
+        "interpretedData": "Interpreted data only",
+        "rawAndInterpreted": "Raw + interpreted data",
+        "coordinates": "Coordinates (if available)",
+        "coordinatesIfSelected": "Coordinates (if selected)",
+        "individualOccurrences": "Individual occurrences",
+        "multimediaLinks": "Multimedia links",
+        "occurrenceCounts": "Occurrence counts"
+      }
+    }
+  },
   "customSqlDownload": {
     "cubeConfiguration": "Cube configuration",
     "invalidSQL": "Invalid SQL",
