@@ -35,7 +35,9 @@ export default function ExpandableSection({
         {summary && <div className="g-hidden md:g-block g-text-sm g-text-gray-500">{summary}</div>}
       </button>
 
-      {isExpanded && <div className="g-border-t g-border-gray-200 g-p-6">{children}</div>}
+      {isExpanded && (
+        <div className="g-border-t g-border-gray-200 g-p-2 md:g-p-6 g-bg-slate-50">{children}</div>
+      )}
     </div>
   );
 }

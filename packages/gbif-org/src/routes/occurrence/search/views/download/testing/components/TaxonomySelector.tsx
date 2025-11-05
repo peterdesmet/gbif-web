@@ -29,7 +29,7 @@ export default function TaxonomySelector({
       {!loading && (
         <div className="g-space-y-2">
           {checklists.map((checklist) => (
-            <label className="g-flex g-items-start g-p-4 g-border g-border-gray-300 g-rounded g-cursor-pointer hover:g-bg-gray-50 g-transition-colors">
+            <label className="g-bg-white g-flex g-items-start g-p-4 g-border g-border-gray-300 g-rounded g-cursor-pointer">
               <input
                 type="radio"
                 name="taxonomy"

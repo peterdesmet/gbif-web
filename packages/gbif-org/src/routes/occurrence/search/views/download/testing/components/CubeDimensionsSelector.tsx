@@ -1,293 +1,31 @@
 import { FaInfoCircle } from 'react-icons/fa';
 import { FaCube as CubeIcon } from 'react-icons/fa6';
-import { useState, useEffect } from 'react';
-import { generateCubeSql, hasAllFilters, hasFilter } from './cubeService';
-import { Checkbox } from '@/components/ui/checkbox';
-import { FilterType } from '@/contexts/filter';
+import { hasAllFilters, hasFilter } from './cubeService';
 import { FormattedMessage } from 'react-intl';
 import ExpandableSection from './ExpandableSection';
 
-// ============================================================================
-// Types & Constants
-// ============================================================================
+// Import types
+import {
+  CubeDimensions,
+  CubeDimensionsSelectorProps,
+  TAXONOMIC_GROUPS,
+  TEMPORAL_GROUPS,
+  SPATIAL_GROUPS,
+  RESOLUTION_OPTIONS,
+  RESOLUTION_DEFAULTS,
+} from './cube/types';
 
-export interface CubeDimensions {
-  spatialResolution: string;
-  temporalResolution: string;
-  taxonomicLevel: string;
-  spatial: string;
-  resolution: number | string;
-  randomize: 'YES' | 'NO';
-  includeTemporalUncertainty: 'YES' | 'NO';
-  includeSpatialUncertainty: 'YES' | 'NO';
-  selectedHigherTaxonomyGroups: string[];
-  removeRecordsWithGeospatialIssues: boolean;
-  removeRecordsTaxonIssues: boolean;
-  removeRecordsAtCentroids: boolean;
-  removeFossilsAndLiving: boolean;
-  removeAbsenceRecords: boolean;
-}
+// Import hooks
+import { useFormValidation, useSqlGeneration } from './cube/hooks';
 
-interface CubeDimensionsSelectorProps {
-  cube: CubeDimensions;
-  onChange: (dimensions: CubeDimensions) => void;
-  isExpanded: boolean;
-  onToggle: () => void;
-  filter?: FilterType;
-  onValidationChange?: (isValid: boolean) => void;
-}
+// Import components
+import { RadioGroup, CheckboxField, SelectField, FieldsetSection } from './cube/components';
 
-const TAXONOMIC_GROUPS = [
-  'KINGDOM',
-  'PHYLUM',
-  'CLASS',
-  'ORDER',
-  'FAMILY',
-  'GENUS',
-  'SPECIES',
-  'ACCEPTED_TAXON',
-  'EXACT_TAXON',
-] as const;
+// Import utils
+import { getHigherTaxonomicGroups } from './cube/utils';
 
-const TEMPORAL_GROUPS = ['YEAR', 'YEARMONTH', 'DATE'] as const;
-
-const SPATIAL_GROUPS = [
-  'EEA_REFERENCE_GRID',
-  'EXTENDED_QUARTER_DEGREE_GRID',
-  'ISEA3H_GRID',
-  'MILITARY_GRID_REFERENCE_SYSTEM',
-  'COUNTRY',
-] as const;
-
-const HIGHER_TAXONOMIC_OPTIONS = [
-  'KINGDOM',
-  'PHYLUM',
-  'CLASS',
-  'ORDER',
-  'FAMILY',
-  'GENUS',
-] as const;
-
-const RESOLUTION_OPTIONS: Record<string, number[]> = {
-  EEA_REFERENCE_GRID: [25, 100, 250, 1000, 10000, 50000, 100000],
-  EXTENDED_QUARTER_DEGREE_GRID: [0, 1, 2, 3, 4, 5, 6],
-  ISEA3H_GRID: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
-  MILITARY_GRID_REFERENCE_SYSTEM: [0, 1, 10, 100, 1000, 10000, 100000],
-};
-
-const RESOLUTION_DEFAULTS: Record<string, number> = {
-  EEA_REFERENCE_GRID: 1000,
-  EXTENDED_QUARTER_DEGREE_GRID: 2,
-  ISEA3H_GRID: 9,
-  MILITARY_GRID_REFERENCE_SYSTEM: 1000,
-};
-
-// ============================================================================
-// Custom Hooks
-// ============================================================================
-
-function useFormValidation(cube: CubeDimensions, onValidationChange?: (isValid: boolean) => void) {
-  const isValid = () => {
-    const hasTaxonomic = Boolean(cube.taxonomicLevel);
-    const hasTemporal = Boolean(cube.temporalResolution);
-    const hasSpatial =
-      Boolean(cube.spatial) && (cube.spatial === 'COUNTRY' || Boolean(cube.resolution));
-
-    return hasTaxonomic || hasTemporal || hasSpatial;
-  };
-
-  useEffect(() => {
-    onValidationChange?.(isValid());
-  }, [cube, onValidationChange]);
-
-  return isValid();
-}
-
-function useSqlGeneration() {
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const generateAndNavigate = async (cube: CubeDimensions) => {
-    setIsGenerating(true);
-    setError(null);
-
-    try {
-      const result = await generateCubeSql(cube, undefined);
-      const url = result.sql
-        ? `/occurrence/download/sql?${new URLSearchParams({ sql: result.sql })}`
-        : '/occurrence/download/sql';
-      window.location.href = url;
-    } catch (err) {
-      console.error('Failed to generate SQL:', err);
-      setError('Failed to generate SQL. Please try again.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  return { isGenerating, error, generateAndNavigate };
-}
-
-// ============================================================================
-// Sub-components
-// ============================================================================
-
-interface RadioGroupProps {
-  name: string;
-  value: 'YES' | 'NO';
-  onChange: (value: 'YES' | 'NO') => void;
-}
-
-function RadioGroup({ name, value, onChange }: RadioGroupProps) {
-  return (
-    <div className="g-flex g-gap-4">
-      <label className="g-flex g-items-center g-gap-2">
-        <input
-          type="radio"
-          name={name}
-          value="YES"
-          checked={value === 'YES'}
-          onChange={(e) => onChange(e.target.value as 'YES' | 'NO')}
-          className="g-h-4 g-w-4 g-text-primary-600"
-        />
-        <span className="g-text-sm">
-          <FormattedMessage id="customSqlDownload.boolean.YES" defaultMessage="Yes" />
-        </span>
-      </label>
-      <label className="g-flex g-items-center g-gap-2">
-        <input
-          type="radio"
-          name={name}
-          value="NO"
-          checked={value === 'NO'}
-          onChange={(e) => onChange(e.target.value as 'YES' | 'NO')}
-          className="g-h-4 g-w-4 g-text-primary-600"
-        />
-        <span className="g-text-sm">
-          <FormattedMessage id="customSqlDownload.boolean.NO" defaultMessage="No" />
-        </span>
-      </label>
-    </div>
-  );
-}
-
-interface CheckboxFieldProps {
-  checked: boolean;
-  onCheckedChange?: (checked: boolean) => void;
-  labelId: string;
-  labelDefault?: string;
-  helpText?: string;
-  disabled?: boolean;
-}
-
-function CheckboxField({
-  checked,
-  onCheckedChange,
-  labelId,
-  labelDefault,
-  helpText,
-  disabled = false,
-}: CheckboxFieldProps) {
-  return (
-    <label className="g-flex g-items-start g-gap-3">
-      <Checkbox
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        disabled={disabled}
-        className="g-mt-1 g-h-4 g-w-4 g-text-primary-600"
-      />
-      <div>
-        <span className={`g-text-sm ${disabled ? '' : 'g-font-medium'}`}>
-          <FormattedMessage id={labelId} defaultMessage={labelDefault || labelId} />
-        </span>
-        {helpText && (
-          <p className="g-text-sm g-text-gray-600">
-            <FormattedMessage id={helpText} />
-          </p>
-        )}
-      </div>
-    </label>
-  );
-}
-
-interface SelectFieldProps {
-  label: string;
-  helpText: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: readonly string[] | number[];
-  translationPrefix: string;
-  noneSelectedText?: string;
-  disableNone?: boolean;
-}
-
-function SelectField({
-  label,
-  helpText,
-  value,
-  onChange,
-  options,
-  translationPrefix,
-  noneSelectedText = 'None selected',
-  disableNone = false,
-}: SelectFieldProps) {
-  return (
-    <div>
-      <label className="g-block g-text-sm g-font-medium g-text-gray-700 g-mb-2">
-        <FormattedMessage id={label} defaultMessage={label} />
-      </label>
-      <p className="g-text-sm g-text-gray-600 g-mb-3">
-        <FormattedMessage id={helpText} defaultMessage={helpText} />
-      </p>
-      <div className="g-w-full g-pe-2 g-border g-border-gray-300 g-rounded g-focus:ring-primary-500 g-focus:border-primary-500">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="g-w-full g-p-2 g-pe-0 g-rounded"
-        >
-          <option value="" disabled={disableNone}>
-            <FormattedMessage
-              id="customSqlDownload.noneSelected"
-              defaultMessage={noneSelectedText}
-            />
-          </option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              <FormattedMessage
-                id={`${translationPrefix}.${option}`}
-                defaultMessage={String(option)}
-              />
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-  );
-}
-
-interface FieldsetSectionProps {
-  title: string;
-  helpText?: string;
-  children: React.ReactNode;
-}
-
-function FieldsetSection({ title, helpText, children }: FieldsetSectionProps) {
-  return (
-    <fieldset className="g-bg-white g-rounded g-shadow-lg g-border g-border-gray-200 g-p-4">
-      <legend className="g-text-lg g-font-medium g-text-gray-900 g-mb-0 g-px-2">
-        <FormattedMessage id={title} defaultMessage={title} />
-      </legend>
-      <div className="g-space-y-4">
-        {helpText && (
-          <div className="g-text-slate-500 g-text-sm g-mb-8">
-            <FormattedMessage id={helpText} />
-          </div>
-        )}
-        {children}
-      </div>
-    </fieldset>
-  );
-}
+// Re-export types for external consumers
+export type { CubeDimensions };
 
 // ============================================================================
 // Main Component
@@ -322,21 +60,16 @@ export default function CubeDimensionsSelector({
     generateAndNavigate(cube);
   };
 
-  const getHigherTaxonomicGroups = () => {
-    const index = TAXONOMIC_GROUPS.indexOf(cube.taxonomicLevel as any);
-    return index === -1 ? [] : HIGHER_TAXONOMIC_OPTIONS.slice(0, index);
-  };
-
   const handleSpatialChange = (spatial: string) => {
     const resolution = RESOLUTION_DEFAULTS[spatial] || '';
     updateDimensions({ spatial, resolution });
   };
 
   const handleTaxonomicLevelChange = (taxonomicLevel: string) => {
-    const higherGroups = getHigherTaxonomicGroups();
+    const higherGroups = getHigherTaxonomicGroups(taxonomicLevel);
     updateDimensions({
       taxonomicLevel,
-      selectedHigherTaxonomyGroups: higherGroups.slice(),
+      selectedHigherTaxonomyGroups: Array.from(higherGroups),
     });
   };
 
@@ -348,7 +81,7 @@ export default function CubeDimensionsSelector({
     updateDimensions({ selectedHigherTaxonomyGroups: updated });
   };
 
-  const higherTaxonomicGroups = getHigherTaxonomicGroups();
+  const higherTaxonomicGroups = getHigherTaxonomicGroups(cube.taxonomicLevel);
 
   return (
     <ExpandableSection
