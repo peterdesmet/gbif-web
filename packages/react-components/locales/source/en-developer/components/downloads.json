@@ -223,6 +223,11 @@
     "redirectNotice": "It looks like you you have been directed here from another site. To download you need to login or register first."
   },
   "occurrenceDownloadFlow": {
+    "back": "Back",
+    "estimatedSize": "Estimated size",
+    "configure": "Configure",
+    "weAlsoSupport": "We also support {link}",
+    "sqlDownloadsLink": "SQL downloads",
     "downloadFormats": {
       "SIMPLE_CSV": {
         "title": "Occurrence list",

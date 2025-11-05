@@ -67,7 +67,7 @@ export default function FormatSelection({
             className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-4 g-transition-colors"
           >
             <FaChevronLeft size={20} />
-            Back to filter
+            <FormattedMessage id="occurrenceDownloadFlow.back" defaultMessage="Back" />
           </button>
         </div>
       )}
@@ -105,7 +105,7 @@ export default function FormatSelection({
                         )}
                         {!loadingCounts && totalRecords > 0 && format.estimateSize && (
                           <div className="g-text-sm g-text-slate-500 g-mb-2">
-                            Estimated size:{' '}
+                            <FormattedMessage id={`occurrenceDownloadFlow.estimatedSize`} />:{' '}
                             {formatFileSize(getEstimatedSizeInBytes(format.id, totalRecords))}
                           </div>
                         )}
@@ -137,7 +137,10 @@ export default function FormatSelection({
                             onFormatSelect(format, getEstimatedSizeInBytes(format.id, totalRecords))
                           }
                         >
-                          Configure
+                          <FormattedMessage
+                            id="occurrenceDownloadFlow.configure"
+                            defaultMessage="Configure"
+                          />
                         </Button>
                       </div>
                     </div>
@@ -150,10 +153,20 @@ export default function FormatSelection({
       </Card>
       <div className="g-mt-8">
         <p className="g-text-gray-600 g-text-sm">
-          We also support{' '}
-          <DynamicLink pageId="occurrenceDownloadSql" className="g-underline">
-            SQL downloads
-          </DynamicLink>
+          <FormattedMessage
+            id="occurrenceDownloadFlow.weAlsoSupport"
+            defaultMessage="We also support {link}"
+            values={{
+              link: (
+                <DynamicLink pageId="occurrenceDownloadSql" className="g-underline">
+                  <FormattedMessage
+                    id="occurrenceDownloadFlow.sqlDownloadsLink"
+                    defaultMessage="SQL downloads"
+                  />
+                </DynamicLink>
+              ),
+            }}
+          />
         </p>
         {/* <p className="g-text-gray-600 g-text-sm g-mt-4">
           Not sure which format to choose? Try this{' '}
