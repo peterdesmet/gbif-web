@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FaPuzzlePiece, FaInfoCircle } from 'react-icons/fa';
 import ExpandableSection from './ExpandableSection';
+import { FormattedMessage } from 'react-intl';
+import { optionStyles } from './utils';
 
 interface ExtensionsSelectorProps {
   selectedExtensions: string[];
@@ -15,139 +17,137 @@ const AVAILABLE_EXTENSIONS = [
     url: 'http://rs.tdwg.org/ac/terms/Multimedia',
     name: 'Multimedia',
     description:
-      'Audubon Core extension for multimedia content including images, audio, video, and other digital media associated with specimens or observations',
+      'Images, audio recordings, or videos, including media metadata and license information - http://rs.tdwg.org/ac/terms/Multimedia',
   },
   {
     url: 'http://data.ggbn.org/schemas/ggbn/terms/Amplification',
     name: 'Amplification',
     description:
-      'GGBN extension for DNA/RNA amplification data including PCR conditions, primers, and amplicon information',
+      'Information on DNA amplification of a material - http://data.ggbn.org/schemas/ggbn/terms/Amplification',
   },
   {
     url: 'http://purl.org/germplasm/germplasmTerm#GermplasmAccession',
     name: 'GermplasmAccession',
     description:
-      'Germplasm extension for plant genetic resource accession data including breeding lines, cultivars, and seed bank information',
+      'Describes genebank accessions for plant genetic resources - http://purl.org/germplasm/germplasmTerm#GermplasmAccession',
   },
   {
     url: 'http://purl.org/germplasm/germplasmTerm#MeasurementScore',
     name: 'MeasurementScore',
     description:
-      'Germplasm extension for recording measurement scores and evaluation data from field trials and assessments',
+      'Trait measurements for plant genetic resources - http://purl.org/germplasm/germplasmTerm#MeasurementScore',
   },
   {
     url: 'http://purl.org/germplasm/germplasmTerm#MeasurementTrait',
     name: 'MeasurementTrait',
     description:
-      'Germplasm extension for defining measurable traits and characteristics evaluated in germplasm collections',
+      'Trait descriptors describing methods and protocols followed when making trait measurements for plant genetic resources - http://purl.org/germplasm/germplasmTerm#MeasurementTrait',
   },
   {
     url: 'http://purl.org/germplasm/germplasmTerm#MeasurementTrial',
     name: 'MeasurementTrial',
     description:
-      'Germplasm extension for trial and experiment metadata where germplasm measurements and evaluations are conducted',
+      'Measurement trial (field or greenhouse) to collect trait measurements for plant genetic resources - http://purl.org/germplasm/germplasmTerm#MeasurementTrial',
   },
   {
     url: 'http://rs.tdwg.org/dwc/terms/Identification',
     name: 'Identification',
     description:
-      'Darwin Core extension for taxonomic identifications, including determiner information, dates, and identification history',
+      'Information on multiple identifications of the same organism - http://rs.tdwg.org/dwc/terms/Identification',
   },
   {
     url: 'http://rs.gbif.org/terms/1.0/Identifier',
     name: 'Identifier',
-    description:
-      'GBIF extension for alternative identifiers and cross-references to external databases and systems',
+    description: 'Alternative identifiers for a taxon - http://rs.gbif.org/terms/1.0/Identifier',
   },
   {
     url: 'http://rs.gbif.org/terms/1.0/Image',
     name: 'Image',
-    description:
-      'GBIF extension specifically for image metadata including licensing, spatial resolution, and technical specifications',
+    description: 'Images and associated metadata - http://rs.gbif.org/terms/1.0/Image',
   },
   {
     url: 'http://rs.tdwg.org/dwc/terms/MeasurementOrFact',
     name: 'MeasurementOrFact',
     description:
-      'Darwin Core extension for quantitative and qualitative measurements, facts, and characteristics of specimens or observations',
+      'Measurements or facts associated with a record - http://rs.tdwg.org/dwc/terms/MeasurementOrFact',
   },
   {
     url: 'http://rs.gbif.org/terms/1.0/Multimedia',
     name: 'Multimedia',
     description:
-      'GBIF-specific multimedia extension for digital media files with enhanced metadata and licensing information',
+      'Images, audio recordings, or videos, including media metadata and license information - http://rs.gbif.org/terms/1.0/Multimedia',
   },
   {
     url: 'http://rs.gbif.org/terms/1.0/Reference',
     name: 'Reference',
     description:
-      'GBIF extension for bibliographic references and literature citations associated with specimens or data records',
+      'Literature references for taxon or occurrence records - http://rs.gbif.org/terms/1.0/Reference',
   },
   {
     url: 'http://rs.tdwg.org/dwc/terms/ResourceRelationship',
     name: 'ResourceRelationship',
     description:
-      'Darwin Core extension for expressing relationships between different resources, specimens, or data records',
+      'Information on the relationship between records within a dataset or resources external to the dataset - http://rs.tdwg.org/dwc/terms/ResourceRelationship',
   },
   {
     url: 'http://data.ggbn.org/schemas/ggbn/terms/Cloning',
     name: 'Cloning',
     description:
-      'GGBN extension for molecular cloning procedures and vector information used in genetic research',
+      'Information on DNA cloning of a material - http://data.ggbn.org/schemas/ggbn/terms/Cloning',
   },
   {
     url: 'http://data.ggbn.org/schemas/ggbn/terms/GelImage',
     name: 'GelImage',
     description:
-      'GGBN extension for gel electrophoresis images and associated metadata from molecular biology procedures',
+      'Information on the gel image of a material - http://data.ggbn.org/schemas/ggbn/terms/GelImage',
   },
   {
     url: 'http://data.ggbn.org/schemas/ggbn/terms/Loan',
     name: 'Loan',
     description:
-      'GGBN extension for tracking specimen and sample loans between institutions including terms and conditions',
+      'Information about how a specimen can be loaned and under which conditions - http://data.ggbn.org/schemas/ggbn/terms/Loan',
   },
   {
     url: 'http://data.ggbn.org/schemas/ggbn/terms/MaterialSample',
     name: 'MaterialSample',
     description:
-      'GGBN extension for physical material samples including tissue samples, DNA extracts, and other derived materials',
+      'Information on properties of material samples (e.g. tissues, DNA, RNA) - http://data.ggbn.org/schemas/ggbn/terms/MaterialSample',
   },
   {
     url: 'http://data.ggbn.org/schemas/ggbn/terms/Permit',
     name: 'Permit',
     description:
-      'GGBN extension for permits and legal authorizations required for specimen collection, export, and research activities',
+      'Information on permits associated with a material - http://data.ggbn.org/schemas/ggbn/terms/Permit',
   },
   {
     url: 'http://data.ggbn.org/schemas/ggbn/terms/Preparation',
     name: 'Preparation',
     description:
-      'GGBN extension for specimen preparation methods and protocols used in processing biological samples',
+      'Information on how material was prepared - http://data.ggbn.org/schemas/ggbn/terms/Preparation',
   },
   {
     url: 'http://data.ggbn.org/schemas/ggbn/terms/Preservation',
     name: 'Preservation',
     description:
-      'GGBN extension for preservation methods, storage conditions, and long-term maintenance of biological samples',
+      'Information on how material was preserved - http://data.ggbn.org/schemas/ggbn/terms/Preservation',
   },
   {
     url: 'http://rs.iobis.org/obis/terms/ExtendedMeasurementOrFact',
     name: 'ExtendedMeasurementOrFact',
     description:
-      'OBIS extension for enhanced marine and aquatic measurements including environmental parameters and species-specific data',
+      'Extended measurements or facts related to a biological occurrence, environmental measurements or facts and sampling method attributes - http://rs.iobis.org/obis/terms/ExtendedMeasurementOrFact',
   },
   {
     url: 'http://rs.tdwg.org/chrono/terms/ChronometricAge',
     name: 'ChronometricAge',
     description:
-      'Chronometric Age extension for absolute age determinations using radiometric and other dating methods',
+      'Chronometric age information in cases where the collecting event is not contemporaneous with the time when the organism was alive - http://rs.tdwg.org/chrono/terms/ChronometricAge',
   },
   {
     url: 'http://rs.gbif.org/terms/1.0/DNADerivedData',
     name: 'DNADerivedData',
     description:
-      'GBIF extension for DNA sequence data, genomic information, and molecular data derived from specimens',
+      'Includes relevant information for records derived based on DNA analysis - http://rs.gbif.org/terms/1.0/DNADerivedData',
   },
 ];
 
@@ -199,19 +199,18 @@ export default function ExtensionsSelector({
 
       <div className="g-grid g-gap-3">
         {AVAILABLE_EXTENSIONS.map((extension) => (
-          <label
-            key={extension.url}
-            className="g-bg-white g-flex g-items-start g-p-4 g-rounded g-border g-border-gray-200 g-cursor-pointer"
-          >
+          <label key={extension.url} className={optionStyles.optionCard}>
             <Checkbox
               checked={selectedExtensions.includes(extension.url)}
               onCheckedChange={() => toggleExtension(extension.url)}
               className="g-mt-1"
             />
-            <div className="g-ml-3 g-flex-1">
-              <span className="g-font-medium g-text-gray-900 g-text-sm">{extension.name}</span>
-              <p className="g-text-xs g-text-gray-500 g-break-all g-mt-0.5">
-                {extension.description}
+            <div className={optionStyles.optionLabel}>
+              <span className={optionStyles.optionTitle}>
+                <FormattedMessage id={`enums.dwcaExtension.${extension.url}`} />
+              </span>
+              <p className={optionStyles.optionDescription}>
+                <FormattedMessage id={`definitions.extension.${extension.url}`} />
               </p>
             </div>
           </label>

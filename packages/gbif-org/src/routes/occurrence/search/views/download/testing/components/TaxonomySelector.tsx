@@ -2,6 +2,7 @@ import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
 import { TaxonomyIcon } from '@/components/highlights';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import ExpandableSection from './ExpandableSection';
+import { optionStyles } from './utils';
 
 interface TaxonomySelectorProps {
   value: string;
@@ -30,15 +31,12 @@ export default function TaxonomySelector({
       {!loading && (
         <RadioGroup value={value} onValueChange={onChange}>
           {checklists.map((checklist) => (
-            <label
-              key={checklist.key}
-              className="g-bg-white g-flex g-items-start g-p-4 g-rounded g-border g-border-gray-200 g-cursor-pointer"
-            >
+            <label key={checklist.key} className={optionStyles.optionCard}>
               <RadioGroupItem value={checklist.key} className="g-mt-1" />
-              <div className="g-ml-3 g-flex-1">
-                <span className="g-font-medium g-text-gray-900 g-text-sm">{checklist.title}</span>
+              <div className={optionStyles.optionLabel}>
+                <span className={optionStyles.optionTitle}>{checklist.title}</span>
                 {checklist.isDefault && (
-                  <p className="g-text-xs g-text-gray-500 g-mt-0.5">
+                  <p className={optionStyles.optionDescription}>
                     Default and recommended for most users
                   </p>
                 )}

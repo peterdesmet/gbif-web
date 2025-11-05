@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FaChevronLeft, FaCheck, FaDownload } from 'react-icons/fa';
 import { getEstimatedSizeInBytes } from './FormatSelection';
 import { generateCubeSql } from './cubeService';
@@ -30,12 +30,9 @@ export default function TermsStep({
   const [preparingDownload, setPreparingDownload] = useState(false);
   const [error, setError] = useState(null);
   const { checklists, loading } = useSupportedChecklists();
-
   const [acceptedTerms, setAcceptedTerms] = useState({
     dataUse: false,
     ...(isLargeDownload && { largeDownload: false }),
-    // privacy: false,
-    // processing: false,
   });
 
   const allTermsAccepted = Object.values(acceptedTerms).every(Boolean);
@@ -66,7 +63,7 @@ export default function TermsStep({
     }
   }, [configuration, predicate, selectedFormat]);
 
-  const handleTermChange = (term: keyof typeof acceptedTerms) => {
+  const handleTermChange = (term: AcceptedTerm) => {
     setAcceptedTerms((prev) => ({
       ...prev,
       [term]: !prev[term],
@@ -212,20 +209,20 @@ export default function TermsStep({
 
             <div className="g-space-y-3 g-mb-6 g-mt-6">
               <h4 className="g-font-medium g-text-gray-900">Terms Status</h4>
-              {Object.entries(acceptedTerms).map(([key, accepted]) => (
-                <label key={key} className="g-flex g-items-start g-gap-2 g-text-sm">
-                  <Checkbox
-                    id={key}
-                    checked={accepted}
-                    onCheckedChange={() => handleTermChange(key as keyof typeof acceptedTerms)}
-                    className="'g-flex-none g-me-2 g-mt-0.5 g-h-4 g-w-4"
-                  />
-                  <span className={accepted ? 'g-text-green-700' : 'g-text-gray-600'}>
-                    {key === 'dataUse' && 'Data Use Agreement'}
-                    {key === 'largeDownload' && 'Large Download Acknowledgment'}
-                  </span>
-                </label>
-              ))}
+              <Term
+                label="Data Use Agreement"
+                termKey="dataUse"
+                accepted={acceptedTerms.dataUse}
+                handleTermChange={handleTermChange}
+              />
+              {isLargeDownload && (
+                <Term
+                  label="Large Download Acknowledgment"
+                  termKey="largeDownload"
+                  accepted={acceptedTerms.largeDownload || false}
+                  handleTermChange={handleTermChange}
+                />
+              )}
             </div>
 
             <Button
@@ -246,5 +243,31 @@ export default function TermsStep({
         </div>
       </div>
     </div>
+  );
+}
+
+type AcceptedTerm = 'dataUse' | 'largeDownload';
+
+function Term({
+  termKey,
+  accepted,
+  handleTermChange,
+  label,
+}: {
+  termKey: AcceptedTerm;
+  accepted: boolean;
+  handleTermChange: (term: AcceptedTerm) => void;
+  label: string | React.ReactNode;
+}) {
+  return (
+    <label className="g-flex g-items-start g-gap-2 g-text-sm">
+      <Checkbox
+        id={termKey}
+        checked={accepted}
+        onCheckedChange={() => handleTermChange(termKey)}
+        className="'g-flex-none g-me-2 g-mt-0.5 g-h-4 g-w-4"
+      />
+      <span className={accepted ? 'g-text-green-700' : 'g-text-gray-600'}>{label}</span>
+    </label>
   );
 }

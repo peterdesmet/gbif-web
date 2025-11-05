@@ -81,11 +81,11 @@ function OccurrenceDownloadFlow({
   const [selectedFormat, setSelectedFormat] = useState(null);
   const [configuration, setConfiguration] = useState(null);
 
-  const handleFilterSelect = (format: any) => {
+  const handleFilterSelect = () => {
     setCurrentStep('FORMAT');
   };
 
-  const handleFormatSelect = (format: any, estimatedSizeInBytes: number) => {
+  const handleFormatSelect = (format: any) => {
     setSelectedFormat({ ...format });
     setCurrentStep('CONFIGURE');
   };
