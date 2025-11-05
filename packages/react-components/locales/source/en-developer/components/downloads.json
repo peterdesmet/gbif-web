@@ -231,6 +231,16 @@
     "downloadSummary": "Download Summary",
     "weAlsoSupport": "We also support {link}",
     "sqlDownloadsLink": "SQL downloads",
+    "extensions": "Extensions",
+    "selectAdditionalExtensions": "Select additional data extensions to include",
+    "nExtensionsSelected": "{count, plural, one {# selected} other {# selected}}",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "extensionsInfoMessage": "Extensions provide additional data fields beyond the core occurrence data. Only select extensions that are relevant to your research needs.",
+    "format": "Format",
+    "csvDelimiter": "CSV delimiter",
+    "taxonomy": "Taxonomy",
+    "tabDelimiter": "TAB",
     "downloadFormats": {
       "SIMPLE_CSV": {
         "title": "Occurrence list",

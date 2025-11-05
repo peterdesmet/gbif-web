@@ -167,9 +167,14 @@ export default function ExtensionsSelector({
   return (
     <ExpandableSection
       icon={<FaPuzzlePiece size={20} className="g-text-primary-600" />}
-      title="Extensions"
-      description="Select additional data extensions to include"
-      summary={`${selectedExtensions.length} selected`}
+      title={<FormattedMessage id="occurrenceDownloadFlow.extensions" />}
+      description={<FormattedMessage id="occurrenceDownloadFlow.selectAdditionalExtensions" />}
+      summary={
+        <FormattedMessage
+          id="occurrenceDownloadFlow.nExtensionsSelected"
+          values={{ count: selectedExtensions.length }}
+        />
+      }
       isExpanded={isExpanded}
       onToggle={onToggle}
     >
@@ -177,8 +182,7 @@ export default function ExtensionsSelector({
         <div className="g-flex g-items-start g-gap-3">
           <FaInfoCircle size={16} className="g-text-blue-600 g-mt-0.5 g-flex-shrink-0" />
           <p className="g-text-sm g-text-blue-800">
-            Extensions provide additional data fields beyond the core occurrence data. Only select
-            extensions that are relevant to your research needs.
+            <FormattedMessage id="occurrenceDownloadFlow.extensionsInfoMessage" />
           </p>
         </div>
       </div>
@@ -190,10 +194,10 @@ export default function ExtensionsSelector({
           variant="default"
           type="button"
         >
-          Select All
+          <FormattedMessage id="occurrenceDownloadFlow.selectAll" />
         </Button>
         <Button size="sm" variant="primaryOutline" onClick={() => onChange([])} type="button">
-          Deselect All
+          <FormattedMessage id="occurrenceDownloadFlow.deselectAll" />
         </Button>
       </div>
 

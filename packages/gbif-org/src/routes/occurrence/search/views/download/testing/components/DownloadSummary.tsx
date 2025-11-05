@@ -1,4 +1,5 @@
 import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
+import { FormattedMessage } from 'react-intl';
 
 export function DownloadSummary({
   selectedFormat,
@@ -12,16 +13,25 @@ export function DownloadSummary({
   const getConfigSummary = () => {
     const isDarwinCoreArchive = selectedFormat?.id === 'DWCA';
     const summary = [
-      { label: 'Format', value: selectedFormat.title },
-      { label: 'CSV delimiter', value: 'TAB' },
       {
-        label: 'Taxonomy',
+        label: <FormattedMessage id="occurrenceDownloadFlow.format" />,
+        value: selectedFormat.title,
+      },
+      {
+        label: <FormattedMessage id="occurrenceDownloadFlow.csvDelimiter" />,
+        value: <FormattedMessage id="occurrenceDownloadFlow.tabDelimiter" />,
+      },
+      {
+        label: <FormattedMessage id="occurrenceDownloadFlow.taxonomy" />,
         value: checklists.find((x) => x.key === configuration.checklistKey)?.alias ?? '',
       },
     ];
 
     if (isDarwinCoreArchive && 'extensions' in configuration) {
-      summary.push({ label: 'Extensions', value: configuration.extensions.length.toString() });
+      summary.push({
+        label: <FormattedMessage id="occurrenceDownloadFlow.extensions" />,
+        value: configuration.extensions.length.toString(),
+      });
     }
 
     return summary;
@@ -29,8 +39,8 @@ export function DownloadSummary({
 
   return (
     <div className="g-space-y-3 g-text-sm">
-      {getConfigSummary().map((item) => (
-        <div key={item.label} className="g-flex g-justify-between">
+      {getConfigSummary().map((item, index) => (
+        <div key={index} className="g-flex g-justify-between">
           <span className="g-text-gray-600">{item.label}:</span>
           <span className="g-font-medium">{item.value}</span>
         </div>
