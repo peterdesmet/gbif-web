@@ -200,7 +200,7 @@ export default function ExtensionsSelector({
         {AVAILABLE_EXTENSIONS.map((extension) => (
           <label
             key={extension.url}
-            className="g-bg-white g-flex g-items-start g-p-3 g-rounded g-border g-border-gray-200 g-cursor-pointer"
+            className="g-bg-white g-flex g-items-start g-p-4 g-rounded g-border g-border-gray-200 g-cursor-pointer"
           >
             <input
               type="checkbox"
