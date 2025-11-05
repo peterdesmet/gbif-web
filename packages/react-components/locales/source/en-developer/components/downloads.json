@@ -337,6 +337,7 @@
       "dimensions": "A dimension represents an aspect along which data can be aggregated. Selecting a higher resolution (e.g. species over family, date over year, 100 m over 10 km) will result in more categories and therefore more records.",
       "taxonomicDimension": "This dimension aggregates occurrences by their taxonomic rank.",
       "temporalDimension": "This dimension aggregates occurrences by time.",
+      "dataQuality": "Additional quality filters to apply to the data.",
       "grid": "This dimension aggregates occurrences in a spatial grid.",
       "gridResolution": "The size of each grid cell.",
       "randomizePoints": "For occurrence records with a coordinate uncertainty that covers more than one grid cell, should a random cell be chosen? If no is chosen, then the cell containing the centroid of the record is used.",
