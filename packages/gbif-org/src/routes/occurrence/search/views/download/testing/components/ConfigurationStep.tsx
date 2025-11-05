@@ -121,7 +121,7 @@ export default function ConfigurationStep({
       // Ensure SQL is generated for cube data before continuing
       const result = await generateCubeSql(config.cube, predicate);
       if (!result.sql) {
-        alert('Error generating SQL'); // TODO inform the user and do not proceed. instead allow the user to try again.
+        alert('Error generating SQL'); // TODO: Replace with proper error handling UI
         return;
       }
       config.sql = result.sql;
@@ -173,7 +173,7 @@ export default function ConfigurationStep({
           className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-4 g-transition-colors"
         >
           <FaChevronLeft size={20} />
-          Back to format selection
+          <FormattedMessage id="occurrenceDownloadFlow.backToFormatSelection" />
         </button>
       </div>
 
@@ -214,7 +214,9 @@ export default function ConfigurationStep({
         {/* Summary Sidebar */}
         <div className="lg:g-col-span-1">
           <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
-            <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Download Summary</h3>
+            <h3 className="g-font-semibold g-text-gray-900 g-mb-4">
+              <FormattedMessage id="occurrenceDownloadFlow.downloadSummary" />
+            </h3>
 
             {/* <div className="g-space-y-3 g-text-sm">
               {getConfigSummary(selectedFormat, config).map((item) => (
@@ -235,7 +237,7 @@ export default function ConfigurationStep({
 
               {!canContinue && (
                 <div className="g-text-red-600 g-text-sm g-font-medium g-mb-4">
-                  At least one dimension must be selected for cube data
+                  <FormattedMessage id="customSqlDownload.errorMinimumDimensionForCube" />
                 </div>
               )}
 
@@ -245,7 +247,7 @@ export default function ConfigurationStep({
                 className="g-w-full g-flex g-items-center g-justify-center g-gap-2 disabled:g-opacity-50 disabled:g-cursor-not-allowed"
               >
                 <FaCog size={16} />
-                Continue to Terms
+                <FormattedMessage id="occurrenceDownloadFlow.continueToTerms" />
               </Button>
             </div>
           </div>

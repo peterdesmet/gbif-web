@@ -224,8 +224,11 @@
   },
   "occurrenceDownloadFlow": {
     "back": "Back",
+    "backToFormatSelection": "Back to format selection",
     "estimatedSize": "Estimated size",
     "configure": "Configure",
+    "continueToTerms": "Continue to Terms",
+    "downloadSummary": "Download Summary",
     "weAlsoSupport": "We also support {link}",
     "sqlDownloadsLink": "SQL downloads",
     "downloadFormats": {
@@ -256,6 +259,11 @@
         "multimediaLinks": "Multimedia links",
         "occurrenceCounts": "Occurrence counts"
       }
+    },
+    "taxonomySelector": {
+      "title": "Taxonomic Reference",
+      "description": "Select the taxonomic reference for interpretation of species names",
+      "defaultRecommended": "Default and recommended for most users"
     }
   },
   "customSqlDownload": {
@@ -359,6 +367,8 @@
     "countHigherTaxonomy": "Occurrence count at higher taxonomic level",
     "coordinateUncertainty": "Include minimum coordinate uncertainty",
     "errorMinimumDimension": "At least one dimension must be selected",
+    "errorMinimumDimensionForCube": "At least one dimension must be selected for cube data",
+    "errorGeneratingSql": "Error generating SQL",
     "editSql": "Edit as SQL",
     "temporalUncertainty": "Include minimum temporal uncertainty",
     "documentation": "Documentation",

@@ -1,6 +1,7 @@
 import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
 import { TaxonomyIcon } from '@/components/highlights';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { FormattedMessage } from 'react-intl';
 import ExpandableSection from './ExpandableSection';
 import { optionStyles } from './utils';
 
@@ -22,8 +23,8 @@ export default function TaxonomySelector({
   return (
     <ExpandableSection
       icon={<TaxonomyIcon size={20} className="g-text-primary-600 g-flex-none" />}
-      title="Taxonomic Reference"
-      description="Select the taxonomic reference for interpretation of species names"
+      title={<FormattedMessage id="occurrenceDownloadFlow.taxonomySelector.title" />}
+      description={<FormattedMessage id="occurrenceDownloadFlow.taxonomySelector.description" />}
       summary={checklists.find((x) => x.key === value)?.alias ?? ''}
       isExpanded={isExpanded}
       onToggle={onToggle}
@@ -37,7 +38,7 @@ export default function TaxonomySelector({
                 <span className={optionStyles.optionTitle}>{checklist.title}</span>
                 {checklist.isDefault && (
                   <p className={optionStyles.optionDescription}>
-                    Default and recommended for most users
+                    <FormattedMessage id="occurrenceDownloadFlow.taxonomySelector.defaultRecommended" />
                   </p>
                 )}
               </div>
