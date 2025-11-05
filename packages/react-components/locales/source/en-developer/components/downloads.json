@@ -291,7 +291,6 @@
     "largeDownloadDiskSpace": "Once you have downloaded the file, you will need approximately {size} of free disk space to unzip the data.",
     "largeDownloadRowCount": "The dataset has {count} data rows.",
     "largeDownloadExcelWarning": "You will not be able to view or analyse the data in Excel or similar applications. A dataset of this size is difficult to analyse on an ordinary computer. You will probably need access to a distributed computing service or 'Big Data' tools.",
-    "largeDownloadAcknowledgmentPrompt": "Please check the box above to acknowledge that you understand these risks and have access to suitable tools for handling this large dataset.",
     "termsStatus": "Terms Status",
     "createDownload": "Create download",
     "completeRequirements": "Please complete all requirements to continue",

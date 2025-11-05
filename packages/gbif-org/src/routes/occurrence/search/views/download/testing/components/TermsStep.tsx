@@ -5,7 +5,7 @@ import { FaChevronLeft, FaDownload } from 'react-icons/fa';
 import { generateCubeSql } from './cubeService';
 import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
 import { DownloadSummary } from './DownloadSummary';
-import { getEstimatedSizeInBytes } from './utils';
+import { formatFileSize, getEstimatedSizeInBytes, getEstimatedUnzippedSizeInBytes } from './utils';
 import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
 interface TermsStepProps {
@@ -21,25 +21,12 @@ type AcceptedTerm = 'dataUse' | 'largeDownload';
 
 // Constants from portal16
 const LARGE_DOWNLOAD_OFFSET = 1048576; // 1M records - above this size, not possible to handle in Excel
-const VERY_LARGE_DOWNLOAD_OFFSET = 50000000; // 50M records - ordinary databases will no longer suffice
-const UNZIP_FACTOR = 4.52617; // Average compression rate
-
-// Connection speeds for download time estimates (in Mbps)
-const CONNECTION_SPEEDS = [10, 50, 100];
 
 interface DownloadTimeEstimate {
   speed: number;
   hours: number;
   minutes: number;
   formattedTime: string;
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 }
 
 function calculateDownloadTime(sizeInBytes: number, speedMbps: number): DownloadTimeEstimate {
@@ -75,9 +62,17 @@ export default function TermsStep({
   onBack,
 }: TermsStepProps) {
   const intl = useIntl();
+  // Get zipped download size (what user downloads)
   const estimatedSizeInBytes = getEstimatedSizeInBytes(selectedFormat.id, totalRecords ?? 0);
-  const isLargeDownload = totalRecords ? totalRecords > LARGE_DOWNLOAD_OFFSET : false;
-  const isVeryLargeDownload = totalRecords ? totalRecords > VERY_LARGE_DOWNLOAD_OFFSET : false;
+  // Get unzipped size (disk space needed after extraction)
+  const estimatedUnzippedSizeInBytes = getEstimatedUnzippedSizeInBytes(
+    selectedFormat.id,
+    totalRecords ?? 0
+  );
+  const isLargeDownload =
+    totalRecords && ['SIMPLE_CSV', 'DWCA'].includes(selectedFormat.id)
+      ? totalRecords > LARGE_DOWNLOAD_OFFSET
+      : false;
 
   const [preparingDownload, setPreparingDownload] = useState(false);
   const [error, setError] = useState(null);
@@ -89,23 +84,15 @@ export default function TermsStep({
 
   const allTermsAccepted = Object.values(acceptedTerms).every(Boolean);
 
-  // Calculate download time estimates for different connection speeds
-  const downloadTimeEstimates = useMemo(() => {
-    return CONNECTION_SPEEDS.map((speed) => calculateDownloadTime(estimatedSizeInBytes, speed));
-  }, [estimatedSizeInBytes]);
-
   // Get the primary download time estimate (50 Mbps)
   const primaryEstimate = useMemo(() => {
     return calculateDownloadTime(estimatedSizeInBytes, 50);
   }, [estimatedSizeInBytes]);
 
-  const unzipSize = estimatedSizeInBytes * UNZIP_FACTOR;
-
   const handleDownload = useCallback(async () => {
     setPreparingDownload(true);
     if (configuration.cube) {
       const result = await generateCubeSql(configuration.cube, predicate);
-      console.log(result);
       if (!result.sql) {
         alert(intl.formatMessage({ id: 'customSqlDownload.errorGeneratingSql' }));
         setPreparingDownload(false);
@@ -146,6 +133,19 @@ export default function TermsStep({
           <FormattedMessage id="occurrenceDownloadFlow.backToConfiguration" />
         </button>
       </div>
+
+      <pre>
+        {JSON.stringify(
+          {
+            estimatedSizeInBytes,
+            totalRecords,
+            estimatedUnzippedSizeInBytes,
+            isLargeDownload,
+          },
+          null,
+          2
+        )}
+      </pre>
 
       <div className="g-grid lg:g-grid-cols-3 g-gap-8">
         {/* Terms Content */}
@@ -217,7 +217,7 @@ export default function TermsStep({
                       <p>
                         <FormattedMessage
                           id="occurrenceDownloadFlow.largeDownloadEstimatedSize"
-                          values={{ size: <strong>{formatBytes(estimatedSizeInBytes)}</strong> }}
+                          values={{ size: <strong>{formatFileSize(estimatedSizeInBytes)}</strong> }}
                         />{' '}
                         <FormattedMessage
                           id="occurrenceDownloadFlow.largeDownloadConnectionSpeed"
@@ -230,7 +230,9 @@ export default function TermsStep({
                       <p>
                         <FormattedMessage
                           id="occurrenceDownloadFlow.largeDownloadDiskSpace"
-                          values={{ size: <strong>{formatBytes(unzipSize)}</strong> }}
+                          values={{
+                            size: <strong>{formatFileSize(estimatedUnzippedSizeInBytes)}</strong>,
+                          }}
                         />
                       </p>
                       <p>
@@ -248,12 +250,6 @@ export default function TermsStep({
                       <p>
                         <FormattedMessage id="occurrenceDownloadFlow.largeDownloadExcelWarning" />
                       </p>
-
-                      <div className="g-mt-4 g-p-3 g-bg-amber-50 g-border g-border-amber-200 g-rounded">
-                        <p className="g-text-sm g-font-medium g-text-gray-900">
-                          <FormattedMessage id="occurrenceDownloadFlow.largeDownloadAcknowledgmentPrompt" />
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </div>

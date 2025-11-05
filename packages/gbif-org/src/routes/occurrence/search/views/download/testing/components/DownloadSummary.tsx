@@ -15,7 +15,11 @@ export function DownloadSummary({
     const summary = [
       {
         label: <FormattedMessage id="occurrenceDownloadFlow.format" />,
-        value: selectedFormat.title,
+        value: (
+          <FormattedMessage
+            id={`occurrenceDownloadFlow.downloadFormats.${selectedFormat?.id}.title`}
+          />
+        ),
       },
       {
         label: <FormattedMessage id="occurrenceDownloadFlow.csvDelimiter" />,
