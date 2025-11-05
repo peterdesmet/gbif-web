@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/largeCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DynamicLink } from '@/reactRouterPlugins';
 import { FaChevronLeft } from 'react-icons/fa';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { formatFileSize, getEstimatedSizeInBytes } from './utils';
 
 interface Format {

@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import React, { useCallback, useState } from 'react';
-import { FaChevronLeft, FaCheck, FaDownload } from 'react-icons/fa';
+import React, { useCallback, useMemo, useState } from 'react';
+import { FaChevronLeft, FaDownload } from 'react-icons/fa';
 import { generateCubeSql } from './cubeService';
 import { useSupportedChecklists } from '@/hooks/useSupportedChecklists';
 import { DownloadSummary } from './DownloadSummary';
 import { getEstimatedSizeInBytes } from './utils';
+import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
 interface TermsStepProps {
   predicate?: any;
@@ -16,6 +17,55 @@ interface TermsStepProps {
   onBack: () => void;
 }
 
+type AcceptedTerm = 'dataUse' | 'largeDownload';
+
+// Constants from portal16
+const LARGE_DOWNLOAD_OFFSET = 1048576; // 1M records - above this size, not possible to handle in Excel
+const VERY_LARGE_DOWNLOAD_OFFSET = 50000000; // 50M records - ordinary databases will no longer suffice
+const UNZIP_FACTOR = 4.52617; // Average compression rate
+
+// Connection speeds for download time estimates (in Mbps)
+const CONNECTION_SPEEDS = [10, 50, 100];
+
+interface DownloadTimeEstimate {
+  speed: number;
+  hours: number;
+  minutes: number;
+  formattedTime: string;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+}
+
+function calculateDownloadTime(sizeInBytes: number, speedMbps: number): DownloadTimeEstimate {
+  const sizeInMegabits = (sizeInBytes * 8) / (1024 * 1024);
+  const timeInSeconds = sizeInMegabits / speedMbps;
+  const hours = Math.floor(timeInSeconds / 3600);
+  const minutes = Math.round((timeInSeconds % 3600) / 60);
+
+  let formattedTime = '';
+  if (hours > 0) {
+    formattedTime = `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+    if (minutes > 0) {
+      formattedTime += ` ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+    }
+  } else {
+    formattedTime = `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+  }
+
+  return {
+    speed: speedMbps,
+    hours,
+    minutes,
+    formattedTime,
+  };
+}
+
 export default function TermsStep({
   predicate,
   sql,
@@ -24,9 +74,11 @@ export default function TermsStep({
   totalRecords,
   onBack,
 }: TermsStepProps) {
-  // Hardcoded flag to show large download warning - replace with actual logic later
+  const intl = useIntl();
   const estimatedSizeInBytes = getEstimatedSizeInBytes(selectedFormat.id, totalRecords ?? 0);
-  const isLargeDownload = totalRecords ? estimatedSizeInBytes > 500_000_000 : false;
+  const isLargeDownload = totalRecords ? totalRecords > LARGE_DOWNLOAD_OFFSET : false;
+  const isVeryLargeDownload = totalRecords ? totalRecords > VERY_LARGE_DOWNLOAD_OFFSET : false;
+
   const [preparingDownload, setPreparingDownload] = useState(false);
   const [error, setError] = useState(null);
   const { checklists, loading } = useSupportedChecklists();
@@ -37,14 +89,26 @@ export default function TermsStep({
 
   const allTermsAccepted = Object.values(acceptedTerms).every(Boolean);
 
+  // Calculate download time estimates for different connection speeds
+  const downloadTimeEstimates = useMemo(() => {
+    return CONNECTION_SPEEDS.map((speed) => calculateDownloadTime(estimatedSizeInBytes, speed));
+  }, [estimatedSizeInBytes]);
+
+  // Get the primary download time estimate (50 Mbps)
+  const primaryEstimate = useMemo(() => {
+    return calculateDownloadTime(estimatedSizeInBytes, 50);
+  }, [estimatedSizeInBytes]);
+
+  const unzipSize = estimatedSizeInBytes * UNZIP_FACTOR;
+
   const handleDownload = useCallback(async () => {
-    // if it is a cube, then refresh it in case the filters have changed
     setPreparingDownload(true);
     if (configuration.cube) {
       const result = await generateCubeSql(configuration.cube, predicate);
       console.log(result);
       if (!result.sql) {
-        alert('Error generating SQL'); // TODO inform the user and do not proceed. instead allow the user to try again.
+        alert(intl.formatMessage({ id: 'customSqlDownload.errorGeneratingSql' }));
+        setPreparingDownload(false);
         return;
       }
       console.log('Download initiated with configuration:', {
@@ -61,7 +125,7 @@ export default function TermsStep({
       });
       setPreparingDownload(false);
     }
-  }, [configuration, predicate, selectedFormat]);
+  }, [configuration, predicate, selectedFormat, intl]);
 
   const handleTermChange = (term: AcceptedTerm) => {
     setAcceptedTerms((prev) => ({
@@ -79,32 +143,8 @@ export default function TermsStep({
           className="g-flex g-items-center g-gap-2 g-text-gray-600 hover:g-text-gray-900 g-mb-4 g-transition-colors"
         >
           <FaChevronLeft size={20} />
-          Back to configuration
+          <FormattedMessage id="occurrenceDownloadFlow.backToConfiguration" />
         </button>
-
-        {/* <div className="g-flex g-items-center g-gap-4 g-mb-6">
-          <div className="g-p-3 g-bg-primary-100 g-rounded">
-            <IconComponent size={24} className="g-text-primary-600" />
-          </div>
-          <div>
-            <h1 className="g-text-2xl g-font-bold g-text-gray-900">Terms and Conditions</h1>
-            <p className="g-text-gray-600">Please review and accept the terms before downloading</p>
-          </div>
-        </div> */}
-        <pre>
-          {JSON.stringify(
-            {
-              totalRecords,
-              estimatedSizeInBytes,
-              selectedFormat,
-              configuration,
-              predicate,
-              sql,
-            },
-            null,
-            2
-          )}
-        </pre>
       </div>
 
       <div className="g-grid lg:g-grid-cols-3 g-gap-8">
@@ -127,19 +167,24 @@ export default function TermsStep({
                     htmlFor="dataUse"
                     className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                   >
-                    Data Use Agreement
+                    <FormattedMessage id="occurrenceDownloadFlow.dataUseAgreement" />
                   </label>
                   <div className="g-text-sm g-text-gray-700 g-space-y-2">
-                    <p>By downloading this data, you agree to:</p>
+                    <p>
+                      <FormattedMessage id="occurrenceDownloadFlow.dataUseAgreementIntro" />
+                    </p>
                     <ul className="g-list-disc g-list-inside g-space-y-1 g-ml-4">
                       <li>
-                        Use the data for legitimate scientific, educational, or conservation
-                        purposes
+                        <FormattedMessage id="occurrenceDownloadFlow.dataUseAgreementItem1" />
                       </li>
-                      <li>Not redistribute the raw data without proper attribution</li>
-                      <li>Respect any additional restrictions specified by data publishers</li>
                       <li>
-                        Acknowledge that data quality may vary and verify critical information
+                        <FormattedMessage id="occurrenceDownloadFlow.dataUseAgreementItem2" />
+                      </li>
+                      <li>
+                        <FormattedMessage id="occurrenceDownloadFlow.dataUseAgreementItem3" />
+                      </li>
+                      <li>
+                        <FormattedMessage id="occurrenceDownloadFlow.dataUseAgreementItem4" />
                       </li>
                     </ul>
                   </div>
@@ -166,30 +211,47 @@ export default function TermsStep({
                       htmlFor="largeDownload"
                       className="g-flex g-items-center g-gap-2 g-font-semibold g-text-gray-900 g-mb-2 g-cursor-pointer"
                     >
-                      Large Download Acknowledgment
+                      <FormattedMessage id="occurrenceDownloadFlow.largeDownloadAcknowledgment" />
                     </label>
                     <div className="g-text-sm g-text-gray-700 g-space-y-3">
                       <p>
-                        <strong>The estimated size of this download is 1 TB.</strong> On a 50 Mb/s
-                        internet connection, this would take 57 hours to download.
+                        <FormattedMessage
+                          id="occurrenceDownloadFlow.largeDownloadEstimatedSize"
+                          values={{ size: <strong>{formatBytes(estimatedSizeInBytes)}</strong> }}
+                        />{' '}
+                        <FormattedMessage
+                          id="occurrenceDownloadFlow.largeDownloadConnectionSpeed"
+                          values={{
+                            speed: primaryEstimate.speed,
+                            time: <strong>{primaryEstimate.formattedTime}</strong>,
+                          }}
+                        />
                       </p>
                       <p>
-                        Once you have downloaded the file, you will need approximately{' '}
-                        <strong>6 TB of free disk space</strong> to unzip the data.
+                        <FormattedMessage
+                          id="occurrenceDownloadFlow.largeDownloadDiskSpace"
+                          values={{ size: <strong>{formatBytes(unzipSize)}</strong> }}
+                        />
                       </p>
                       <p>
-                        The dataset has <strong>3,509,434,147 data rows</strong>.
+                        <FormattedMessage
+                          id="occurrenceDownloadFlow.largeDownloadRowCount"
+                          values={{
+                            count: (
+                              <strong>
+                                <FormattedNumber value={totalRecords ?? 0} />
+                              </strong>
+                            ),
+                          }}
+                        />
                       </p>
                       <p>
-                        You will not be able to view or analyse the data in Excel or similar
-                        applications. A dataset of this size is difficult to analyse on an ordinary
-                        computer. You will probably need access to a distributed computing service
-                        or 'Big Data' tools.
+                        <FormattedMessage id="occurrenceDownloadFlow.largeDownloadExcelWarning" />
                       </p>
-                      <div className="g-mt-4 g-p-3 g-bg-gray-50 g-border g-border-gray-200 g-rounded">
+
+                      <div className="g-mt-4 g-p-3 g-bg-amber-50 g-border g-border-amber-200 g-rounded">
                         <p className="g-text-sm g-font-medium g-text-gray-900">
-                          Please check the box above to acknowledge that you understand these risks
-                          and have access to suitable tools for handling this large dataset.
+                          <FormattedMessage id="occurrenceDownloadFlow.largeDownloadAcknowledgmentPrompt" />
                         </p>
                       </div>
                     </div>
@@ -203,21 +265,27 @@ export default function TermsStep({
         {/* Summary Sidebar */}
         <div className="lg:g-col-span-1">
           <div className="g-bg-white g-rounded g-shadow-md g-border g-border-gray-200 g-p-6 g-sticky g-top-6">
-            <h3 className="g-font-semibold g-text-gray-900 g-mb-4">Download Summary</h3>
+            <h3 className="g-font-semibold g-text-gray-900 g-mb-4">
+              <FormattedMessage id="occurrenceDownloadFlow.downloadSummary" />
+            </h3>
 
             <DownloadSummary selectedFormat={selectedFormat} configuration={configuration} />
 
             <div className="g-space-y-3 g-mb-6 g-mt-6">
-              <h4 className="g-font-medium g-text-gray-900">Terms Status</h4>
+              <h4 className="g-font-medium g-text-gray-900">
+                <FormattedMessage id="occurrenceDownloadFlow.termsStatus" />
+              </h4>
               <Term
-                label="Data Use Agreement"
+                label={<FormattedMessage id="occurrenceDownloadFlow.dataUseAgreement" />}
                 termKey="dataUse"
                 accepted={acceptedTerms.dataUse}
                 handleTermChange={handleTermChange}
               />
               {isLargeDownload && (
                 <Term
-                  label="Large Download Acknowledgment"
+                  label={
+                    <FormattedMessage id="occurrenceDownloadFlow.largeDownloadAcknowledgment" />
+                  }
                   termKey="largeDownload"
                   accepted={acceptedTerms.largeDownload || false}
                   handleTermChange={handleTermChange}
@@ -226,17 +294,17 @@ export default function TermsStep({
             </div>
 
             <Button
-              disabled={!allTermsAccepted}
+              disabled={!allTermsAccepted || preparingDownload}
               className={`g-w-full g-flex g-items-center g-justify-center g-gap-2`}
               onClick={handleDownload}
             >
               <FaDownload size={16} />
-              Create download
+              <FormattedMessage id="occurrenceDownloadFlow.createDownload" />
             </Button>
 
             {!allTermsAccepted && (
               <p className="g-text-xs g-text-gray-500 g-text-center g-mt-2">
-                Please complete all requirements to continue
+                <FormattedMessage id="occurrenceDownloadFlow.completeRequirements" />
               </p>
             )}
           </div>
@@ -245,8 +313,6 @@ export default function TermsStep({
     </div>
   );
 }
-
-type AcceptedTerm = 'dataUse' | 'largeDownload';
 
 function Term({
   termKey,

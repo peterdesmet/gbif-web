@@ -61,7 +61,7 @@ export default function StepIndicator({
                   </div>
                   <div className="g-absolute g-top-12 g-text-center">
                     <div
-                      className={`g-text-sm g-font-medium g-whitespace-nowrap${
+                      className={`g-text-sm g-font-medium g-whitespace-nowrap ${
                         isCurrent
                           ? 'g-text-primary-600'
                           : isCompleted
